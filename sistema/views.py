@@ -21,11 +21,11 @@ def index(request):
             senha = request.POST.get("senha"),
         )
 
-        return render(request, "index.html")
+        return render(request, "404.html")
 
     
     else:
-        return render(request, "index.html")
+        return render(request, "404.html")
 
 
       
