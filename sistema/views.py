@@ -21,11 +21,11 @@ def index(request):
             senha = request.POST.get("senha"),
         )
 
-        return render(request, "static/sistema.html")
+        return render(request, "static/index.html")
 
     
     else:
-        return render(request, "static/sistema.html")
+        return render(request, "static/index.html")
 
 
       
