@@ -8,7 +8,7 @@ from .models import Informations
 def views(request):
     quantidade = Informations.objects.count()
     chamados  = Informations.objects.all()
-    return render(request, "static/visualização.html",  {"chamados": chamados, "quantidade": quantidade})
+    return render(request, "visualização.html",  {"chamados": chamados, "quantidade": quantidade})
 
 
 
