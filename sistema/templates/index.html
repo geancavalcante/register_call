@@ -65,7 +65,15 @@
             font-size: 14px;
         }
 
+        input[type="textarea"]{
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;
+            
+        }
+
         input[type="text"],
+        input[type="textarea"],
         input[type="number"],
         input[type="date"],
         input[type="time"],
@@ -82,10 +90,33 @@
         }
 
         input[type="text"]:focus,
+        input[type="textarea"]:focus,
         input[type="number"]:focus,
         input[type="date"]:focus,
         input[type="time"]:focus,
         input[type="password"]:focus {
+            border-color: #667eea;
+            outline: none;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+            resize: vertical; 
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+
+        textarea:focus {
             border-color: #667eea;
             outline: none;
             background: white;
@@ -178,10 +209,11 @@
             </div>
 
             <label for="senha">Senha:</label>
-            <input type="password" id="senha" name="senha" maxlength="12" required>
+            <input type="text" id="senha" name="senha" maxlength="12" required>
 
             <label for="observacao">Observação:</label>
-            <input type="text" id="observacao" name="observacao" maxlength="300" required>
+            <textarea id="observacao" name="observacao" rows="5" wrap="hard" placeholder="Digite observações aqui..."></textarea>
+
 
             <button type="submit" class="submit-button">Enviar</button>
         </form>

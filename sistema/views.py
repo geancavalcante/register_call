@@ -2,7 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from .models import Chamados
 
-from datetime import date
+from datetime import datetime, date
 
 
 
@@ -33,22 +33,14 @@ def index(request):
     
         inicio = request.POST.get("inicio")
         conclusao = request.POST.get("conclusao")
-        print(inicio)
-    
 
-        inicio = float(inicio.replace(":", "."))
-        conclusao = float(conclusao.replace(":", "."))
-
-        
-        #round: Arrendodar o valor para 2 casas decimais
-        #abs: definiir o valor como positivo
+        formato = "%H:%M"
+        inicio = datetime.strptime(inicio, formato)
+        conclusao = datetime.strptime(conclusao, formato)
     
-        total_horas = round(abs(inicio - conclusao), 2) 
-        total_horas = f"{float(total_horas):05.2f}".replace(".",":")
-        print(total_horas)
-        
-    
+        total_horas = conclusao - inicio
 
+    
         #==============================================
     
     
@@ -60,7 +52,7 @@ def index(request):
             data = request.POST.get("data"),
             inicio =  request.POST.get("inicio"),
             conclusao = request.POST.get("conclusao"),
-            total_horas = total_horas,
+            total_horas = str(total_horas),
             produtiva = produtiva_valor,
             senha = request.POST.get("senha"),
             observacao = request.POST.get("observacao")

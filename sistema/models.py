@@ -15,7 +15,7 @@ class Chamados(models.Model):
 
 
     def __str__(self):
-        return f"{self.nome_analista} || {self.data}" 
+        return f"{self.nome_analista} || {self.data}  || {self.inicio}" 
 
 
     
