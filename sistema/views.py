@@ -40,6 +40,7 @@ def index(request):
     
         total_horas = conclusao - inicio
 
+
     
         #==============================================
     
