@@ -1,72 +1,104 @@
-from django.http import HttpResponse
+from django.views import View
 from django.shortcuts import render, redirect
 from .models import Chamados
-
+from django.contrib.auth.models import User
 from datetime import datetime, date
 
 
 
 
-def views(request):
+def ver_analista(request, user_id):
+    hora = datetime.strptime("01:00","%H:%M").time()
 
+
+
+    analista = User.objects.get(id=user_id)
+    chamados_feitos = Chamados.objects.filter(nome_analista=analista)
+    analista = str(analista).replace("_", " ")
+
+    return render(request, "chamado_especifico.html" , {"chamados": chamados_feitos, "analista": analista, "hora": hora} )
+
+
+
+def views(request):
+    
+    hora = datetime.strptime("01:00", "%H:%M").time()
     data = date.today()
-    print(data)
 
     quantidade = Chamados.objects.filter(data=data).count()
     chamados  = Chamados.objects.all()
-    return render(request, "visualização.html",  {"chamados": chamados, "quantidade": quantidade,"data":data})
+    return render(request, "visualização.html",  {"chamados":chamados, "quantidade": quantidade,"data":data, "hora":hora})
 
 
 
-def index(request):
-    
-    if request.method == "POST":
-        #======================================
+class RegistrarChamado(View):
 
-        produtiva_valor = request.POST.get("produtiva")
-        if produtiva_valor == "on":
-            produtiva_valor = True
-        else:
-            produtiva_valor = False
-
-        #========================================
-    
-        inicio = request.POST.get("inicio")
-        conclusao = request.POST.get("conclusao")
-
-        formato = "%H:%M"
-        inicio = datetime.strptime(inicio, formato)
-        conclusao = datetime.strptime(conclusao, formato)
-    
-        total_horas = conclusao - inicio
-
-
-     
-        #==============================================
-    
+    def get(self, request):
+        return render(request, "index.html")
     
 
-        Chamados.objects.create(
-            nome_analista = request.POST.get("nome_analista"),
-            ID_chamado = request.POST.get("ID_chamado"),
-            tecnico = request.POST.get("tecnico"),
-            data = request.POST.get("data"),
-            inicio =  request.POST.get("inicio"),
-            conclusao = request.POST.get("conclusao"),
-            total_horas = str(total_horas),
-            produtiva = produtiva_valor,
-            senha = request.POST.get("senha"),
-            observacao = request.POST.get("observacao")
-        )
+    def post(self, request):
+        self.nome_analista = request.POST.get("nome_analista")
+        self.ID_chamado = request.POST.get("ID_chamado")
+        self.tipo_atividade = request.POST.get("tipo_atividade")
+        self.nome_tecnico = request.POST.get("tecnico")
+        self.data = request.POST.get("data")
+        self.inicio =  request.POST.get("inicio")
+        self.conclusao = request.POST.get("conclusao")
+        self.situacao = request.POST.get("produtiva")
+        self.senha = request.POST.get("senha")
+        self.observacao = request.POST.get("observacao")
 
+
+
+    
+        RegistrarChamado._validar_situacao(self)
+        RegistrarChamado._cauculo_de_tempo_de_atendimento(self)
+        RegistrarChamado._salvador_chamado(self)
+            
+        return render(request, "index.html")
+
+    
+
+
+    def _validar_situacao(self):
+        if self.situacao == "on":
+
+            self.situacao = True
         
+        else:
+            self.situacao = False
+   
+        
+    def _cauculo_de_tempo_de_atendimento(self):
+        formato = "%H:%M"
 
-        return render(request, "index.html")
+        inicio = datetime.strptime(self.inicio, formato)
+        conclusao = datetime.strptime(self.conclusao, formato)
+        self.total_horas = str(conclusao - inicio)
+    
+
+    def _salvador_chamado(self):
+            print(self.tipo_atividade)
+
+            Chamados.objects.create(
+                nome_analista = User.objects.get(username=self.nome_analista),
+                ID_chamado = self.ID_chamado,
+                tipo_atividade = self.tipo_atividade,
+                nome_tecnico = self.nome_tecnico,
+                data = self.data,
+                inicio =  self.inicio,
+                conclusao = self.conclusao,
+                total_horas = self.total_horas,
+                produtiva = self.situacao,
+                senha = self.senha,
+                observacao = self.observacao,
+            )
+
+            
 
     
-    else:
-        return render(request, "index.html")
-
+    
 
       
    

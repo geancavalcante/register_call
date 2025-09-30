@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualizar Chamado</title>
-    <style>
-     /* Reset básico */
+    <title>Document</title>
+     <style>
+          /* Reset básico */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -67,10 +67,6 @@ body {
 .quantity {
     font-size: 1.1rem;
     color: #666;
-
-    strong{
-        color: #4a00e0;
-    }
 }
 
 /* CARDS */
@@ -100,7 +96,7 @@ body {
 
 /* Texto dentro do Card */
 p.label {
-    font-size: 1.rem;
+    font-size: 1.3rem;
     color: #333;
     margin-bottom: 12px;
 }
@@ -129,26 +125,20 @@ a{
     </style>
 </head>
 <body>
-    <div class="navbar">
+     <div class="navbar">
         <a href="{% url 'cadastrar_chamado' %}">Registrar Chamado</a>
         <a href="{% url 'views' %}">Chamados de Hoje</a>
     </div>
-    
     <div class="container">
-       
-        
         <div class="header">
-            <h1>Visualização de Chamados</h1>
-            <div class="quantity">Quantidade de chamados Hoje: <strong>{{ quantidade }} </strong></div>
+            <h1>Quantidade de chamados feitos por: {{analista}}</h1>
         </div>
-
+        
         <div class="cards">
-
-                
-                {% for chamado in chamados %}
-                    {% if chamado.data == data %}
-                        <div class="card">
-                            <p class="label"><strong>Nome do Analista:</strong> <a href="{% url 'ver_analista' chamado.nome_analista.id %}">{{ chamado.nome_analista }}</a></p>
+            {% for chamado in chamados%} 
+        
+            <div class="card">
+                            <p class="label"><strong>Nome do Analista:</strong>{{analista}}</p>
                             <p class="label"><strong>ID do Chamado:</strong> {{ chamado.ID_chamado }}</p>
                             <p class="label"><strong>Tpo da Atividade:</strong> {{ chamado.tipo_atividade }}</p>
                             <p class="label"><strong>Técnico:</strong> {{ chamado.nome_tecnico }}</p>
@@ -160,21 +150,17 @@ a{
                             {% else %}
                                 <p class="label"><strong>Tempo de chamado:</strong> {{ chamado.total_horas }} Mins</p>
                             {% endif%}
-                            {% if chamado.produtiva == True %}
-                                <p class="label"><strong>Produtiva:</strong>Produtiva</p>
-                            {% else %}
-                                <p class="label"><strong>Produtiva:</strong>Improutiva</p>
-                            {% endif %}
+                            {% if chamado.produtiva%}
+                                <p class="label"><strong>Produtiva:</strong> Produtiva</p>
+                            {% else%}
+                                <p class="label"><strong>Produtiva:</strong> Produtiva</p>
+                            {% endif%}
+
                             <p class="label"><strong>Senha:</strong> {{ chamado.senha }}</p>
-                            <p class="label"><strong>Observação:</strong> {{ chamado.observacao }}</p>
-                        </div>
-                    {% endif %}
+                        <p class="label"><strong>Observação:</strong> {{ chamado.observacao }}</p>
+                </div>
             {% endfor %}
-            
         </div>
     </div>
-
-    
 </body>
 </html>
-    

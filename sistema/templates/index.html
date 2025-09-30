@@ -6,190 +6,215 @@
     <title>Registrar Chamado</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background: #e0e0e0;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #333;
-        }
+<style>
+    body {
+        font-family: 'Roboto', sans-serif;
+        background: #e0e0e0;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: #333;
+    }
 
-        .container {
-            max-width: 700px;
-            width: 100%;
-            padding: 20px;
-            min-height: 500px;
-        }
+    .navbar {
+        width: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 15px 30px;
+        display: flex;
+        justify-content: center;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
 
-        h1 {
-            text-align: center;
-            color: #333;
-            margin: 0 0 25px 0;
-            font-weight: 700;
-            font-size: 2em;
-            text-shadow: none;
-            word-wrap: break-word;
-        }
+    .navbar a {
+        color: white;
+        margin: 0 15px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 16px;
+        transition: 0.3s;
+        padding: 8px 15px;
+        border-radius: 6px;
+    }
 
-        form {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 40px 35px;
-            border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            animation: fadeInUp 0.6s ease-out;
-        }
+    .navbar a:hover {
+        background: rgba(255,255,255,0.2);
+    }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+    .container {
+        max-width: 700px;
+        width: 100%;
+        padding: 20px;
+        margin-top: 30px;
+        min-height: 500px;
+    }
 
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #555;
-            font-size: 14px;
-        }
+    h1 {
+        text-align: center;
+        color: #333;
+        margin: 0 0 25px 0;
+        font-weight: 700;
+        font-size: 2em;
+        text-shadow: none;
+        word-wrap: break-word;
+    }
 
-        input[type="textarea"]{
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            white-space: normal;
-            
-        }
+    form {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 40px 35px;
+        border-radius: 15px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        animation: fadeInUp 0.6s ease-out;
+    }
 
-        input[type="text"],
-        input[type="textarea"],
-        input[type="number"],
-        input[type="date"],
-        input[type="time"],
-        input[type="password"] {
-            width: 100%;
-            padding: 12px 15px;
-            margin-bottom: 20px;
-            border: 2px solid #e1e5e9;
-            border-radius: 8px;
-            font-size: 16px;
-            box-sizing: border-box;
-            transition: all 0.3s ease;
-            background: #f8f9fa;
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
         }
-
-        input[type="text"]:focus,
-        input[type="textarea"]:focus,
-        input[type="number"]:focus,
-        input[type="date"]:focus,
-        input[type="time"]:focus,
-        input[type="password"]:focus {
-            border-color: #667eea;
-            outline: none;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        textarea {
-            width: 100%;
-            padding: 12px 15px;
-            margin-bottom: 20px;
-            border: 2px solid #e1e5e9;
-            border-radius: 8px;
-            font-size: 16px;
-            box-sizing: border-box;
-            transition: all 0.3s ease;
-            background: #f8f9fa;
-            resize: vertical; 
-            word-wrap: break-word;
-            white-space: pre-wrap;
-        }
-
-        textarea:focus {
-            border-color: #667eea;
-            outline: none;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        input[type="checkbox"] {
-            transform: scale(1.2);
-            margin-right: 10px;
-            vertical-align: middle;
-        }
-
-        .checkbox-container {
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            background: #f8f9fa;
-            padding: 12px 15px;
-            border-radius: 8px;
-            border: 2px solid #e1e5e9;
-        }
-
-        .checkbox-container label {
-            margin-bottom: 0;
-            cursor: pointer;
-        }
-
-        button {
-            width: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px 0;
-            font-size: 18px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-        }
-
-        button:active {
+        to {
+            opacity: 1;
             transform: translateY(0);
         }
+    }
 
-        @media (max-width: 480px) {
-            .container {
-                padding: 10px;
-            }
-            form {
-                padding: 30px 20px;
-            }
-            h1 {
-                font-size: 2em;
-            }
+    label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #555;
+        font-size: 14px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    input[type="time"],
+    input[type="password"],
+    select,
+    textarea {
+        width: 100%;
+        padding: 12px 15px;
+        margin-bottom: 20px;
+        border: 2px solid #e1e5e9;
+        border-radius: 8px;
+        font-size: 16px;
+        box-sizing: border-box;
+        transition: all 0.3s ease;
+        background: #f8f9fa;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+        border-color: #667eea;
+        outline: none;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    textarea {
+        resize: vertical; 
+        word-wrap: break-word;
+        white-space: pre-wrap;
+    }
+
+    input[type="checkbox"] {
+        transform: scale(1.2);
+        margin-right: 10px;
+        vertical-align: middle;
+    }
+
+    .checkbox-container {
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        background: #f8f9fa;
+        padding: 12px 15px;
+        border-radius: 8px;
+        border: 2px solid #e1e5e9;
+    }
+
+    .checkbox-container label {
+        margin-bottom: 0;
+        cursor: pointer;
+    }
+
+    button {
+        width: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px 0;
+        font-size: 18px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+
+    button:active {
+        transform: translateY(0);
+    }
+
+    @media (max-width: 480px) {
+        .container {
+            padding: 10px;
         }
-    </style>
+        form {
+            padding: 30px 20px;
+        }
+        h1 {
+            font-size: 2em;
+        }
+    }
+</style>
 </head>
 <body>
+     <div class="navbar">
+        <a href="{% url 'cadastrar_chamado' %}">Registrar Chamado</a>
+        <a href="{% url 'views' %}">Chamados de Hoje</a>
+    </div>
+
+
     <div class="container">
         <h1>Registrar Chamado</h1>
         <form method="POST">
-            {%csrf_token%}
+            {% csrf_token %}
+
             <label for="nome_analista">Nome do Analista:</label>
-            <input type="text" id="nome_analista" name="nome_analista" maxlength="50" required>
+            <select id="nome_analista" name="nome_analista" required>
+                <option value="">Selecione...</option>
+                <option value="Gean_Cavalcante">Gean Cavalcante</option>
+                <option value="Paulo_Henrique">Paulo Henrique</option>
+                <option value="Joao_Cezar">João Cezar</option>
+                <option value="Ramon_Farias">Ramon Farias</option>
+                <option value="Pedro_Alexandre">Pedro Alexandre</option>mkeeAtte
+                <option value="Adryson_Costa">Adryson Costa</option>
+                <option value="Mateus_Bezerra">Mateus Bezerra</option>
+            </select>
 
             <label for="ID_chamado">ID do Chamado:</label>
             <input type="number" id="ID_chamado" name="ID_chamado" required>
+
+            <label for="tipo_atividade">Tipo da Atividade:</label>
+            <select id="tipo_atividade" name="tipo_atividade" required>
+                <option value="">Selecione...</option>
+                <option value="Manutenção">Manutenção</option>
+                <option value="Migração">Migração</option>
+                <option value="Mudança de Endereço">Mudança de Endereço</option>
+                <option value="Remanejamento">Remanejamento</option>
+            </select>
 
             <label for="tecnico">Técnico:</label>
             <input type="text" id="tecnico" name="tecnico" maxlength="30" required>
@@ -214,10 +239,10 @@
             <label for="observacao">Observação:</label>
             <textarea id="observacao" name="observacao" rows="5" wrap="hard" placeholder="Digite observações aqui..."></textarea>
 
-
             <button type="submit" class="submit-button">Enviar</button>
         </form>
     </div>
+</body>
 
 
 
