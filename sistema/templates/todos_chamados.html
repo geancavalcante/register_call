@@ -96,7 +96,7 @@ body {
 
 /* Texto dentro do Card */
 p.label {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     color: #333;
     margin-bottom: 12px;
 }
@@ -132,34 +132,35 @@ a{
     </div>
     <div class="container">
         <div class="header">
-            <h1>Quantidade de chamados feitos por: {{analista}}</h1>
+            <h1>Quantidade de todos os chamados: {{quantidade}}</h1>
         </div>
         
         <div class="cards">
-            {% for chamado in chamados%} 
-        
-            <div class="card">
-                            <p class="label"><strong>Nome do Analista:</strong>{{analista}}</p>
-                            <p class="label"><strong>ID do Chamado:</strong> {{ chamado.ID_chamado }}</p>
-                            <p class="label"><strong>Tpo da Atividade:</strong> {{ chamado.tipo_atividade }}</p>
-                            <p class="label"><strong>Técnico:</strong> {{ chamado.nome_tecnico }}</p>
-                            <p class="label"><strong>Data:</strong> {{ chamado.data }}</p>
-                            <p class="label"><strong>Início:</strong> {{ chamado.inicio }}</p>
-                            <p class="label"><strong>Conclusão:</strong> {{ chamado.conclusao }}</p>
-                            {% if chamado.total_horas >= hora %}
-                                <p class="label"><strong>Tempo de chamado:</strong> {{ chamado.total_horas }} Hrs</p>
-                            {% else %}
-                                <p class="label"><strong>Tempo de chamado:</strong> {{ chamado.total_horas }} Mins</p>
-                            {% endif%}
-                            {% if chamado.produtiva%}
-                                <p class="label"><strong>Produtiva:</strong> Produtiva</p>
-                            {% else%}
-                                <p class="label"><strong>Produtiva:</strong> Produtiva</p>
-                            {% endif%}
+            {% for chamado in chamados%}
+ 
+                    <div class="card">
+                                <p class="label"><strong>Nome do Analista:</strong>{{chamado.nome_analista}}</p>
+                                <p class="label"><strong>ID do Chamado:</strong> {{ chamado.ID_chamado }}</p>
+                                <p class="label"><strong>Tpo da Atividade:</strong> {{ chamado.tipo_atividade }}</p>
+                                <p class="label"><strong>Técnico:</strong> {{ chamado.nome_tecnico }}</p>
+                                <p class="label"><strong>Data:</strong> {{ chamado.data }}</p>
+                                <p class="label"><strong>Início:</strong> {{ chamado.inicio }}</p>
+                                <p class="label"><strong>Conclusão:</strong> {{ chamado.conclusao }}</p>
+                                {% if chamado.total_horas >= hora %}
+                                    <p class="label"><strong>Tempo de chamado:</strong> {{ chamado.total_horas }} Hrs</p>
+                                {% else %}
+                                    <p class="label"><strong>Tempo de chamado:</strong> {{ chamado.total_horas }} Mins</p>
+                                {% endif%}
+                                {% if chamado.produtiva%}
+                                    <p class="label"><strong>Produtiva:</strong> Produtiva</p>
+                                {% else%}
+                                    <p class="label"><strong>Produtiva:</strong> Produtiva</p>
+                                {% endif%}
 
-                            <p class="label"><strong>Senha:</strong> {{ chamado.senha }}</p>
-                        <p class="label"><strong>Observação:</strong> {{ chamado.observacao }}</p>
-                </div>
+                                <p class="label"><strong>Senha:</strong> {{ chamado.senha }}</p>
+                            <p class="label"><strong>Observação:</strong> {{ chamado.observacao }}</p>
+                    </div>
+            
             {% endfor %}
         </div>
     </div>

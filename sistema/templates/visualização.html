@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,31 +18,226 @@ body {
 
 }
 
+ body {
+    font-family: 'Roboto', sans-serif;
+    background: #e0e0e0;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #333;
+}
+
 /* NAVBAR */
 .navbar {
     width: 100%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 15px 30px;
     display: flex;
-    justify-content: center;
+    align-items: center; /* centraliza verticalmente */
+   justify-content: center;
+    padding: 15px 0px; /* espaço nas laterais */
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    margin-bottom: 3rem;
 }
 
-/* Links da Navbar */
 .navbar a {
     color: white;
     margin: 0 15px;
     text-decoration: none;
     font-weight: 600;
     font-size: 16px;
-    transition: 0.3s;
     padding: 8px 15px;
     border-radius: 6px;
+    transition: 0.3s;
 }
 
 .navbar a:hover {
     background: rgba(255,255,255,0.2);
+}
+
+/* FORM DA NAVBAR (INPUT + BOTÃO) */
+.navbar .date-form {
+
+    /* centraliza verticalmente */
+    justify-content: center;    /* centraliza horizontalmente */
+    gap: 10px;  
+
+    display: flex;
+    align-items: center;
+    margin-left: 0; /* empurra pro lado direito */
+    gap: 8px; /* espaço entre input e botão */
+    background: rgba(255, 255, 255, 0.15);
+    padding: 6px 20px;
+    border-radius: 10px;
+    backdrop-filter: blur(6px);
+}
+
+.navbar .date-form input[type="date"] {
+    margin-top: 1rem;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: none;
+    font-size: 14px;
+    background: rgba(255,255,255,0.9);
+}
+
+.navbar .date-form button {
+    padding: 6px 12px;
+    font-size: 14px;
+    border-radius: 6px;
+    border: none;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.navbar .date-form button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+}
+
+
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin: 0 0 25px 0;
+    font-weight: 700;
+    font-size: 2em;
+    text-shadow: none;
+    word-wrap: break-word;
+}
+
+/* FORMULÁRIO */
+form {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 40px 35px;
+    border-radius: 15px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #555;
+    font-size: 14px;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"],
+input[type="time"],
+input[type="password"],
+select,
+textarea {
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 20px;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: #667eea;
+    outline: none;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+textarea {
+    resize: vertical; 
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+input[type="checkbox"] {
+    transform: scale(1.2);
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+.checkbox-container {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    background: #f8f9fa;
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: 2px solid #e1e5e9;
+}
+
+.checkbox-container label {
+    margin-bottom: 0;
+    cursor: pointer;
+}
+
+/* BOTÃO PRINCIPAL DO FORM */
+button {
+    width: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px 0;
+    font-size: 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+/* RESPONSIVO */
+@media (max-width: 480px) {
+    .container {
+        padding: 10px;
+    }
+    form {
+        padding: 30px 20px;
+    }
+    h1 {
+        font-size: 2em;
+    }
+    .navbar {
+        flex-wrap: wrap;
+    }
+    .navbar .date-form {
+        margin-left: 0;
+        margin-top: 10px;
+        width: 100%;
+        justify-content: center;
+    }
 }
 
 /* CONTAINER */
@@ -129,9 +324,17 @@ a{
     </style>
 </head>
 <body>
-    <div class="navbar">
+       <div class="navbar">
+        <a href="{% url 'nomes_analistas' %}">Analistas</a>
         <a href="{% url 'cadastrar_chamado' %}">Registrar Chamado</a>
         <a href="{% url 'views' %}">Chamados de Hoje</a>
+
+   
+        <form method="POST" class="date-form">
+            {% csrf_token %}
+            <input type="date" name="data" required>
+            <button type="submit">Filtrar</button>
+        </form>
     </div>
     
     <div class="container">
@@ -139,14 +342,18 @@ a{
         
         <div class="header">
             <h1>Visualização de Chamados</h1>
-            <div class="quantity">Quantidade de chamados Hoje: <strong>{{ quantidade }} </strong></div>
+            {% if data_especificada != data_hoje %}
+                <div class="quantity">Quantidade de chamados {{data_especificada}}: <strong>{{ quantidade }} </strong></div>
+            {% else %}
+                <div class="quantity">Quantidade de chamados hoje: <strong>{{ quantidade }} </strong></div>
+            {% endif %}
         </div>
 
         <div class="cards">
 
                 
                 {% for chamado in chamados %}
-                    {% if chamado.data == data %}
+                    {% if chamado.data == data_especificada%}
                         <div class="card">
                             <p class="label"><strong>Nome do Analista:</strong> <a href="{% url 'ver_analista' chamado.nome_analista.id %}">{{ chamado.nome_analista }}</a></p>
                             <p class="label"><strong>ID do Chamado:</strong> {{ chamado.ID_chamado }}</p>

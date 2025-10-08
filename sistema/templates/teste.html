@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Interativo</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f3f4f6;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .cards {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            width: 180px;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+        }
+
+        .card h3 {
+            margin: 0;
+            font-size: 1.2em;
+            color: #555;
+        }
+
+        .card p {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin: 5px 0 0;
+            color: #667eea;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #764ba2;
+        }
+
+        canvas {
+            width: 85%;
+            max-width: 800px;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 15px;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .semana {
+            margin: 15px 0;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>📈 Dashboard de Chamados</h1>
+    </header>
+
+    <section class="cards">
+        <div class="card">
+            <h3>Total de Chamados</h3>
+            <p id="totalChamados">-</p>
+        </div>
+        <div class="card">
+            <h3>Resolvidos</h3>
+            <p id="chamadosResolvidos">-</p>
+        </div>
+        <div class="card">
+            <h3>Pendentes</h3>
+            <p id="chamadosPendentes">-</p>
+        </div>
+    </section>
+
+    <div class="semana" id="semanaAtual">Semana 1</div>
+
+    <div class="navbar">
+        <button onclick="mudarSemana(-1)">⬅ Semana Anterior</button>
+        <button onclick="mostrarGrafico('pie')">Pizza</button>
+        <button onclick="mostrarGrafico('bar')">Barra</button>
+        <button onclick="mostrarGrafico('line')">Linha</button>
+        <button onclick="mudarSemana(1)">Semana Seguinte ➡</button>
+    </div>
+
+    <canvas id="grafico"></canvas>
+
+    <footer>
+        Desenvolvido por Gean © 2025
+    </footer>
+
+    <script>
+        const ctx = document.getElementById('grafico');
+        let chart;
+        let semanaIndex = 0;
+
+        // Dados simulados de 4 semanas
+        const semanas = [
+            { semana: "Semana 1", labels: ['João', 'Maria', 'Carlos', 'Ana'], valores: [10, 15, 5, 8] },
+            { semana: "Semana 2", labels: ['João', 'Maria', 'Carlos', 'Ana'], valores: [7, 12, 11, 6] },
+            { semana: "Semana 3", labels: ['João', 'Maria', 'Carlos', 'Ana'], valores: [14, 9, 13, 10] },
+            { semana: "Semana 4", labels: ['João', 'Maria', 'Carlos', 'Ana'], valores: [9, 16, 8, 12] },
+        ];
+
+        function atualizarDados(semana) {
+            const total = semana.valores.reduce((a, b) => a + b, 0);
+            const resolvidos = Math.floor(total * 0.7);
+            const pendentes = total - resolvidos;
+
+            document.getElementById('totalChamados').textContent = total;
+            document.getElementById('chamadosResolvidos').textContent = resolvidos;
+            document.getElementById('chamadosPendentes').textContent = pendentes;
+            document.getElementById('semanaAtual').textContent = semana.semana;
+        }
+
+        function mostrarGrafico(tipo) {
+            if (chart) chart.destroy();
+
+            const semana = semanas[semanaIndex];
+            atualizarDados(semana);
+
+            chart = new Chart(ctx, {
+                type: tipo,
+                data: {
+                    labels: semana.labels,
+                    datasets: [{
+                        label: 'Chamados por Analista',
+                        data: semana.valores,
+                        backgroundColor: ['#667eea', '#764ba2', '#43cea2', '#30cfd0'],
+                        borderWidth: 1,
+                        fill: tipo === 'line'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    },
+                    scales: tipo !== 'pie' ? {
+                        y: { beginAtZero: true, ticks: { stepSize: 5 } }
+                    } : {}
+                }
+            });
+        }
+
+        function mudarSemana(direcao) {
+            semanaIndex += direcao;
+            if (semanaIndex < 0) semanaIndex = semanas.length - 1;
+            if (semanaIndex >= semanas.length) semanaIndex = 0;
+            mostrarGrafico(chart.config.type);
+        }
+
+        // Inicializa com gráfico de pizza
+        mostrarGrafico('pie');
+    </script>
+</body>
+</html>

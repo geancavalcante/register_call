@@ -7,9 +7,23 @@ from datetime import datetime, date
 
 
 
+def nomes_analistas(request):
+    analistas_str = []
+    analistas_object = User.objects.filter(is_superuser=False)
+   
+   
+    for analista in analistas_object:
+        nome_analista = User.objects.get(username=analista)
+
+        analista = str(analista).replace("_"," ")
+        analistas_str.append((analista,nome_analista.id))
+    
+
+
+    return render(request, "analistas.html", {"analistas": analistas_str })
+
 def ver_analista(request, user_id):
     hora = datetime.strptime("01:00","%H:%M").time()
-
 
 
     analista = User.objects.get(id=user_id)
@@ -19,15 +33,46 @@ def ver_analista(request, user_id):
     return render(request, "chamado_especifico.html" , {"chamados": chamados_feitos, "analista": analista, "hora": hora} )
 
 
+def todos_chamados(request):
+    chamados  = Chamados.objects.all()
+    quantidade = chamados.count()
+
+
+    return render(request, "todos_chamados.html", {"chamados": chamados, "quantidade": quantidade})
+
 
 def views(request):
     
-    hora = datetime.strptime("01:00", "%H:%M").time()
-    data = date.today()
 
-    quantidade = Chamados.objects.filter(data=data).count()
-    chamados  = Chamados.objects.all()
-    return render(request, "visualização.html",  {"chamados":chamados, "quantidade": quantidade,"data":data, "hora":hora})
+    if request.method == "POST":
+
+        formato = "%Y-%m-%d"
+        data_especifica = request.POST.get("data") 
+        data_especifica = datetime.strptime(data_especifica, formato).date()
+        data_hoje = date.today()
+
+
+
+        hora = datetime.strptime("01:00","%H:%M").time()
+
+        
+
+        chamados = Chamados.objects.filter(data=data_especifica) 
+        quantidade = Chamados.objects.filter(data=data_especifica).count() 
+
+        return render(request, "visualização.html", {"chamados":chamados, "quantidade": quantidade, "data_especificada":data_especifica,"data_hoje": data_hoje, "hora":hora}  )
+    else:
+
+
+        hora = datetime.strptime("01:00", "%H:%M").time()
+        data_especifica = date.today()
+        data_hoje = date.today()
+
+
+
+        quantidade = Chamados.objects.filter(data=data_especifica).count()
+        chamados  = Chamados.objects.all()
+        return render(request, "visualização.html",  {"chamados":chamados, "quantidade": quantidade,"data_especificada":data_especifica,"data_hoje":data_hoje, "hora":hora})
 
 
 
