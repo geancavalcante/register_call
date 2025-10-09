@@ -5,7 +5,9 @@ from django.contrib.auth.models import User
 from datetime import datetime, date
 
 
-
+def dashboards(request):
+    chamados = Chamados.objects.all()
+    return render(request, "dashboards.html", {"chamados": chamados})
 
 def nomes_analistas(request):
     analistas_str = []
