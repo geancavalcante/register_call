@@ -13,7 +13,9 @@ from reportlab.lib.enums import TA_CENTER, TA_LEFT
 from io import BytesIO
 
 
-
+def dashboards(request):
+    chamados = Chamados.objects.all()
+    return render(request, "dashboards.html", {"chamados": chamados})
 
 def nomes_analistas(request):
     analistas_str = []

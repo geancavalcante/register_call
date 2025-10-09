@@ -4,15 +4,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<<<<<<< HEAD
     <title>Chamados de Hoje - Attend Services</title>
+=======
+    <title>Visualizar Chamados - Sistema Attend</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+>>>>>>> d58eabf
     <style>
-     /* Reset básico */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+<<<<<<< HEAD
 body {
     font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
     background: url('{% static "img/back 01.jpeg" %}?v=3') center center/cover no-repeat fixed;
@@ -180,149 +186,231 @@ body::before {
     box-shadow: 0 6px 20px rgba(248, 194, 74, 0.4);
     background: linear-gradient(135deg, #ffd166 0%, #F8C24A 100%);
 }
+=======
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #000000;
+            color: #ffffff;
+            position: relative;
+            min-height: 100vh;
+        }
 
+        /* Background Pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(248, 194, 74, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(248, 194, 74, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
 
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: linear-gradient(180deg, #F8C24A 0%, #f4a261 100%);
+            padding: 40px 0;
+            z-index: 100;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-h1 {
-    text-align: center;
-    color: #333;
-    margin: 0 0 25px 0;
-    font-weight: 700;
-    font-size: 2em;
-    text-shadow: none;
-    word-wrap: break-word;
-}
+        .sidebar-logo {
+            padding: 0 30px;
+            margin-bottom: 50px;
+        }
 
-/* FORMULÁRIO */
-form {
-    background: rgba(255, 255, 255, 0.95);
-    padding: 40px 35px;
-    border-radius: 15px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    animation: fadeInUp 0.6s ease-out;
-}
+        .sidebar-logo h2 {
+            color: #000000;
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+        }
 
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
 
-label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
-    color: #555;
-    font-size: 14px;
-}
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 16px 30px;
+            color: #000000;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-input[type="text"],
-input[type="number"],
-input[type="date"],
-input[type="time"],
-input[type="password"],
-select,
-textarea {
-    width: 100%;
-    padding: 12px 15px;
-    margin-bottom: 20px;
-    border: 2px solid #e1e5e9;
-    border-radius: 8px;
-    font-size: 16px;
-    box-sizing: border-box;
-    transition: all 0.3s ease;
-    background: #f8f9fa;
-}
+        .sidebar-nav a:hover {
+            background: rgba(0, 0, 0, 0.1);
+            transform: translateX(5px);
+        }
 
-input:focus,
-select:focus,
-textarea:focus {
-    border-color: #667eea;
-    outline: none;
-    background: white;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
+        .sidebar-nav a.active {
+            background: rgba(0, 0, 0, 0.2);
+        }
 
-textarea {
-    resize: vertical; 
-    word-wrap: break-word;
-    white-space: pre-wrap;
-}
+        .sidebar-nav a span:first-child {
+            font-size: 1.2rem;
+        }
 
-input[type="checkbox"] {
-    transform: scale(1.2);
-    margin-right: 10px;
-    vertical-align: middle;
-}
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            padding: 60px 80px;
+            position: relative;
+            z-index: 1;
+        }
 
-.checkbox-container {
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    background: #f8f9fa;
-    padding: 12px 15px;
-    border-radius: 8px;
-    border: 2px solid #e1e5e9;
-}
+        /* Header Section */
+        .header-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+>>>>>>> d58eabf
 
-.checkbox-container label {
-    margin-bottom: 0;
-    cursor: pointer;
-}
+        .header-section h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: #F8C24A;
+            letter-spacing: -2px;
+            margin-bottom: 15px;
+        }
 
-/* BOTÃO PRINCIPAL DO FORM */
-button {
-    width: 100%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 15px 0;
-    font-size: 18px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-}
+        .header-section p {
+            font-size: 1.125rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
 
-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-}
+        /* Filter Form */
+        .filter-section {
+            max-width: 600px;
+            margin: 0 auto 50px;
+            background: rgba(15, 15, 15, 0.8);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(248, 194, 74, 0.15);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+        }
 
-button:active {
-    transform: translateY(0);
-}
+        .filter-form {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+        }
 
-/* RESPONSIVO */
-@media (max-width: 480px) {
-    .container {
-        padding: 10px;
-    }
-    form {
-        padding: 30px 20px;
-    }
-    h1 {
-        font-size: 2em;
-    }
-    .navbar {
-        flex-wrap: wrap;
-    }
-    .navbar .date-form {
-        margin-left: 0;
-        margin-top: 10px;
-        width: 100%;
-        justify-content: center;
-    }
-}
+        .filter-form label {
+            display: block;
+            color: #F8C24A;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
 
+        .filter-form .input-group {
+            flex: 1;
+        }
+
+        .filter-form input[type="date"] {
+            width: 100%;
+            padding: 14px 18px;
+            border: 1.5px solid rgba(248, 194, 74, 0.2);
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.4);
+            color: #ffffff;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .filter-form input[type="date"]:focus {
+            outline: none;
+            border-color: #F8C24A;
+            background: rgba(0, 0, 0, 0.6);
+            box-shadow: 0 0 0 4px rgba(248, 194, 74, 0.1);
+        }
+
+        .filter-form button {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #F8C24A 0%, #f4a261 100%);
+            color: #000000;
+            font-weight: 700;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(248, 194, 74, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .filter-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(248, 194, 74, 0.5);
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background: rgba(15, 15, 15, 0.8);
+            padding: 35px;
+            border-radius: 20px;
+            border: 1px solid rgba(248, 194, 74, 0.15);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card:hover {
+            border-color: rgba(248, 194, 74, 0.3);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 50px rgba(248, 194, 74, 0.15);
+        }
+
+        .card p {
+            margin-bottom: 14px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .card p strong {
+            color: #F8C24A;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+            letter-spacing: 0.3px;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        .card p a {
+            color: #ffd166;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+<<<<<<< HEAD
 /* CONTAINER */
 .container {
     max-width: 1900px;
@@ -485,11 +573,61 @@ p.label strong {
 p.label span {
     color: #e4e4e7;
 }
+=======
+        .card p a:hover {
+            color: #F8C24A;
+            text-decoration: underline;
+        }
 
-a{
-    text-decoration: none;
-}
+        /* Responsividade */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 240px;
+            }
 
+            .main-content {
+                margin-left: 240px;
+                padding: 50px 60px;
+            }
+
+            .header-section h1 {
+                font-size: 3rem;
+            }
+
+            .cards-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 80px;
+            }
+
+            .sidebar-nav a span:last-child {
+                display: none;
+            }
+
+            .sidebar-logo h2 {
+                font-size: 1.2rem;
+                text-align: center;
+            }
+
+            .main-content {
+                margin-left: 80px;
+                padding: 40px 30px;
+            }
+
+            .header-section h1 {
+                font-size: 2.5rem;
+            }
+>>>>>>> d58eabf
+
+            .filter-form {
+                flex-direction: column;
+            }
+
+<<<<<<< HEAD
 .card a {
     color: #e4e4e7;
     transition: all 0.3s ease;
@@ -523,12 +661,17 @@ a{
     .header h1 {
         font-size: 2rem;
     }
+=======
+            .filter-form button {
+                width: 100%;
+            }
+>>>>>>> d58eabf
 
-    .card {
-        padding: 20px;
-    }
-}
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
 
+<<<<<<< HEAD
 /* FILTRO POR DATA - PEQUENO E RETANGULAR NO CANTO */
 .date-filter {
     position: fixed !important;
@@ -719,10 +862,58 @@ a{
         
         <div class="header">
             <h1>Chamados de Hoje</h1>
+=======
+            .card {
+                padding: 25px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .header-section h1 {
+                font-size: 2rem;
+            }
+
+            .filter-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <h2>Sistema Attend</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="{% url 'nomes_analistas' %}">
+                <span>👥</span>
+                <span>Analistas</span>
+            </a>
+            <a href="{% url 'cadastrar_chamado' %}">
+                <span>📝</span>
+                <span>Registrar Chamado</span>
+            </a>
+            <a href="{% url 'views' %}" class="active">
+                <span>📊</span>
+                <span>Chamados Hoje</span>
+            </a>
+            <a href="{% url 'dashboards' %}">
+                <span>📈</span>
+                <span>Dashboard</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header-section">
+            <h1>Visualização de Chamados</h1>
+>>>>>>> d58eabf
             {% if data_especificada != data_hoje %}
-                <div class="quantity">Quantidade de chamados {{data_especificada}}: <strong>{{ quantidade }} </strong></div>
+                <p>Quantidade de chamados em {{ data_especificada }}: <strong style="color: #F8C24A;">{{ quantidade }}</strong></p>
             {% else %}
-                <div class="quantity">Quantidade de chamados hoje: <strong>{{ quantidade }} </strong></div>
+                <p>Quantidade de chamados hoje: <strong style="color: #F8C24A;">{{ quantidade }}</strong></p>
             {% endif %}
             
             <!-- FILTRO POR DATA -->
@@ -736,40 +927,52 @@ a{
             </div>
         </div>
 
-        <div class="cards">
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <form method="POST" class="filter-form">
+                {% csrf_token %}
+                <div class="input-group">
+                    <label for="data">Filtrar por Data:</label>
+                    <input type="date" name="data" id="data" required>
+                </div>
+                <button type="submit">Filtrar</button>
+            </form>
+        </div>
 
-                
-                {% for chamado in chamados %}
-                    {% if chamado.data == data_especificada%}
-                        <div class="card">
-                            <p class="label"><strong>Nome do Analista:</strong> <a href="{% url 'ver_analista' chamado.nome_analista.id %}">{{ chamado.nome_analista }}</a></p>
-                            <p class="label"><strong>ID do Chamado:</strong> {{ chamado.ID_chamado }}</p>
-                            <p class="label"><strong>Tpo da Atividade:</strong> {{ chamado.tipo_atividade }}</p>
-                            <p class="label"><strong>Técnico:</strong> {{ chamado.nome_tecnico }}</p>
-                            <p class="label"><strong>Data:</strong> {{ chamado.data }}</p>
-                            <p class="label"><strong>Início:</strong> {{ chamado.inicio }}</p>
-                            <p class="label"><strong>Conclusão:</strong> {{ chamado.conclusao }}</p>
-                            {% if chamado.total_horas >= hora %}
-                                <p class="label"><strong>Tempo de chamado:</strong> {{ chamado.total_horas }} Hrs</p>
-                            {% else %}
-                                <p class="label"><strong>Tempo de chamado:</strong> {{ chamado.total_horas }} Mins</p>
-                            {% endif%}
-                            {% if chamado.produtiva == True %}
-                                <p class="label"><strong>Produtiva:</strong>Produtiva</p>
-                            {% else %}
-                                <p class="label"><strong>Produtiva:</strong>Improutiva</p>
-                            {% endif %}
-                            <p class="label"><strong>Senha:</strong> {{ chamado.senha }}</p>
-                            <p class="label"><strong>Observação:</strong> {{ chamado.observacao }}</p>
-                        </div>
-                    {% endif %}
+        <!-- Cards Grid -->
+        <div class="cards-grid">
+            {% for chamado in chamados %}
+                {% if chamado.data == data_especificada %}
+                    <div class="card">
+                        <p><strong>Analista:</strong> <a href="{% url 'ver_analista' chamado.nome_analista.id %}">{{ chamado.nome_analista }}</a></p>
+                        <p><strong>ID Chamado:</strong> {{ chamado.ID_chamado }}</p>
+                        <p><strong>Tipo:</strong> {{ chamado.tipo_atividade }}</p>
+                        <p><strong>Técnico:</strong> {{ chamado.nome_tecnico }}</p>
+                        <p><strong>Data:</strong> {{ chamado.data }}</p>
+                        <p><strong>Início:</strong> {{ chamado.inicio }}</p>
+                        <p><strong>Conclusão:</strong> {{ chamado.conclusao }}</p>
+                        {% if chamado.total_horas >= hora %}
+                            <p><strong>Tempo:</strong> {{ chamado.total_horas }} Hrs</p>
+                        {% else %}
+                            <p><strong>Tempo:</strong> {{ chamado.total_horas }} Mins</p>
+                        {% endif %}
+                        {% if chamado.produtiva %}
+                            <p><strong>Produtiva:</strong> Sim</p>
+                        {% else %}
+                            <p><strong>Produtiva:</strong> Não</p>
+                        {% endif %}
+                        <p><strong>Senha:</strong> {{ chamado.senha }}</p>
+                        <p><strong>Observação:</strong> {{ chamado.observacao }}</p>
+                    </div>
+                {% endif %}
             {% endfor %}
-            
         </div>
     </div>
+<<<<<<< HEAD
     </div>
     
     
+=======
+>>>>>>> d58eabf
 </body>
 </html>
-    
