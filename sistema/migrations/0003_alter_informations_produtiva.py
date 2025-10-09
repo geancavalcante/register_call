@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='informations',
             name='produtiva',
-            field=models.CharField(),
+            field=models.CharField(max_length=100),
         ),
     ]

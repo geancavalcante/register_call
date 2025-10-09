@@ -18,6 +18,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='chamados',
             name='tecnico',
-            field=models.CharField(default='OK'),
+            field=models.CharField(default='OK', max_length=100),
         ),
     ]

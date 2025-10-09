@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,42 +17,126 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #e0e0e0;
-    color: #333;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: url('{% static "img/back 01.jpeg" %}?v=3') center center/cover no-repeat fixed;
+    position: relative;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    color: #e4e4e7;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(26, 26, 46, 0.85) 0%, rgba(22, 33, 62, 0.85) 100%);
+    z-index: -1;
 }
 
 a {
     text-decoration: none;
-    color: #667eea;
+    color: #F8C24A;
 }
 
 /* ==========================================================================
    2. NAVBAR
    ========================================================================== */
-.navbar {
-    width: 100%;
+/* SIDEBAR */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 250px;
+    height: 100vh;
+    background: linear-gradient(180deg, #0f0f23 0%, #1a1a2e 100%);
+    box-shadow: 4px 0 20px rgba(248, 194, 74, 0.15);
+    border-right: 2px solid rgba(248, 194, 74, 0.2);
+    z-index: 1000;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap; /* Permite quebrar linha em telas menores */
-    padding: 15px 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    flex-direction: column;
+    padding: 20px 0;
 }
 
-.navbar a {
-    color: white;
-    margin: 5px 15px;
+.sidebar-logo {
+    text-align: center;
+    padding: 20px;
+    border-bottom: 1px solid rgba(248, 194, 74, 0.2);
+    margin-bottom: 30px;
+}
+
+.sidebar-logo img {
+    height: 60px;
+    width: auto;
+    transition: transform 0.3s ease;
+}
+
+.sidebar-logo img:hover {
+    transform: scale(1.05);
+}
+
+.sidebar-links {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 20px;
+}
+
+.sidebar a {
+    color: #e4e4e7;
+    text-decoration: none;
     font-weight: 600;
     font-size: 16px;
-    padding: 8px 15px;
-    border-radius: 6px;
-    transition: background-color 0.3s;
+    padding: 15px 20px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    letter-spacing: 0.5px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
-.navbar a:hover {
-    background: rgba(255, 255, 255, 0.2);
+.sidebar a::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    background: #F8C24A;
+    border-radius: 0 4px 4px 0;
+    transform: scaleY(0);
+    transition: transform 0.3s ease;
+}
+
+.sidebar a:hover {
+    color: #F8C24A;
+    background: rgba(248, 194, 74, 0.1);
+    transform: translateX(5px);
+}
+
+.sidebar a:hover::before {
+    transform: scaleY(1);
+}
+
+.sidebar a.active {
+    color: #F8C24A;
+    background: rgba(248, 194, 74, 0.15);
+}
+
+.sidebar a.active::before {
+    transform: scaleY(1);
+}
+
+/* MAIN CONTENT */
+.main-content {
+    margin-left: 250px;
+    min-height: 100vh;
 }
 
 .navbar .date-form {
@@ -90,9 +175,9 @@ a {
    ========================================================================== */
 .container {
     width: 100%;
-    max-width: 1200px; /* Limita a largura máxima em telas grandes */
-    margin: 30px auto; /* Centraliza o container */
-    padding: 20px 30px;
+    max-width: 1600px;
+    margin: 30px auto;
+    padding: 20px 40px;
 }
 
 .header {
@@ -101,18 +186,22 @@ a {
 }
 
 .header h1 {
-    font-size: 2.5rem;
-    color: #4a00e0;
-    margin-bottom: 10px;
+    font-size: 2.8rem;
+    color: #F8C24A;
+    margin-bottom: 15px;
+    font-weight: 700;
+    text-shadow: 0 2px 10px rgba(248, 194, 74, 0.3);
 }
 
 .header .quantity {
-    font-size: 1.1rem;
-    color: #666;
+    font-size: 1.2rem;
+    color: #a1a1aa;
+    font-weight: 500;
 }
 
 .header .quantity strong {
-    color: #4a00e0;
+    color: #F8C24A;
+    font-weight: 700;
 }
 
 /* ==========================================================================
@@ -126,30 +215,48 @@ a {
 }
 
 .card {
-    background-color: #fff;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    border-top: 6px solid #8e2de2;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: linear-gradient(135deg, #1e1e30 0%, #252538 100%);
+    padding: 28px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    border-left: 4px solid #F8C24A;
+    border-top: 1px solid rgba(248, 194, 74, 0.1);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     word-wrap: break-word;
+    position: relative;
+    overflow: hidden;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100px;
+    height: 100px;
+    background: radial-gradient(circle, rgba(248, 194, 74, 0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    transform: translate(30%, -30%);
 }
 
 .card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 15px 40px rgba(248, 194, 74, 0.2), 0 0 0 1px rgba(248, 194, 74, 0.3);
+    border-left-width: 6px;
 }
 
 .card p.label {
     font-size: 1rem;
-    color: #333;
-    margin-bottom: 12px;
+    color: #d4d4d8;
+    margin-bottom: 14px;
+    line-height: 1.6;
 }
 
 .card p.label strong {
-    color: #4a00e0;
-    font-weight: 600;
-    margin-right: 6px;
+    color: #F8C24A;
+    font-weight: 700;
+    margin-right: 8px;
+    letter-spacing: 0.3px;
 }
 
 /* NOVO ESTILO PARA O LINK "VER TODOS" */
@@ -158,22 +265,39 @@ a {
     align-items: center;
     justify-content: center;
     font-size: 1.2rem;
-    font-weight: 600;
-    color: #4a00e0;
+    font-weight: 700;
+    color: #F8C24A;
     text-decoration: none;
-    background-color: #fff;
-    border-radius: 12px;
+    background: linear-gradient(135deg, #1e1e30 0%, #252538 100%);
+    border-radius: 16px;
     padding: 25px;
     text-align: center;
-    min-height: 150px; /* Garante que tenha uma altura mínima similar ao card */
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    transition: transform 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+    min-height: 150px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border-left: 4px solid #F8C24A;
+    border-top: 1px solid rgba(248, 194, 74, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.view-all-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100px;
+    height: 100px;
+    background: radial-gradient(circle, rgba(248, 194, 74, 0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    transform: translate(30%, -30%);
 }
 
 .view-all-link:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
-    color: #8e2de2;
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 15px 40px rgba(248, 194, 74, 0.2), 0 0 0 1px rgba(248, 194, 74, 0.3);
+    color: #ffd166;
+    border-left-width: 6px;
 }
 
 /* ==========================================================================
@@ -198,14 +322,31 @@ a {
 
 </head>
 <body>
-    <div class="navbar">
-        <a href="{% url 'nomes_analistas' %}">Analistas</a>
-        <a href="{% url 'cadastrar_chamado' %}">Registrar Chamado</a>
-        <a href="{% url 'views' %}">Chamados de Hoje</a>
-
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <img src="{% static 'img/logo.png' %}" alt="Attend Services">
+        </div>
+        
+        <div class="sidebar-links">
+            <a href="{% url 'nomes_analistas' %}" class="active">
+                <span>👥</span> Analistas
+            </a>
+            <a href="{% url 'cadastrar_chamado' %}">
+                <span>➕</span> Registrar Chamado
+            </a>
+            <a href="{% url 'views' %}">
+                <span>📋</span> Chamados de Hoje
+            </a>
+            <a href="{% url 'dashboards' %}">
+                <span>📊</span> Dashboards
+            </a>
+        </div>
     </div>
 
-    <div class="container">
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <div class="container">
         <div class="cards">
             {% for analista, id in analistas %}
                 <div class="card">
@@ -221,7 +362,7 @@ a {
               
 
                
-            </div>
+        </div>
         </div>
     </div>
     

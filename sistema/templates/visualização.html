@@ -1,9 +1,10 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualizar Chamado</title>
+    <title>Chamados de Hoje - Attend Services</title>
     <style>
      /* Reset básico */
 * {
@@ -13,89 +14,171 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #e0e0e0;
-
-}
-
- body {
-    font-family: 'Roboto', sans-serif;
-    background: #e0e0e0;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: url('{% static "img/back 01.jpeg" %}?v=3') center center/cover no-repeat fixed;
+    position: relative;
     margin: 0;
     padding: 0;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    color: #333;
+    color: #e4e4e7;
 }
 
-/* NAVBAR */
-.navbar {
-    width: 100%;
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(26, 26, 46, 0.85) 0%, rgba(22, 33, 62, 0.85) 100%);
+    z-index: -1;
+}
+
+/* SIDEBAR */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 250px;
+    height: 100vh;
+    background: linear-gradient(180deg, #0f0f23 0%, #1a1a2e 100%);
+    box-shadow: 4px 0 20px rgba(248, 194, 74, 0.15);
+    border-right: 2px solid rgba(248, 194, 74, 0.2);
+    z-index: 1000;
     display: flex;
-    align-items: center; /* centraliza verticalmente */
-   justify-content: center;
-    padding: 15px 0px; /* espaço nas laterais */
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    flex-direction: column;
+    padding: 20px 0;
 }
 
-.navbar a {
-    color: white;
-    margin: 0 15px;
+.sidebar-logo {
+    text-align: center;
+    padding: 20px;
+    border-bottom: 1px solid rgba(248, 194, 74, 0.2);
+    margin-bottom: 30px;
+}
+
+.sidebar-logo img {
+    height: 60px;
+    width: auto;
+    transition: transform 0.3s ease;
+}
+
+.sidebar-logo img:hover {
+    transform: scale(1.05);
+}
+
+.sidebar-links {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 20px;
+}
+
+.sidebar a {
+    color: #e4e4e7;
     text-decoration: none;
     font-weight: 600;
     font-size: 16px;
-    padding: 8px 15px;
-    border-radius: 6px;
-    transition: 0.3s;
+    padding: 15px 20px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    letter-spacing: 0.5px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
-.navbar a:hover {
-    background: rgba(255,255,255,0.2);
+.sidebar a::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    background: #F8C24A;
+    border-radius: 0 4px 4px 0;
+    transform: scaleY(0);
+    transition: transform 0.3s ease;
+}
+
+.sidebar a:hover {
+    color: #F8C24A;
+    background: rgba(248, 194, 74, 0.1);
+    transform: translateX(5px);
+}
+
+.sidebar a:hover::before {
+    transform: scaleY(1);
+}
+
+.sidebar a.active {
+    color: #F8C24A;
+    background: rgba(248, 194, 74, 0.15);
+}
+
+.sidebar a.active::before {
+    transform: scaleY(1);
+}
+
+/* MAIN CONTENT */
+.main-content {
+    margin-left: 250px;
+    min-height: 100vh;
 }
 
 /* FORM DA NAVBAR (INPUT + BOTÃO) */
 .navbar .date-form {
-
-    /* centraliza verticalmente */
-    justify-content: center;    /* centraliza horizontalmente */
-    gap: 10px;  
-
     display: flex;
     align-items: center;
-    margin-left: 0; /* empurra pro lado direito */
-    gap: 8px; /* espaço entre input e botão */
-    background: rgba(255, 255, 255, 0.15);
-    padding: 6px 20px;
-    border-radius: 10px;
-    backdrop-filter: blur(6px);
+    justify-content: center;
+    gap: 12px;
+    margin-left: 0;
+    background: rgba(248, 194, 74, 0.1);
+    padding: 8px 24px;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(248, 194, 74, 0.2);
 }
 
 .navbar .date-form input[type="date"] {
     margin-top: 1rem;
-    padding: 6px 10px;
-    border-radius: 6px;
-    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(248, 194, 74, 0.3);
     font-size: 14px;
-    background: rgba(255,255,255,0.9);
+    background: rgba(26, 26, 46, 0.8);
+    color: #e4e4e7;
+    font-family: 'Inter', sans-serif;
+}
+
+.navbar .date-form input[type="date"]:focus {
+    outline: none;
+    border-color: #F8C24A;
+    box-shadow: 0 0 0 3px rgba(248, 194, 74, 0.1);
 }
 
 .navbar .date-form button {
-    padding: 6px 12px;
+    padding: 8px 20px;
     font-size: 14px;
-    border-radius: 6px;
+    border-radius: 8px;
     border: none;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background: linear-gradient(135deg, #F8C24A 0%, #f4a261 100%);
+    color: #0f0f23;
+    font-weight: 600;
     cursor: pointer;
-    transition: 0.3s;
+    transition: all 0.3s ease;
+    letter-spacing: 0.5px;
 }
 
 .navbar .date-form button:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(248, 194, 74, 0.4);
+    background: linear-gradient(135deg, #ffd166 0%, #F8C24A 100%);
 }
 
 
@@ -242,72 +325,197 @@ button:active {
 
 /* CONTAINER */
 .container {
-    width: 100%; /* ocupa 100% da tela */
-    margin: 0;
-    padding: 20px 30px; /* espaço só interno */
+    max-width: 1900px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 20px 60px;
 }
 
 /* HEADER */
 .header {
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 50px;
+    position: relative;
+}
+
+.header::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(248, 194, 74, 0.05) 0%, transparent 70%);
+    border-radius: 50%;
+    z-index: -1;
 }
 
 .header h1 {
-    font-size: 2.5rem;
-    color: #4a00e0;
-    margin-bottom: 10px;
+    font-size: 3.2rem;
+    color: #F8C24A;
+    margin-bottom: 20px;
+    font-weight: 800;
+    text-shadow: 0 4px 20px rgba(248, 194, 74, 0.4);
+    letter-spacing: 1px;
+    position: relative;
+}
+
+.header h1::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #F8C24A, transparent);
+    border-radius: 2px;
 }
 
 .quantity {
-    font-size: 1.1rem;
-    color: #666;
+    font-size: 1.4rem;
+    color: #a1a1aa;
+    font-weight: 500;
+    margin-top: 25px;
 
     strong{
-        color: #4a00e0;
+        color: #F8C24A;
+        font-weight: 700;
+        text-shadow: 0 0 10px rgba(248, 194, 74, 0.3);
     }
 }
 
 /* CARDS */
 .cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
-    gap: 25px;
-    width: 100%; /* ocupa toda a largura */
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); 
+    gap: 30px;
+    width: 100%;
 }
 
 /* CARD */
 .card {
-    background-color: #fff;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    border-top: 6px solid #8e2de2;
-    transition: transform 0.3s ease;
+    background: linear-gradient(135deg, #1e1e30 0%, #252538 100%);
+    padding: 35px 40px;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    border-left: 6px solid #F8C24A;
+    border-top: 1px solid rgba(248, 194, 74, 0.1);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     word-wrap: break-word;
     overflow-wrap: break-word;
     white-space: normal;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(248, 194, 74, 0.08) 0%, transparent 70%);
+    border-radius: 50%;
+    transition: all 0.4s ease;
+}
+
+.card::after {
+    content: '';
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #F8C24A, transparent);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.card:hover::before {
+    transform: scale(1.2);
+    opacity: 0.15;
+}
+
+.card:hover::after {
+    opacity: 1;
 }
 
 .card:hover {
-    transform: translateY(-6px);
+    transform: translateY(-12px) scale(1.03);
+    box-shadow: 0 20px 50px rgba(248, 194, 74, 0.25), 0 0 0 1px rgba(248, 194, 74, 0.4);
+    border-left-width: 8px;
 }
 
 /* Texto dentro do Card */
 p.label {
-    font-size: 1.rem;
-    color: #333;
-    margin-bottom: 12px;
+    font-size: 1.1rem;
+    color: #d4d4d8;
+    margin-bottom: 18px;
+    line-height: 1.7;
+    position: relative;
+    padding-left: 8px;
+}
+
+p.label::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 3px;
+    background: #F8C24A;
+    border-radius: 50%;
+    opacity: 0.7;
 }
 
 p.label strong {
-    color: #4a00e0;
-    font-weight: 600;
-    margin-right: 6px;
+    color: #F8C24A;
+    font-weight: 700;
+    margin-right: 10px;
+    letter-spacing: 0.5px;
+    text-shadow: 0 0 10px rgba(248, 194, 74, 0.3);
+}
+
+p.label span {
+    color: #e4e4e7;
 }
 
 a{
     text-decoration: none;
+}
+
+.card a {
+    color: #e4e4e7;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    position: relative;
+    display: inline-block;
+}
+
+.card a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #F8C24A;
+    transition: width 0.3s ease;
+}
+
+.card a:hover {
+    color: #F8C24A;
+    text-shadow: 0 0 8px rgba(248, 194, 74, 0.4);
+}
+
+.card a:hover::after {
+    width: 100%;
 }
 
 /* RESPONSIVIDADE */
@@ -321,32 +529,211 @@ a{
     }
 }
 
+/* FILTRO POR DATA - PEQUENO E RETANGULAR NO CANTO */
+.date-filter {
+    position: fixed !important;
+    top: 15px !important;
+    right: 15px !important;
+    width: 140px !important;
+    height: auto !important;
+    padding: 8px 10px !important;
+    background: #0f0f23 !important;
+    border-radius: 4px !important;
+    border: 1px solid #F8C24A !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+    z-index: 9999 !important;
+    margin: 0 !important;
+}
+
+.date-form {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 5px !important;
+    align-items: stretch !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.date-form label {
+    color: #F8C24A !important;
+    font-weight: 600 !important;
+    font-size: 10px !important;
+    margin: 0 !important;
+    text-align: center !important;
+    padding: 0 !important;
+}
+
+.date-form input[type="date"] {
+    padding: 6px 8px !important;
+    border: 1px solid #F8C24A !important;
+    border-radius: 3px !important;
+    background: #0f0f23 !important;
+    color: #F8C24A !important;
+    font-size: 10px !important;
+    transition: all 0.3s ease !important;
+    width: 100% !important;
+    height: 24px !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+}
+
+.date-form input[type="date"]:focus {
+    outline: none !important;
+    border-color: #f4a261 !important;
+    background: #1e1e30 !important;
+}
+
+.date-form button {
+    padding: 6px 12px !important;
+    background: #F8C24A !important;
+    color: #0f0f23 !important;
+    border: none !important;
+    border-radius: 3px !important;
+    font-weight: 600 !important;
+    font-size: 10px !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    width: 100% !important;
+    height: 24px !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+}
+
+.date-form button:hover {
+    background: #f4a261 !important;
+    transform: translateY(-1px) !important;
+}
+
+/* RESPONSIVIDADE */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 200px;
+    }
+    
+    .main-content {
+        margin-left: 200px;
+    }
+    
+    .sidebar-logo img {
+        height: 50px;
+    }
+    
+    .sidebar a {
+        font-size: 14px;
+        padding: 12px 15px;
+    }
+    
+    .header h1 {
+        font-size: 2.2rem;
+    }
+    
+    .card {
+        padding: 20px;
+    }
+    
+    .date-filter {
+        position: fixed !important;
+        top: 12px !important;
+        right: 12px !important;
+        width: 120px !important;
+        padding: 6px 8px !important;
+    }
+    
+    .date-form label {
+        font-size: 9px !important;
+    }
+    
+    .date-form input,
+    .date-form button {
+        font-size: 9px !important;
+        height: 20px !important;
+    }
+}
+
+@media (max-width: 600px) {
+    .sidebar {
+        width: 180px;
+    }
+    
+    .main-content {
+        margin-left: 180px;
+    }
+    
+    .sidebar a {
+        font-size: 13px;
+        padding: 10px 12px;
+    }
+    
+    .sidebar a span {
+        font-size: 12px;
+    }
+    
+    .date-filter {
+        position: fixed !important;
+        top: 10px !important;
+        right: 10px !important;
+        width: 110px !important;
+        padding: 5px 6px !important;
+    }
+    
+    .date-form label {
+        font-size: 8px !important;
+    }
+    
+    .date-form input,
+    .date-form button {
+        font-size: 8px !important;
+        height: 18px !important;
+    }
+}
+
     </style>
 </head>
 <body>
-       <div class="navbar">
-        <a href="{% url 'nomes_analistas' %}">Analistas</a>
-        <a href="{% url 'cadastrar_chamado' %}">Registrar Chamado</a>
-        <a href="{% url 'views' %}">Chamados de Hoje</a>
-
-   
-        <form method="POST" class="date-form">
-            {% csrf_token %}
-            <input type="date" name="data" required>
-            <button type="submit">Filtrar</button>
-        </form>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <img src="{% static 'img/logo.png' %}" alt="Attend Services">
+        </div>
+        
+        <div class="sidebar-links">
+            <a href="{% url 'nomes_analistas' %}">
+                <span>👥</span> Analistas
+            </a>
+            <a href="{% url 'cadastrar_chamado' %}">
+                <span>➕</span> Registrar Chamado
+            </a>
+            <a href="{% url 'views' %}" class="active">
+                <span>📋</span> Chamados de Hoje
+            </a>
+            <a href="{% url 'dashboards' %}">
+                <span>📊</span> Dashboards
+            </a>
+        </div>
     </div>
-    
-    <div class="container">
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <div class="container">
        
         
         <div class="header">
-            <h1>Visualização de Chamados</h1>
+            <h1>Chamados de Hoje</h1>
             {% if data_especificada != data_hoje %}
                 <div class="quantity">Quantidade de chamados {{data_especificada}}: <strong>{{ quantidade }} </strong></div>
             {% else %}
                 <div class="quantity">Quantidade de chamados hoje: <strong>{{ quantidade }} </strong></div>
             {% endif %}
+            
+            <!-- FILTRO POR DATA -->
+            <div class="date-filter">
+                <form method="POST" class="date-form">
+                    {% csrf_token %}
+                    <label for="data">Data</label>
+                    <input type="date" name="data" id="data" required>
+                    <button type="submit">OK</button>
+                </form>
+            </div>
         </div>
 
         <div class="cards">
@@ -380,7 +767,8 @@ a{
             
         </div>
     </div>
-
+    </div>
+    
     
 </body>
 </html>
