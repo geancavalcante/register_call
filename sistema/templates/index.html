@@ -1,329 +1,413 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrar Chamado</title>
+    <title>Registrar Chamado - Sistema Attend</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-<style>
-   body {
-    font-family: 'Roboto', sans-serif;
-    background: #e0e0e0;
-    margin: 0;
-    padding: 0;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: #333;
-}
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #000000;
+            color: #ffffff;
+            position: relative;
+            min-height: 100vh;
+        }
 
-/* NAVBAR */
-.navbar {
-    width: 100%;
-    display: flex;
-    align-items: center; /* centraliza verticalmente */
-   justify-content: center;
-    padding: 15px 0px; /* espaço nas laterais */
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-}
+        /* Background Pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(248, 194, 74, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(248, 194, 74, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
 
-.navbar a {
-    color: white;
-    margin: 0 15px;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 16px;
-    padding: 8px 15px;
-    border-radius: 6px;
-    transition: 0.3s;
-}
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: linear-gradient(180deg, #F8C24A 0%, #f4a261 100%);
+            padding: 40px 0;
+            z-index: 100;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-.navbar a:hover {
-    background: rgba(255,255,255,0.2);
-}
+        .sidebar-logo {
+            padding: 0 30px;
+            margin-bottom: 50px;
+        }
 
-/* FORM DA NAVBAR (INPUT + BOTÃO) */
-.navbar .date-form {
+        .sidebar-logo h2 {
+            color: #000000;
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+        }
 
-    /* centraliza verticalmente */
-    justify-content: center;    /* centraliza horizontalmente */
-    gap: 10px;  
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
 
-    display: flex;
-    align-items: center;
-    margin-left: 0; /* empurra pro lado direito */
-    gap: 8px; /* espaço entre input e botão */
-    background: rgba(255, 255, 255, 0.15);
-    padding: 6px 20px;
-    border-radius: 10px;
-    backdrop-filter: blur(6px);
-}
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 16px 30px;
+            color: #000000;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-.navbar .date-form input[type="date"] {
-    margin-top: 1rem;
-    padding: 6px 10px;
-    border-radius: 6px;
-    border: none;
-    font-size: 14px;
-    background: rgba(255,255,255,0.9);
-}
+        .sidebar-nav a:hover {
+            background: rgba(0, 0, 0, 0.1);
+            transform: translateX(5px);
+        }
 
-.navbar .date-form button {
-    padding: 6px 12px;
-    font-size: 14px;
-    border-radius: 6px;
-    border: none;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    cursor: pointer;
-    transition: 0.3s;
-}
+        .sidebar-nav a.active {
+            background: rgba(0, 0, 0, 0.2);
+        }
 
-.navbar .date-form button:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
-}
+        .sidebar-nav a span:first-child {
+            font-size: 1.2rem;
+        }
 
-/* CONTAINER PRINCIPAL */
-.container {
-    max-width: 700px;
-    width: 100%;
-    padding: 20px;
-    margin-top: 30px;
-    min-height: 500px;
-}
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            padding: 60px 80px;
+            position: relative;
+            z-index: 1;
+        }
 
-h1 {
-    text-align: center;
-    color: #333;
-    margin: 0 0 25px 0;
-    font-weight: 700;
-    font-size: 2em;
-    text-shadow: none;
-    word-wrap: break-word;
-}
+        /* Header Section */
+        .header-section {
+            text-align: center;
+            margin-bottom: 60px;
+        }
 
-/* FORMULÁRIO */
-form {
-    background: rgba(255, 255, 255, 0.95);
-    padding: 40px 35px;
-    border-radius: 15px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    animation: fadeInUp 0.6s ease-out;
-}
+        .header-section h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: #F8C24A;
+            letter-spacing: -2px;
+            margin-bottom: 15px;
+        }
 
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
+        .header-section p {
+            font-size: 1.125rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
 
-label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
-    color: #555;
-    font-size: 14px;
-}
+        /* Form Container */
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(15, 15, 15, 0.8);
+            padding: 35px;
+            border-radius: 20px;
+            border: 1px solid rgba(248, 194, 74, 0.15);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-input[type="text"],
-input[type="number"],
-input[type="date"],
-input[type="time"],
-input[type="password"],
-select,
-textarea {
-    width: 100%;
-    padding: 12px 15px;
-    margin-bottom: 20px;
-    border: 2px solid #e1e5e9;
-    border-radius: 8px;
-    font-size: 16px;
-    box-sizing: border-box;
-    transition: all 0.3s ease;
-    background: #f8f9fa;
-}
+        .form-container:hover {
+            border-color: rgba(248, 194, 74, 0.3);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 50px rgba(248, 194, 74, 0.15);
+        }
 
-input:focus,
-select:focus,
-textarea:focus {
-    border-color: #667eea;
-    outline: none;
-    background: white;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
+        /* Form Elements */
+        form label {
+            display: block;
+            color: #F8C24A;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
 
-textarea {
-    resize: vertical; 
-    word-wrap: break-word;
-    white-space: pre-wrap;
-}
+        form input[type="text"],
+        form input[type="number"],
+        form input[type="date"],
+        form input[type="time"],
+        form select,
+        form textarea {
+            width: 100%;
+            padding: 14px 18px;
+            margin-bottom: 24px;
+            border: 1.5px solid rgba(248, 194, 74, 0.2);
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.4);
+            color: #ffffff;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-input[type="checkbox"] {
-    transform: scale(1.2);
-    margin-right: 10px;
-    vertical-align: middle;
-}
+        form input:focus,
+        form select:focus,
+        form textarea:focus {
+            outline: none;
+            border-color: #F8C24A;
+            background: rgba(0, 0, 0, 0.6);
+            box-shadow: 0 0 0 4px rgba(248, 194, 74, 0.1);
+        }
 
-.checkbox-container {
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    background: #f8f9fa;
-    padding: 12px 15px;
-    border-radius: 8px;
-    border: 2px solid #e1e5e9;
-}
+        form select {
+            cursor: pointer;
+        }
 
-.checkbox-container label {
-    margin-bottom: 0;
-    cursor: pointer;
-}
+        form select option {
+            background: #1a1a1a;
+            color: #ffffff;
+        }
 
-/* BOTÃO PRINCIPAL DO FORM */
-button {
-    width: 100%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 15px 0;
-    font-size: 18px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-}
+        form textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
 
-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-}
+        /* Checkbox Container */
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 24px;
+            padding: 14px 18px;
+            border: 1.5px solid rgba(248, 194, 74, 0.2);
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-button:active {
-    transform: translateY(0);
-}
+        .checkbox-container:hover {
+            border-color: rgba(248, 194, 74, 0.3);
+        }
 
-/* RESPONSIVO */
-@media (max-width: 480px) {
-    .container {
-        padding: 10px;
-    }
-    form {
-        padding: 30px 20px;
-    }
-    h1 {
-        font-size: 2em;
-    }
-    .navbar {
-        flex-wrap: wrap;
-    }
-    .navbar .date-form {
-        margin-left: 0;
-        margin-top: 10px;
-        width: 100%;
-        justify-content: center;
-    }
-}
+        .checkbox-container input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin: 0 15px 0 0;
+            cursor: pointer;
+            accent-color: #F8C24A;
+        }
 
-</style>
+        .checkbox-container label {
+            margin: 0;
+            cursor: pointer;
+            color: #ffffff;
+            font-weight: 500;
+            text-transform: none;
+        }
+
+        /* Button */
+        .submit-button {
+            width: 100%;
+            padding: 18px 32px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #F8C24A 0%, #f4a261 100%);
+            color: #000000;
+            font-weight: 700;
+            font-size: 1.125rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(248, 194, 74, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(248, 194, 74, 0.5);
+        }
+
+        .submit-button:active {
+            transform: translateY(0);
+        }
+
+        /* Responsividade */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 240px;
+            }
+
+            .main-content {
+                margin-left: 240px;
+                padding: 50px 60px;
+            }
+
+            .header-section h1 {
+                font-size: 3rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 80px;
+            }
+
+            .sidebar-nav a span:last-child {
+                display: none;
+            }
+
+            .sidebar-logo h2 {
+                font-size: 1.2rem;
+                text-align: center;
+            }
+
+            .main-content {
+                margin-left: 80px;
+                padding: 40px 30px;
+            }
+
+            .header-section h1 {
+                font-size: 2.5rem;
+            }
+
+            .form-container {
+                padding: 25px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .header-section h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="navbar">
-        <a href="{% url 'nomes_analistas'%}">Analistas</a>
-        <a href="{% url 'cadastrar_chamado' %}">Registrar Chamado</a>
-        <a href="{% url 'views' %}">Chamados de Hoje</a>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <h2>Sistema Attend</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="{% url 'nomes_analistas' %}">
+                <span>👥</span>
+                <span>Analistas</span>
+            </a>
+            <a href="{% url 'cadastrar_chamado' %}" class="active">
+                <span>📝</span>
+                <span>Registrar Chamado</span>
+            </a>
+            <a href="{% url 'views' %}">
+                <span>📊</span>
+                <span>Chamados Hoje</span>
+            </a>
+            <a href="{% url 'dashboards' %}">
+                <span>📈</span>
+                <span>Dashboard</span>
+            </a>
+        </nav>
     </div>
 
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header-section">
+            <h1>Registrar Chamado</h1>
+            <p>Preencha os dados do chamado técnico</p>
+        </div>
 
-    <div class="container">
-        <h1>Registrar Chamado</h1>
-        <form method="POST">
-            {% csrf_token %}
+        <div class="form-container">
+            <form method="POST">
+                {% csrf_token %}
 
-            <label for="nome_analista">Nome do Analista:</label>
-            <select id="nome_analista" name="nome_analista" required>
-                <option value="">Selecione...</option>
-                <option value="Gean_Cavalcante">Gean Cavalcante</option>
-                <option value="Paulo_Henrique">Paulo Henrique</option>
-                <option value="Joao_Cezar">João Cezar</option>
-                <option value="Ramon_Farias">Ramon Farias</option>
-                <option value="Pedro_Alexandre">Pedro Alexandre</option>mkeeAtte
-                <option value="Adryson_Costa">Adryson Costa</option>
-                <option value="Mateus_Bezerra">Mateus Bezerra</option>
-                <option value="Guilherme_Palmiere">Guilherme Palmiere</option>
-                <option value="Guilherme_Palmiere">Miguel Campos</option>
-            </select>
+                <label for="nome_analista">Nome do Analista:</label>
+                <select id="nome_analista" name="nome_analista" required>
+                    <option value="">Selecione...</option>
+                    <option value="Gean_Cavalcante">Gean Cavalcante</option>
+                    <option value="Paulo_Henrique">Paulo Henrique</option>
+                    <option value="Joao_Cezar">João Cezar</option>
+                    <option value="Ramon_Farias">Ramon Farias</option>
+                    <option value="Pedro_Alexandre">Pedro Alexandre</option>
+                    <option value="Adryson_Costa">Adryson Costa</option>
+                    <option value="Mateus_Bezerra">Mateus Bezerra</option>
+                    <option value="Guilherme_Palmiere">Guilherme Palmiere</option>
+                    <option value="Miguel_Campos">Miguel Campos</option>
+                </select>
 
-            <label for="ID_chamado">ID do Chamado:</label>
-            <input type="number" id="ID_chamado" name="ID_chamado" required>
+                <label for="ID_chamado">ID do Chamado:</label>
+                <input type="number" id="ID_chamado" name="ID_chamado" required>
 
-            <label for="tipo_atividade">Tipo da Atividade:</label>
-            <select id="tipo_atividade" name="tipo_atividade" required>
-                <option value="">Selecione...</option>
-                <option value="Manutenção">Manutenção</option>
-                <option value="Migração">Migração</option>
-                <option value="Mudança de Endereço">Mudança de Endereço</option>
-                <option value="Remanejamento">Remanejamento</option>
-            </select>
+                <label for="tipo_atividade">Tipo da Atividade:</label>
+                <select id="tipo_atividade" name="tipo_atividade" required>
+                    <option value="">Selecione...</option>
+                    <option value="Manutenção">Manutenção</option>
+                    <option value="Migração">Migração</option>
+                    <option value="Mudança de Endereço">Mudança de Endereço</option>
+                    <option value="Remanejamento">Remanejamento</option>
+                </select>
 
-            <label for="tecnico">Técnico:</label>
-            <input type="text" id="tecnico" name="tecnico" maxlength="30" required>
+                <label for="tecnico">Técnico:</label>
+                <input type="text" id="tecnico" name="tecnico" maxlength="30" required>
 
-            <label for="data">Data:</label>
-            <input type="date" id="data" name="data" required>
+                <label for="data">Data:</label>
+                <input type="date" id="data" name="data" required>
 
-            <label for="inicio">Início:</label>
-            <input type="time" id="inicio" name="inicio" required>
+                <label for="inicio">Início:</label>
+                <input type="time" id="inicio" name="inicio" required>
 
-            <label for="conclusao">Conclusão:</label>
-            <input type="time" id="conclusao" name="conclusao" required>
+                <label for="conclusao">Conclusão:</label>
+                <input type="time" id="conclusao" name="conclusao" required>
 
-            <div class="checkbox-container">
-                <input type="checkbox" id="produtiva" name="produtiva" checked>
-                <label for="produtiva">Produtiva</label>
-            </div>
+                <div class="checkbox-container">
+                    <input type="checkbox" id="produtiva" name="produtiva" checked>
+                    <label for="produtiva">Produtiva</label>
+                </div>
 
-            <label for="senha">Senha:</label>
-            <input type="text" id="senha" name="senha" maxlength="12" required>
+                <label for="senha">Senha:</label>
+                <input type="text" id="senha" name="senha" maxlength="12" required>
 
-            <label for="observacao">Observação:</label>
-            <textarea id="observacao" name="observacao" rows="5" wrap="hard" placeholder="Digite observações aqui..."></textarea>
+                <label for="observacao">Observação:</label>
+                <textarea id="observacao" name="observacao" rows="5" placeholder="Digite observações aqui..."></textarea>
 
-            <button type="submit" class="submit-button">Enviar</button>
-        </form>
+                <button type="submit" class="submit-button">Enviar Chamado</button>
+            </form>
+        </div>
     </div>
-</body>
-
-
 
     <script>
-        let button = document.getElementsByClassName("submit-button")[0]   
-        button.addEventListener("click", function(){
-            question = confirm("Deseja registrar esse chamado?")
-
-            if (question){
-                alert("Chamado registrado!")
-            } else{
-                location.reload()
+        let button = document.querySelector(".submit-button");   
+        button.addEventListener("click", function(event) {
+            const form = event.target.closest('form');
+            if (!form.checkValidity()) {
+                return;
             }
             
-            
-        })
+            event.preventDefault();
+            const question = confirm("Deseja registrar esse chamado?");
 
-    
-
-
+            if (question) {
+                alert("Chamado registrado!");
+                form.submit();
+            } else {
+                location.reload();
+            }
+        });
     </script>
 </body>
 </html>

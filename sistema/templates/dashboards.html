@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Sistema Attend</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #000000;
+            color: #ffffff;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* Background Pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(248, 194, 74, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(248, 194, 74, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: linear-gradient(180deg, #F8C24A 0%, #f4a261 100%);
+            padding: 40px 0;
+            z-index: 100;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar-logo {
+            padding: 0 30px;
+            margin-bottom: 50px;
+        }
+
+        .sidebar-logo h2 {
+            color: #000000;
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 16px 30px;
+            color: #000000;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar-nav a:hover {
+            background: rgba(0, 0, 0, 0.1);
+            transform: translateX(5px);
+        }
+
+        .sidebar-nav a.active {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar-nav a span:first-child {
+            font-size: 1.2rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            padding: 60px 80px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header Section */
+        .header-section {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .header-section h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: #F8C24A;
+            letter-spacing: -2px;
+            margin-bottom: 15px;
+        }
+
+        .header-section p {
+            font-size: 1.125rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Charts Grid */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .chart-card {
+            background: rgba(15, 15, 15, 0.8);
+            padding: 35px;
+            border-radius: 20px;
+            border: 1px solid rgba(248, 194, 74, 0.15);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .chart-card:hover {
+            border-color: rgba(248, 194, 74, 0.3);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 50px rgba(248, 194, 74, 0.15);
+        }
+
+        .chart-card h3 {
+            color: #F8C24A;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 320px;
+        }
+
+        /* Responsividade */
+        @media (max-width: 1400px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 240px;
+            }
+
+            .main-content {
+                margin-left: 240px;
+                padding: 50px 60px;
+            }
+
+            .header-section h1 {
+                font-size: 3rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 80px;
+            }
+
+            .sidebar-nav a span:last-child {
+                display: none;
+            }
+
+            .sidebar-logo h2 {
+                font-size: 1.2rem;
+                text-align: center;
+            }
+
+            .main-content {
+                margin-left: 80px;
+                padding: 40px 30px;
+            }
+
+            .header-section h1 {
+                font-size: 2.5rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .header-section h1 {
+                font-size: 2rem;
+            }
+
+            .chart-wrapper {
+                height: 280px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <h2>Sistema Attend</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="{% url 'nomes_analistas' %}">
+                <span>👥</span>
+                <span>Analistas</span>
+            </a>
+            <a href="{% url 'cadastrar_chamado' %}">
+                <span>📝</span>
+                <span>Registrar Chamado</span>
+            </a>
+            <a href="{% url 'views' %}">
+                <span>📊</span>
+                <span>Chamados Hoje</span>
+            </a>
+            <a href="{% url 'dashboards' %}" class="active">
+                <span>📈</span>
+                <span>Dashboard</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header-section">
+            <h1>Dashboard Analítico</h1>
+            <p>Visualização completa de métricas e indicadores</p>
+        </div>
+
+        <div class="charts-grid">
+            <!-- Gráfico 1: Chamados por Analista -->
+            <div class="chart-card">
+                <h3>Chamados por Analista</h3>
+                <div class="chart-wrapper">
+                    <canvas id="chamadosPorAnalista"></canvas>
+                </div>
+            </div>
+
+            <!-- Gráfico 2: Tempo Médio por Analista -->
+            <div class="chart-card">
+                <h3>Tempo Médio por Analista (min)</h3>
+                <div class="chart-wrapper">
+                    <canvas id="tempoMedioPorAnalista"></canvas>
+                </div>
+            </div>
+
+            <!-- Gráfico 3: Tempo Médio por Mês -->
+            <div class="chart-card">
+                <h3>Tempo Médio por Mês (min)</h3>
+                <div class="chart-wrapper">
+                    <canvas id="tempoMedioPorMes"></canvas>
+                </div>
+            </div>
+
+            <!-- Gráfico 4: Tipos de Atividade -->
+            <div class="chart-card">
+                <h3>Distribuição por Tipo de Atividade</h3>
+                <div class="chart-wrapper">
+                    <canvas id="tiposAtividade"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dados JSON -->
+    <script id="chamados-data" type="application/json">
+        [{% for chamado in chamados %}{
+            "analista": "{{ chamado.nome_analista }}",
+            "tipo_atividade": "{{ chamado.tipo_atividade }}",
+            "total_horas": "{{ chamado.total_horas }}",
+            "data": "{{ chamado.data|date:'Y-m-d' }}"
+        }{% if not forloop.last %},{% endif %}{% endfor %}]
+    </script>
+
+    <script>
+        // Carregar dados
+        const chamadosData = JSON.parse(document.getElementById('chamados-data').textContent);
+
+        // Função para converter HH:MM:SS para minutos
+        function converterParaMinutos(tempo) {
+            const partes = tempo.split(':');
+            const horas = parseInt(partes[0]) || 0;
+            const minutos = parseInt(partes[1]) || 0;
+            const segundos = parseInt(partes[2]) || 0;
+            return horas * 60 + minutos + (segundos / 60);
+        }
+
+        // 1. Processar dados para Chamados por Analista
+        const chamadosPorAnalista = {};
+        chamadosData.forEach(chamado => {
+            const analista = chamado.analista.replace(/_/g, ' ');
+            chamadosPorAnalista[analista] = (chamadosPorAnalista[analista] || 0) + 1;
+        });
+
+        // 2. Processar dados para Tempo Médio por Analista
+        const tempoPorAnalista = {};
+        chamadosData.forEach(chamado => {
+            const analista = chamado.analista.replace(/_/g, ' ');
+            if (!tempoPorAnalista[analista]) {
+                tempoPorAnalista[analista] = { total: 0, count: 0 };
+            }
+            tempoPorAnalista[analista].total += converterParaMinutos(chamado.total_horas);
+            tempoPorAnalista[analista].count += 1;
+        });
+
+        const tempoMedioPorAnalista = {};
+        Object.keys(tempoPorAnalista).forEach(analista => {
+            tempoMedioPorAnalista[analista] = Math.round(tempoPorAnalista[analista].total / tempoPorAnalista[analista].count);
+        });
+
+        // 3. Processar dados para Tempo Médio por Mês
+        const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+        const tempoPorMes = {};
+        meses.forEach(mes => {
+            tempoPorMes[mes] = { total: 0, count: 0 };
+        });
+
+        chamadosData.forEach(chamado => {
+            const data = new Date(chamado.data + 'T00:00:00');
+            const mesIndex = data.getMonth();
+            const mesNome = meses[mesIndex];
+            tempoPorMes[mesNome].total += converterParaMinutos(chamado.total_horas);
+            tempoPorMes[mesNome].count += 1;
+        });
+
+        const tempoMedioPorMes = meses.map(mes => {
+            return tempoPorMes[mes].count > 0 
+                ? Math.round(tempoPorMes[mes].total / tempoPorMes[mes].count) 
+                : 0;
+        });
+
+        // 4. Processar dados para Tipos de Atividade
+        const tiposAtividade = {};
+        chamadosData.forEach(chamado => {
+            const tipo = chamado.tipo_atividade;
+            tiposAtividade[tipo] = (tiposAtividade[tipo] || 0) + 1;
+        });
+
+        // Configuração padrão dos gráficos
+        Chart.defaults.color = '#ffffff';
+        Chart.defaults.borderColor = 'rgba(248, 194, 74, 0.1)';
+        Chart.defaults.font.family = 'Inter';
+
+        // Gráfico 1: Chamados por Analista
+        new Chart(document.getElementById('chamadosPorAnalista'), {
+            type: 'bar',
+            data: {
+                labels: Object.keys(chamadosPorAnalista),
+                datasets: [{
+                    label: 'Quantidade de Chamados',
+                    data: Object.values(chamadosPorAnalista),
+                    backgroundColor: '#F8C24A',
+                    borderRadius: 8,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        },
+                        grid: {
+                            color: 'rgba(248, 194, 74, 0.1)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // Gráfico 2: Tempo Médio por Analista
+        new Chart(document.getElementById('tempoMedioPorAnalista'), {
+            type: 'bar',
+            data: {
+                labels: Object.keys(tempoMedioPorAnalista),
+                datasets: [{
+                    label: 'Tempo Médio (minutos)',
+                    data: Object.values(tempoMedioPorAnalista),
+                    backgroundColor: '#f4a261',
+                    borderRadius: 8,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(248, 194, 74, 0.1)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // Gráfico 3: Tempo Médio por Mês
+        new Chart(document.getElementById('tempoMedioPorMes'), {
+            type: 'bar',
+            data: {
+                labels: meses,
+                datasets: [{
+                    label: 'Tempo Médio (minutos)',
+                    data: tempoMedioPorMes,
+                    backgroundColor: '#ffd166',
+                    borderRadius: 8,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(248, 194, 74, 0.1)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // Gráfico 4: Tipos de Atividade (Pizza)
+        new Chart(document.getElementById('tiposAtividade'), {
+            type: 'pie',
+            data: {
+                labels: Object.keys(tiposAtividade),
+                datasets: [{
+                    data: Object.values(tiposAtividade),
+                    backgroundColor: ['#F8C24A', '#f4a261', '#ffd166', '#e76f51', '#d4a574'],
+                    borderWidth: 0,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            font: {
+                                size: 12
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+

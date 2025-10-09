@@ -1,229 +1,326 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-
-   <style>
-    /* ==========================================================================
-   1. RESET BÁSICO E ESTILOS GLOBAIS
-   ========================================================================== */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #e0e0e0;
-    color: #333;
-}
-
-a {
-    text-decoration: none;
-    color: #667eea;
-}
-
-/* ==========================================================================
-   2. NAVBAR
-   ========================================================================== */
-.navbar {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap; /* Permite quebrar linha em telas menores */
-    padding: 15px 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
-
-.navbar a {
-    color: white;
-    margin: 5px 15px;
-    font-weight: 600;
-    font-size: 16px;
-    padding: 8px 15px;
-    border-radius: 6px;
-    transition: background-color 0.3s;
-}
-
-.navbar a:hover {
-    background: rgba(255, 255, 255, 0.2);
-}
-
-.navbar .date-form {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-left: 15px;
-}
-
-.navbar .date-form input[type="date"] {
-    padding: 6px 10px;
-    border-radius: 6px;
-    border: none;
-    font-size: 14px;
-}
-
-.navbar .date-form button {
-    padding: 7px 12px;
-    font-size: 14px;
-    border-radius: 6px;
-    border: none;
-    background: #fff;
-    color: #764ba2;
-    cursor: pointer;
-    font-weight: 600;
-    transition: all 0.3s;
-}
-
-.navbar .date-form button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
-
-/* ==========================================================================
-   3. CONTAINER PRINCIPAL E CABEÇALHO
-   ========================================================================== */
-.container {
-    width: 100%;
-    max-width: 1200px; /* Limita a largura máxima em telas grandes */
-    margin: 30px auto; /* Centraliza o container */
-    padding: 20px 30px;
-}
-
-.header {
-    text-align: center;
-    margin-bottom: 40px;
-}
-
-.header h1 {
-    font-size: 2.5rem;
-    color: #4a00e0;
-    margin-bottom: 10px;
-}
-
-.header .quantity {
-    font-size: 1.1rem;
-    color: #666;
-}
-
-.header .quantity strong {
-    color: #4a00e0;
-}
-
-/* ==========================================================================
-   4. LAYOUT DE CARDS
-   ========================================================================== */
-.cards {
-    display: grid;
-    /* Cria colunas responsivas que se adaptam ao tamanho da tela */
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
-    gap: 25px;
-}
-
-.card {
-    background-color: #fff;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    border-top: 6px solid #8e2de2;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    word-wrap: break-word;
-}
-
-.card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
-}
-
-.card p.label {
-    font-size: 1rem;
-    color: #333;
-    margin-bottom: 12px;
-}
-
-.card p.label strong {
-    color: #4a00e0;
-    font-weight: 600;
-    margin-right: 6px;
-}
-
-/* NOVO ESTILO PARA O LINK "VER TODOS" */
-.view-all-link {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #4a00e0;
-    text-decoration: none;
-    background-color: #fff;
-    border-radius: 12px;
-    padding: 25px;
-    text-align: center;
-    min-height: 150px; /* Garante que tenha uma altura mínima similar ao card */
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    transition: transform 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
-}
-
-.view-all-link:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
-    color: #8e2de2;
-}
-
-/* ==========================================================================
-   5. RESPONSIVIDADE
-   ========================================================================== */
-@media (max-width: 600px) {
-    .container {
-        padding: 15px;
-    }
+    <title>Analistas - Sistema Attend</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
-    .header h1 {
-        font-size: 2rem;
-    }
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    .card, .view-all-link {
-        padding: 20px;
-    }
-}
-   </style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #000000;
+            color: #ffffff;
+            position: relative;
+            min-height: 100vh;
+        }
 
+        /* Background Pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(248, 194, 74, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(248, 194, 74, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
 
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: linear-gradient(180deg, #F8C24A 0%, #f4a261 100%);
+            padding: 40px 0;
+            z-index: 100;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
+        .sidebar-logo {
+            padding: 0 30px;
+            margin-bottom: 50px;
+        }
+
+        .sidebar-logo h2 {
+            color: #000000;
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 16px 30px;
+            color: #000000;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar-nav a:hover {
+            background: rgba(0, 0, 0, 0.1);
+            transform: translateX(5px);
+        }
+
+        .sidebar-nav a.active {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar-nav a span:first-child {
+            font-size: 1.2rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            padding: 60px 80px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header Section */
+        .header-section {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .header-section h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: #F8C24A;
+            letter-spacing: -2px;
+            margin-bottom: 15px;
+        }
+
+        .header-section p {
+            font-size: 1.125rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Analistas Grid */
+        .analistas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .analista-card {
+            background: rgba(15, 15, 15, 0.8);
+            padding: 40px 35px;
+            border-radius: 20px;
+            border: 1px solid rgba(248, 194, 74, 0.15);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+        }
+
+        .analista-card:hover {
+            border-color: rgba(248, 194, 74, 0.3);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 50px rgba(248, 194, 74, 0.15);
+        }
+
+        .analista-card a {
+            display: block;
+            color: #F8C24A;
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: 700;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .analista-card a:hover {
+            color: #ffd166;
+            letter-spacing: 0.5px;
+        }
+
+        .analista-card .icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        /* Ver Todos Card */
+        .ver-todos-card {
+            background: rgba(15, 15, 15, 0.8);
+            padding: 40px 35px;
+            border-radius: 20px;
+            border: 1px solid rgba(248, 194, 74, 0.15);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ver-todos-card:hover {
+            border-color: rgba(248, 194, 74, 0.3);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 50px rgba(248, 194, 74, 0.15);
+        }
+
+        .ver-todos-card a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            color: #ffd166;
+            text-decoration: none;
+            font-size: 1.3rem;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .ver-todos-card a:hover {
+            color: #F8C24A;
+        }
+
+        .ver-todos-card .icon {
+            font-size: 2.5rem;
+        }
+
+        /* Responsividade */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 240px;
+            }
+
+            .main-content {
+                margin-left: 240px;
+                padding: 50px 60px;
+            }
+
+            .header-section h1 {
+                font-size: 3rem;
+            }
+
+            .analistas-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 80px;
+            }
+
+            .sidebar-nav a span:last-child {
+                display: none;
+            }
+
+            .sidebar-logo h2 {
+                font-size: 1.2rem;
+                text-align: center;
+            }
+
+            .main-content {
+                margin-left: 80px;
+                padding: 40px 30px;
+            }
+
+            .header-section h1 {
+                font-size: 2.5rem;
+            }
+
+            .analistas-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+
+            .analista-card {
+                padding: 30px 25px;
+            }
+
+            .analista-card a {
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .header-section h1 {
+                font-size: 2rem;
+            }
+
+            .analistas-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="navbar">
-        <a href="{% url 'nomes_analistas' %}">Analistas</a>
-        <a href="{% url 'cadastrar_chamado' %}">Registrar Chamado</a>
-        <a href="{% url 'views' %}">Chamados de Hoje</a>
-
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <h2>Sistema Attend</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="{% url 'nomes_analistas' %}" class="active">
+                <span>👥</span>
+                <span>Analistas</span>
+            </a>
+            <a href="{% url 'cadastrar_chamado' %}">
+                <span>📝</span>
+                <span>Registrar Chamado</span>
+            </a>
+            <a href="{% url 'views' %}">
+                <span>📊</span>
+                <span>Chamados Hoje</span>
+            </a>
+            <a href="{% url 'dashboards' %}">
+                <span>📈</span>
+                <span>Dashboard</span>
+            </a>
+        </nav>
     </div>
 
-    <div class="container">
-        <div class="cards">
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header-section">
+            <h1>Analistas</h1>
+            <p>Selecione um analista para ver seus chamados</p>
+        </div>
+
+        <!-- Analistas Grid -->
+        <div class="analistas-grid">
             {% for analista, id in analistas %}
-                <div class="card">
-          
-                    <a href="{% url 'ver_analista' id %}" class="view-all-link">{{analista}}</a>
-   
+                <div class="analista-card">
+                    <div class="icon">👤</div>
+                    <a href="{% url 'ver_analista' id %}">{{ analista }}</a>
                 </div>
-            {% endfor%}
+            {% endfor %}
 
-         
-                <a href="{% url 'todos_chamados' %}" class="view-all-link">Ver todos os chamados...</a>
-   
-              
-
-               
+            <!-- Ver Todos Card -->
+            <div class="ver-todos-card">
+                <a href="{% url 'todos_chamados' %}">
+                    <span class="icon">📋</span>
+                    <span>Ver Todos os Chamados</span>
+                </a>
             </div>
         </div>
     </div>
-    
 </body>
 </html>
