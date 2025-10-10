@@ -1,978 +1,377 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<<<<<<< HEAD
     <title>Chamados de Hoje - Attend Services</title>
-=======
-    <title>Visualizar Chamados - Sistema Attend</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
->>>>>>> d58eabf
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-<<<<<<< HEAD
-body {
-    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: url('{% static "img/back 01.jpeg" %}?v=3') center center/cover no-repeat fixed;
-    position: relative;
+* {
     margin: 0;
     padding: 0;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: #e4e4e7;
+            box-sizing: border-box;
 }
 
-body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(26, 26, 46, 0.85) 0%, rgba(22, 33, 62, 0.85) 100%);
-    z-index: -1;
-}
-
-/* SIDEBAR */
-.sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 250px;
-    height: 100vh;
-    background: linear-gradient(180deg, #0f0f23 0%, #1a1a2e 100%);
-    box-shadow: 4px 0 20px rgba(248, 194, 74, 0.15);
-    border-right: 2px solid rgba(248, 194, 74, 0.2);
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
-    padding: 20px 0;
-}
-
-.sidebar-logo {
-    text-align: center;
-    padding: 20px;
-    border-bottom: 1px solid rgba(248, 194, 74, 0.2);
-    margin-bottom: 30px;
-}
-
-.sidebar-logo img {
-    height: 60px;
-    width: auto;
-    transition: transform 0.3s ease;
-}
-
-.sidebar-logo img:hover {
-    transform: scale(1.05);
-}
-
-.sidebar-links {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 0 20px;
-}
-
-.sidebar a {
-    color: #e4e4e7;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 16px;
-    padding: 15px 20px;
-    border-radius: 12px;
-    transition: all 0.3s ease;
-    letter-spacing: 0.5px;
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.sidebar a::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 4px;
-    height: 100%;
-    background: #F8C24A;
-    border-radius: 0 4px 4px 0;
-    transform: scaleY(0);
-    transition: transform 0.3s ease;
-}
-
-.sidebar a:hover {
-    color: #F8C24A;
-    background: rgba(248, 194, 74, 0.1);
-    transform: translateX(5px);
-}
-
-.sidebar a:hover::before {
-    transform: scaleY(1);
-}
-
-.sidebar a.active {
-    color: #F8C24A;
-    background: rgba(248, 194, 74, 0.15);
-}
-
-.sidebar a.active::before {
-    transform: scaleY(1);
-}
-
-/* MAIN CONTENT */
-.main-content {
-    margin-left: 250px;
-    min-height: 100vh;
-}
-
-/* FORM DA NAVBAR (INPUT + BOTÃO) */
-.navbar .date-form {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    margin-left: 0;
-    background: rgba(248, 194, 74, 0.1);
-    padding: 8px 24px;
-    border-radius: 12px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(248, 194, 74, 0.2);
-}
-
-.navbar .date-form input[type="date"] {
-    margin-top: 1rem;
-    padding: 8px 14px;
-    border-radius: 8px;
-    border: 1px solid rgba(248, 194, 74, 0.3);
-    font-size: 14px;
-    background: rgba(26, 26, 46, 0.8);
-    color: #e4e4e7;
-    font-family: 'Inter', sans-serif;
-}
-
-.navbar .date-form input[type="date"]:focus {
-    outline: none;
-    border-color: #F8C24A;
-    box-shadow: 0 0 0 3px rgba(248, 194, 74, 0.1);
-}
-
-.navbar .date-form button {
-    padding: 8px 20px;
-    font-size: 14px;
-    border-radius: 8px;
-    border: none;
-    background: linear-gradient(135deg, #F8C24A 0%, #f4a261 100%);
-    color: #0f0f23;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    letter-spacing: 0.5px;
-}
-
-.navbar .date-form button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(248, 194, 74, 0.4);
-    background: linear-gradient(135deg, #ffd166 0%, #F8C24A 100%);
-}
-=======
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #000000;
-            color: #ffffff;
-            position: relative;
+body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            color: #fff;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* Background Pattern */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(248, 194, 74, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(248, 194, 74, 0.08) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        /* Sidebar */
+        /* SIDEBAR */
         .sidebar {
             position: fixed;
             left: 0;
             top: 0;
             width: 260px;
             height: 100vh;
-            background: linear-gradient(180deg, #F8C24A 0%, #f4a261 100%);
-            padding: 40px 0;
-            z-index: 100;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%);
+            border-right: 1px solid rgba(248, 194, 74, 0.1);
+            padding: 30px 0;
+            z-index: 1000;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
         }
 
-        .sidebar-logo {
-            padding: 0 30px;
-            margin-bottom: 50px;
+        .sidebar .logo {
+            padding: 0 25px 30px;
+            border-bottom: 1px solid rgba(248, 194, 74, 0.1);
+            margin-bottom: 30px;
         }
 
-        .sidebar-logo h2 {
-            color: #000000;
-            font-size: 1.5rem;
-            font-weight: 900;
-            letter-spacing: -0.5px;
-        }
-
-        .sidebar-nav {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .sidebar-nav a {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 16px 30px;
-            color: #000000;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.95rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .sidebar-nav a:hover {
-            background: rgba(0, 0, 0, 0.1);
-            transform: translateX(5px);
-        }
-
-        .sidebar-nav a.active {
-            background: rgba(0, 0, 0, 0.2);
-        }
-
-        .sidebar-nav a span:first-child {
-            font-size: 1.2rem;
-        }
-
-        /* Main Content */
-        .main-content {
-            margin-left: 260px;
-            padding: 60px 80px;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Header Section */
-        .header-section {
-            text-align: center;
-            margin-bottom: 40px;
-        }
->>>>>>> d58eabf
-
-        .header-section h1 {
-            font-size: 3.5rem;
-            font-weight: 900;
+        .sidebar .logo h2 {
             color: #F8C24A;
-            letter-spacing: -2px;
-            margin-bottom: 15px;
-        }
-
-        .header-section p {
-            font-size: 1.125rem;
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        /* Filter Form */
-        .filter-section {
-            max-width: 600px;
-            margin: 0 auto 50px;
-            background: rgba(15, 15, 15, 0.8);
-            padding: 30px;
-            border-radius: 20px;
-            border: 1px solid rgba(248, 194, 74, 0.15);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(10px);
-        }
-
-        .filter-form {
-            display: flex;
-            gap: 15px;
-            align-items: flex-end;
-        }
-
-        .filter-form label {
-            display: block;
-            color: #F8C24A;
-            font-weight: 600;
-            font-size: 0.875rem;
+            font-size: 24px;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 10px;
+            letter-spacing: 2px;
         }
 
-        .filter-form .input-group {
-            flex: 1;
-        }
-
-        .filter-form input[type="date"] {
-            width: 100%;
-            padding: 14px 18px;
-            border: 1.5px solid rgba(248, 194, 74, 0.2);
-            border-radius: 12px;
-            background: rgba(0, 0, 0, 0.4);
-            color: #ffffff;
-            font-size: 1rem;
-            font-family: 'Inter', sans-serif;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .filter-form input[type="date"]:focus {
-            outline: none;
-            border-color: #F8C24A;
-            background: rgba(0, 0, 0, 0.6);
-            box-shadow: 0 0 0 4px rgba(248, 194, 74, 0.1);
-        }
-
-        .filter-form button {
-            padding: 14px 28px;
-            border: none;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #F8C24A 0%, #f4a261 100%);
-            color: #000000;
-            font-weight: 700;
-            font-size: 1rem;
+        .sidebar .logo p {
+            color: #888;
+            font-size: 12px;
+            margin-top: 5px;
             text-transform: uppercase;
             letter-spacing: 1px;
-            cursor: pointer;
-            box-shadow: 0 10px 30px rgba(248, 194, 74, 0.3);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .filter-form button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 40px rgba(248, 194, 74, 0.5);
+        .sidebar nav a {
+    display: flex;
+    align-items: center;
+            padding: 15px 25px;
+            color: #ccc;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
         }
 
-        /* Cards Grid */
-        .cards-grid {
+        .sidebar nav a:hover {
+            background: rgba(248, 194, 74, 0.1);
+            color: #F8C24A;
+            border-left-color: #F8C24A;
+        }
+
+        .sidebar nav a.active {
+            background: rgba(248, 194, 74, 0.15);
+            color: #F8C24A;
+            border-left-color: #F8C24A;
+            font-weight: 600;
+        }
+
+        .sidebar nav a::before {
+            content: "▸";
+            margin-right: 12px;
+            font-size: 18px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .sidebar nav a:hover::before,
+        .sidebar nav a.active::before {
+            opacity: 1;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            margin-left: 260px;
+            padding: 30px 40px;
+            min-height: 100vh;
+        }
+
+        /* HEADER */
+        .page-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(248, 194, 74, 0.2);
+        }
+
+        .page-header h1 {
+            font-size: 36px;
+            font-weight: 800;
+            color: #F8C24A;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .page-header .quantity {
+            color: #999;
+            font-size: 18px;
+            margin-top: 10px;
+        }
+
+        .page-header .quantity strong {
+            color: #F8C24A;
+            font-size: 24px;
+        }
+
+        /* DATE FILTER */
+        .date-filter {
+            background: linear-gradient(135deg, #1f1f1f 0%, #141414 100%);
+            border: 1px solid rgba(248, 194, 74, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .date-filter h3 {
+            color: #F8C24A;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .date-filter form {
+    display: flex;
+            gap: 15px;
+    align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .date-filter input[type="date"] {
+            padding: 12px 16px;
+            border: 2px solid rgba(248, 194, 74, 0.2);
+    border-radius: 8px;
+            font-size: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .date-filter input[type="date"]:focus {
+            border-color: #F8C24A;
+            outline: none;
+            background: rgba(248, 194, 74, 0.1);
+        }
+
+        .date-filter button {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #F8C24A 0%, #C69A3A 100%);
+            color: #0a0a0a;
+    border: none;
+    border-radius: 8px;
+            font-size: 15px;
+            font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+}
+
+        .date-filter button:hover {
+    transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(248, 194, 74, 0.4);
+        }
+
+        /* CHAMADOS GRID */
+        .chamados-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 30px;
+            gap: 25px;
         }
 
-        .card {
-            background: rgba(15, 15, 15, 0.8);
-            padding: 35px;
-            border-radius: 20px;
-            border: 1px solid rgba(248, 194, 74, 0.15);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(10px);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        .chamado-card {
+            background: linear-gradient(135deg, #1f1f1f 0%, #141414 100%);
+            border: 1px solid rgba(248, 194, 74, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
         }
 
-        .card:hover {
-            border-color: rgba(248, 194, 74, 0.3);
-            transform: translateY(-8px);
-            box-shadow: 0 20px 50px rgba(248, 194, 74, 0.15);
+        .chamado-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(248, 194, 74, 0.2);
+            border-color: #F8C24A;
         }
 
-        .card p {
-            margin-bottom: 14px;
-            font-size: 0.95rem;
+        .chamado-card .field {
+            margin-bottom: 12px;
+            font-size: 14px;
             line-height: 1.6;
+            word-wrap: break-word;
         }
 
-        .card p strong {
+        .chamado-card .field strong {
             color: #F8C24A;
             font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.875rem;
-            letter-spacing: 0.3px;
             display: inline-block;
-            margin-right: 8px;
+            min-width: 120px;
         }
 
-        .card p a {
-            color: #ffd166;
+        .chamado-card .field span {
+            color: #ccc;
+        }
+
+        .chamado-card .field a {
+            color: #FFD666;
             text-decoration: none;
             transition: color 0.3s;
         }
 
-<<<<<<< HEAD
-/* CONTAINER */
-.container {
-    max-width: 1900px;
-    width: 100%;
-    margin: 0 auto;
-    padding: 20px 60px;
-}
-
-/* HEADER */
-.header {
-    text-align: center;
-    margin-bottom: 50px;
-    position: relative;
-}
-
-.header::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 300px;
-    height: 300px;
-    background: radial-gradient(circle, rgba(248, 194, 74, 0.05) 0%, transparent 70%);
-    border-radius: 50%;
-    z-index: -1;
-}
-
-.header h1 {
-    font-size: 3.2rem;
-    color: #F8C24A;
-    margin-bottom: 20px;
-    font-weight: 800;
-    text-shadow: 0 4px 20px rgba(248, 194, 74, 0.4);
-    letter-spacing: 1px;
-    position: relative;
-}
-
-.header h1::after {
-    content: '';
-    position: absolute;
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100px;
-    height: 3px;
-    background: linear-gradient(90deg, transparent, #F8C24A, transparent);
-    border-radius: 2px;
-}
-
-.quantity {
-    font-size: 1.4rem;
-    color: #a1a1aa;
-    font-weight: 500;
-    margin-top: 25px;
-
-    strong{
-        color: #F8C24A;
-        font-weight: 700;
-        text-shadow: 0 0 10px rgba(248, 194, 74, 0.3);
-    }
-}
-
-/* CARDS */
-.cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); 
-    gap: 30px;
-    width: 100%;
-}
-
-/* CARD */
-.card {
-    background: linear-gradient(135deg, #1e1e30 0%, #252538 100%);
-    padding: 35px 40px;
-    border-radius: 20px;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
-    border-left: 6px solid #F8C24A;
-    border-top: 1px solid rgba(248, 194, 74, 0.1);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    white-space: normal;
-    position: relative;
-    overflow: hidden;
-    backdrop-filter: blur(10px);
-}
-
-.card::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    right: -50%;
-    width: 200px;
-    height: 200px;
-    background: radial-gradient(circle, rgba(248, 194, 74, 0.08) 0%, transparent 70%);
-    border-radius: 50%;
-    transition: all 0.4s ease;
-}
-
-.card::after {
-    content: '';
-    position: absolute;
-    bottom: -30px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80%;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, #F8C24A, transparent);
-    opacity: 0;
-    transition: opacity 0.4s ease;
-}
-
-.card:hover::before {
-    transform: scale(1.2);
-    opacity: 0.15;
-}
-
-.card:hover::after {
-    opacity: 1;
-}
-
-.card:hover {
-    transform: translateY(-12px) scale(1.03);
-    box-shadow: 0 20px 50px rgba(248, 194, 74, 0.25), 0 0 0 1px rgba(248, 194, 74, 0.4);
-    border-left-width: 8px;
-}
-
-/* Texto dentro do Card */
-p.label {
-    font-size: 1.1rem;
-    color: #d4d4d8;
-    margin-bottom: 18px;
-    line-height: 1.7;
-    position: relative;
-    padding-left: 8px;
-}
-
-p.label::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 3px;
-    height: 3px;
-    background: #F8C24A;
-    border-radius: 50%;
-    opacity: 0.7;
-}
-
-p.label strong {
-    color: #F8C24A;
-    font-weight: 700;
-    margin-right: 10px;
-    letter-spacing: 0.5px;
-    text-shadow: 0 0 10px rgba(248, 194, 74, 0.3);
-}
-
-p.label span {
-    color: #e4e4e7;
-}
-=======
-        .card p a:hover {
+        .chamado-card .field a:hover {
             color: #F8C24A;
             text-decoration: underline;
         }
 
-        /* Responsividade */
-        @media (max-width: 1024px) {
-            .sidebar {
-                width: 240px;
-            }
-
-            .main-content {
-                margin-left: 240px;
-                padding: 50px 60px;
-            }
-
-            .header-section h1 {
-                font-size: 3rem;
-            }
-
-            .cards-grid {
-                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            }
+        .chamado-card .field.produtiva {
+            padding: 8px 12px;
+            background: rgba(74, 222, 128, 0.1);
+            border-left: 3px solid #4ade80;
+            border-radius: 4px;
         }
 
+        .chamado-card .field.improdutiva {
+            padding: 8px 12px;
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 3px solid #ef4444;
+            border-radius: 4px;
+        }
+
+        /* RESPONSIVE */
         @media (max-width: 768px) {
             .sidebar {
-                width: 80px;
-            }
-
-            .sidebar-nav a span:last-child {
-                display: none;
-            }
-
-            .sidebar-logo h2 {
-                font-size: 1.2rem;
-                text-align: center;
+                width: 0;
+                overflow: hidden;
             }
 
             .main-content {
-                margin-left: 80px;
-                padding: 40px 30px;
+                margin-left: 0;
+                padding: 20px;
             }
 
-            .header-section h1 {
-                font-size: 2.5rem;
-            }
->>>>>>> d58eabf
-
-            .filter-form {
-                flex-direction: column;
+            .page-header h1 {
+                font-size: 28px;
             }
 
-<<<<<<< HEAD
-.card a {
-    color: #e4e4e7;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    position: relative;
-    display: inline-block;
-}
-
-.card a::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: #F8C24A;
-    transition: width 0.3s ease;
-}
-
-.card a:hover {
-    color: #F8C24A;
-    text-shadow: 0 0 8px rgba(248, 194, 74, 0.4);
-}
-
-.card a:hover::after {
-    width: 100%;
-}
-
-/* RESPONSIVIDADE */
-@media (max-width: 600px) {
-    .header h1 {
-        font-size: 2rem;
-    }
-=======
-            .filter-form button {
-                width: 100%;
-            }
->>>>>>> d58eabf
-
-            .cards-grid {
+            .chamados-grid {
                 grid-template-columns: 1fr;
             }
 
-<<<<<<< HEAD
-/* FILTRO POR DATA - PEQUENO E RETANGULAR NO CANTO */
-.date-filter {
-    position: fixed !important;
-    top: 15px !important;
-    right: 15px !important;
-    width: 140px !important;
-    height: auto !important;
-    padding: 8px 10px !important;
-    background: #0f0f23 !important;
-    border-radius: 4px !important;
-    border: 1px solid #F8C24A !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
-    z-index: 9999 !important;
-    margin: 0 !important;
-}
+            .date-filter form {
+                flex-direction: column;
+                align-items: stretch;
+            }
 
-.date-form {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 5px !important;
-    align-items: stretch !important;
-    margin: 0 !important;
-    padding: 0 !important;
-}
-
-.date-form label {
-    color: #F8C24A !important;
-    font-weight: 600 !important;
-    font-size: 10px !important;
-    margin: 0 !important;
-    text-align: center !important;
-    padding: 0 !important;
-}
-
-.date-form input[type="date"] {
-    padding: 6px 8px !important;
-    border: 1px solid #F8C24A !important;
-    border-radius: 3px !important;
-    background: #0f0f23 !important;
-    color: #F8C24A !important;
-    font-size: 10px !important;
-    transition: all 0.3s ease !important;
-    width: 100% !important;
-    height: 24px !important;
-    margin: 0 !important;
-    box-sizing: border-box !important;
-}
-
-.date-form input[type="date"]:focus {
-    outline: none !important;
-    border-color: #f4a261 !important;
-    background: #1e1e30 !important;
-}
-
-.date-form button {
-    padding: 6px 12px !important;
-    background: #F8C24A !important;
-    color: #0f0f23 !important;
-    border: none !important;
-    border-radius: 3px !important;
-    font-weight: 600 !important;
-    font-size: 10px !important;
-    cursor: pointer !important;
-    transition: all 0.3s ease !important;
-    width: 100% !important;
-    height: 24px !important;
-    margin: 0 !important;
-    box-sizing: border-box !important;
-}
-
-.date-form button:hover {
-    background: #f4a261 !important;
-    transform: translateY(-1px) !important;
-}
-
-/* RESPONSIVIDADE */
-@media (max-width: 768px) {
-    .sidebar {
-        width: 200px;
-    }
-    
-    .main-content {
-        margin-left: 200px;
-    }
-    
-    .sidebar-logo img {
-        height: 50px;
-    }
-    
-    .sidebar a {
-        font-size: 14px;
-        padding: 12px 15px;
-    }
-    
-    .header h1 {
-        font-size: 2.2rem;
-    }
-    
-    .card {
-        padding: 20px;
-    }
-    
-    .date-filter {
-        position: fixed !important;
-        top: 12px !important;
-        right: 12px !important;
-        width: 120px !important;
-        padding: 6px 8px !important;
-    }
-    
-    .date-form label {
-        font-size: 9px !important;
-    }
-    
-    .date-form input,
-    .date-form button {
-        font-size: 9px !important;
-        height: 20px !important;
-    }
-}
-
-@media (max-width: 600px) {
-    .sidebar {
-        width: 180px;
-    }
-    
-    .main-content {
-        margin-left: 180px;
-    }
-    
-    .sidebar a {
-        font-size: 13px;
-        padding: 10px 12px;
-    }
-    
-    .sidebar a span {
-        font-size: 12px;
-    }
-    
-    .date-filter {
-        position: fixed !important;
-        top: 10px !important;
-        right: 10px !important;
-        width: 110px !important;
-        padding: 5px 6px !important;
-    }
-    
-    .date-form label {
-        font-size: 8px !important;
-    }
-    
-    .date-form input,
-    .date-form button {
-        font-size: 8px !important;
-        height: 18px !important;
-    }
-}
-
+            .date-filter button {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
     <!-- SIDEBAR -->
     <div class="sidebar">
-        <div class="sidebar-logo">
-            <img src="{% static 'img/logo.png' %}" alt="Attend Services">
+        <div class="logo">
+            <h2>ATTEND</h2>
+            <p>Services Dashboard</p>
         </div>
-        
-        <div class="sidebar-links">
-            <a href="{% url 'nomes_analistas' %}">
-                <span>👥</span> Analistas
-            </a>
-            <a href="{% url 'cadastrar_chamado' %}">
-                <span>➕</span> Registrar Chamado
-            </a>
-            <a href="{% url 'views' %}" class="active">
-                <span>📋</span> Chamados de Hoje
-            </a>
-            <a href="{% url 'dashboards' %}">
-                <span>📊</span> Dashboards
-            </a>
-        </div>
+        <nav>
+            <a href="{% url 'dashboards' %}">Dashboards</a>
+        <a href="{% url 'nomes_analistas' %}">Analistas</a>
+        <a href="{% url 'cadastrar_chamado' %}">Registrar Chamado</a>
+            <a href="{% url 'views' %}" class="active">Chamados de Hoje</a>
+            <a href="{% url 'todos_chamados' %}">Todos os Chamados</a>
+        </nav>
     </div>
 
     <!-- MAIN CONTENT -->
     <div class="main-content">
-        <div class="container">
-       
-        
-        <div class="header">
-            <h1>Chamados de Hoje</h1>
-=======
-            .card {
-                padding: 25px;
-            }
-        }
-
-        @media (max-width: 600px) {
-            .header-section h1 {
-                font-size: 2rem;
-            }
-
-            .filter-section {
-                padding: 20px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="sidebar-logo">
-            <h2>Sistema Attend</h2>
-        </div>
-        <nav class="sidebar-nav">
-            <a href="{% url 'nomes_analistas' %}">
-                <span>👥</span>
-                <span>Analistas</span>
-            </a>
-            <a href="{% url 'cadastrar_chamado' %}">
-                <span>📝</span>
-                <span>Registrar Chamado</span>
-            </a>
-            <a href="{% url 'views' %}" class="active">
-                <span>📊</span>
-                <span>Chamados Hoje</span>
-            </a>
-            <a href="{% url 'dashboards' %}">
-                <span>📈</span>
-                <span>Dashboard</span>
-            </a>
-        </nav>
-    </div>
-
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="header-section">
-            <h1>Visualização de Chamados</h1>
->>>>>>> d58eabf
+        <div class="page-header">
+            <h1>📅 Visualização de Chamados</h1>
             {% if data_especificada != data_hoje %}
-                <p>Quantidade de chamados em {{ data_especificada }}: <strong style="color: #F8C24A;">{{ quantidade }}</strong></p>
+                <div class="quantity">Chamados em {{ data_especificada|date:"d/m/Y" }}: <strong>{{ quantidade }}</strong></div>
             {% else %}
-                <p>Quantidade de chamados hoje: <strong style="color: #F8C24A;">{{ quantidade }}</strong></p>
+                <div class="quantity">Chamados de hoje: <strong>{{ quantidade }}</strong></div>
             {% endif %}
-            
-            <!-- FILTRO POR DATA -->
-            <div class="date-filter">
-                <form method="POST" class="date-form">
-                    {% csrf_token %}
-                    <label for="data">Data</label>
-                    <input type="date" name="data" id="data" required>
-                    <button type="submit">OK</button>
-                </form>
-            </div>
         </div>
 
-        <!-- Filter Section -->
-        <div class="filter-section">
-            <form method="POST" class="filter-form">
-                {% csrf_token %}
-                <div class="input-group">
-                    <label for="data">Filtrar por Data:</label>
-                    <input type="date" name="data" id="data" required>
-                </div>
-                <button type="submit">Filtrar</button>
-            </form>
-        </div>
-
-        <!-- Cards Grid -->
-        <div class="cards-grid">
+        <!-- DATE FILTER -->
+        <div class="date-filter">
+            <h3>🔍 Filtrar por Data</h3>
+            <form method="POST">
+            {% csrf_token %}
+                <input type="date" name="data" value="{{ data_especificada|date:'Y-m-d' }}" required>
+            <button type="submit">Filtrar</button>
+        </form>
+    </div>
+    
+        <!-- CHAMADOS GRID -->
+        <div class="chamados-grid">
             {% for chamado in chamados %}
                 {% if chamado.data == data_especificada %}
-                    <div class="card">
-                        <p><strong>Analista:</strong> <a href="{% url 'ver_analista' chamado.nome_analista.id %}">{{ chamado.nome_analista }}</a></p>
-                        <p><strong>ID Chamado:</strong> {{ chamado.ID_chamado }}</p>
-                        <p><strong>Tipo:</strong> {{ chamado.tipo_atividade }}</p>
-                        <p><strong>Técnico:</strong> {{ chamado.nome_tecnico }}</p>
-                        <p><strong>Data:</strong> {{ chamado.data }}</p>
-                        <p><strong>Início:</strong> {{ chamado.inicio }}</p>
-                        <p><strong>Conclusão:</strong> {{ chamado.conclusao }}</p>
-                        {% if chamado.total_horas >= hora %}
-                            <p><strong>Tempo:</strong> {{ chamado.total_horas }} Hrs</p>
-                        {% else %}
-                            <p><strong>Tempo:</strong> {{ chamado.total_horas }} Mins</p>
-                        {% endif %}
-                        {% if chamado.produtiva %}
-                            <p><strong>Produtiva:</strong> Sim</p>
-                        {% else %}
-                            <p><strong>Produtiva:</strong> Não</p>
-                        {% endif %}
-                        <p><strong>Senha:</strong> {{ chamado.senha }}</p>
-                        <p><strong>Observação:</strong> {{ chamado.observacao }}</p>
+                <div class="chamado-card">
+                    <div class="field">
+                        <strong>Analista:</strong> 
+                        <span>
+                            <a href="{% url 'ver_analista' chamado.nome_analista.id %}">
+                                {{ chamado.nome_analista }}
+                            </a>
+                        </span>
                     </div>
-                {% endif %}
+                    <div class="field">
+                        <strong>ID Chamado:</strong> <span>{{ chamado.ID_chamado }}</span>
+                    </div>
+                    <div class="field">
+                        <strong>Tipo Atividade:</strong> <span>{{ chamado.tipo_atividade }}</span>
+                    </div>
+                    <div class="field">
+                        <strong>Técnico:</strong> <span>{{ chamado.nome_tecnico }}</span>
+                    </div>
+                    <div class="field">
+                        <strong>Data:</strong> <span>{{ chamado.data|date:"d/m/Y" }}</span>
+                    </div>
+                    <div class="field">
+                        <strong>Horário:</strong> <span>{{ chamado.inicio }} - {{ chamado.conclusao }}</span>
+                    </div>
+                    <div class="field">
+                        <strong>Tempo Total:</strong> <span>{{ chamado.total_horas }}</span>
+                    </div>
+                    <div class="field {% if chamado.produtiva %}produtiva{% else %}improdutiva{% endif %}">
+                        <strong>Status:</strong> 
+                        <span>{% if chamado.produtiva %}✓ Produtiva{% else %}✗ Improdutiva{% endif %}</span>
+                    </div>
+                    <div class="field">
+                        <strong>Senha:</strong> <span>{{ chamado.senha }}</span>
+                    </div>
+                    <div class="field">
+                        <strong>Observação:</strong> <span>{{ chamado.observacao|default:"Sem observações" }}</span>
+        </div>
+                        </div>
+                    {% endif %}
+            {% empty %}
+            <div style="grid-column: 1 / -1; text-align: center; color: #999; padding: 40px;">
+                Nenhum chamado encontrado para esta data.
+            </div>
             {% endfor %}
         </div>
     </div>
-<<<<<<< HEAD
-    </div>
-    
-    
-=======
->>>>>>> d58eabf
 </body>
 </html>

@@ -1,370 +1,280 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Analistas - Attend Services</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-   <style>
-    /* ==========================================================================
-   1. RESET BÁSICO E ESTILOS GLOBAIS
-   ========================================================================== */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, rgba(10, 10, 10, 0.8) 0%, rgba(26, 26, 26, 0.8) 100%), url('{% static "img/back 02.jpeg" %}');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
 
-body {
-    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: url('{% static "img/back 01.jpeg" %}?v=3') center center/cover no-repeat fixed;
-    position: relative;
-    margin: 0;
-    padding: 0;
-    min-height: 100vh;
-    color: #e4e4e7;
-}
+        /* SIDEBAR */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%);
+            border-right: 1px solid rgba(248, 194, 74, 0.1);
+            padding: 30px 0;
+            z-index: 1000;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
+        }
 
-body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(26, 26, 46, 0.85) 0%, rgba(22, 33, 62, 0.85) 100%);
-    z-index: -1;
-}
+        .sidebar .logo {
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(248, 194, 74, 0.1);
+            margin-bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
 
-a {
-    text-decoration: none;
-    color: #F8C24A;
-}
+        .sidebar .logo img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            border-radius: 50%;
+            background: transparent;
+        }
 
-/* ==========================================================================
-   2. NAVBAR
-   ========================================================================== */
-/* SIDEBAR */
-.sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 250px;
-    height: 100vh;
-    background: linear-gradient(180deg, #0f0f23 0%, #1a1a2e 100%);
-    box-shadow: 4px 0 20px rgba(248, 194, 74, 0.15);
-    border-right: 2px solid rgba(248, 194, 74, 0.2);
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
-    padding: 20px 0;
-}
+        .sidebar nav a {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            color: #ccc;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
 
-.sidebar-logo {
-    text-align: center;
-    padding: 20px;
-    border-bottom: 1px solid rgba(248, 194, 74, 0.2);
-    margin-bottom: 30px;
-}
+        .sidebar nav a:hover {
+            background: rgba(248, 194, 74, 0.1);
+            color: #F8C24A;
+            border-left-color: #F8C24A;
+        }
 
-.sidebar-logo img {
-    height: 60px;
-    width: auto;
-    transition: transform 0.3s ease;
-}
+        .sidebar nav a.active {
+            background: rgba(248, 194, 74, 0.15);
+            color: #F8C24A;
+            border-left-color: #F8C24A;
+            font-weight: 600;
+        }
 
-.sidebar-logo img:hover {
-    transform: scale(1.05);
-}
+        .sidebar nav a::before {
+            content: "▸";
+            margin-right: 12px;
+            font-size: 18px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
 
-.sidebar-links {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 0 20px;
-}
+        .sidebar nav a:hover::before,
+        .sidebar nav a.active::before {
+            opacity: 1;
+        }
 
-.sidebar a {
-    color: #e4e4e7;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 16px;
-    padding: 15px 20px;
-    border-radius: 12px;
-    transition: all 0.3s ease;
-    letter-spacing: 0.5px;
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
+        /* MAIN CONTENT */
+        .main-content {
+            margin-left: 260px;
+            padding: 30px 40px;
+            min-height: 100vh;
+        }
 
-.sidebar a::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 4px;
-    height: 100%;
-    background: #F8C24A;
-    border-radius: 0 4px 4px 0;
-    transform: scaleY(0);
-    transition: transform 0.3s ease;
-}
+        /* HEADER */
+        .page-header {
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(248, 194, 74, 0.2);
+        }
 
-.sidebar a:hover {
-    color: #F8C24A;
-    background: rgba(248, 194, 74, 0.1);
-    transform: translateX(5px);
-}
+        .page-header h1 {
+            font-size: 36px;
+            font-weight: 800;
+            color: #F8C24A;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
 
-.sidebar a:hover::before {
-    transform: scaleY(1);
-}
+        .page-header p {
+            color: #999;
+            font-size: 16px;
+        }
 
-.sidebar a.active {
-    color: #F8C24A;
-    background: rgba(248, 194, 74, 0.15);
-}
+        /* CARDS GRID */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
 
-.sidebar a.active::before {
-    transform: scaleY(1);
-}
+        .analista-card {
+            background: linear-gradient(135deg, #1f1f1f 0%, #141414 100%);
+            border: 1px solid rgba(248, 194, 74, 0.2);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            cursor: pointer;
+        }
 
-/* MAIN CONTENT */
-.main-content {
-    margin-left: 250px;
-    min-height: 100vh;
-}
+        .analista-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 35px rgba(248, 194, 74, 0.3);
+            border-color: #F8C24A;
+        }
 
-.navbar .date-form {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-left: 15px;
-}
+        .analista-card a {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
 
-.navbar .date-form input[type="date"] {
-    padding: 6px 10px;
-    border-radius: 6px;
-    border: none;
-    font-size: 14px;
-}
+        .analista-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #F8C24A 0%, #C69A3A 100%);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: 800;
+            color: #0a0a0a;
+            box-shadow: 0 4px 15px rgba(248, 194, 74, 0.4);
+        }
 
-.navbar .date-form button {
-    padding: 7px 12px;
-    font-size: 14px;
-    border-radius: 6px;
-    border: none;
-    background: #fff;
-    color: #764ba2;
-    cursor: pointer;
-    font-weight: 600;
-    transition: all 0.3s;
-}
+        .analista-name {
+            color: #F8C24A;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
-.navbar .date-form button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
+        .analista-desc {
+            color: #999;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
-/* ==========================================================================
-   3. CONTAINER PRINCIPAL E CABEÇALHO
-   ========================================================================== */
-.container {
-    width: 100%;
-    max-width: 1600px;
-    margin: 30px auto;
-    padding: 20px 40px;
-}
+        /* SPECIAL CARD - VER TODOS */
+        .all-chamados-card {
+            background: linear-gradient(135deg, #F8C24A 0%, #C69A3A 100%);
+            border: 1px solid #F8C24A;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
 
-.header {
-    text-align: center;
-    margin-bottom: 40px;
-}
+        .all-chamados-card:hover {
+            background: linear-gradient(135deg, #FFD666 0%, #F8C24A 100%);
+        }
 
-.header h1 {
-    font-size: 2.8rem;
-    color: #F8C24A;
-    margin-bottom: 15px;
-    font-weight: 700;
-    text-shadow: 0 2px 10px rgba(248, 194, 74, 0.3);
-}
+        .all-chamados-card a {
+            color: #0a0a0a;
+        }
 
-.header .quantity {
-    font-size: 1.2rem;
-    color: #a1a1aa;
-    font-weight: 500;
-}
+        .all-chamados-card .analista-icon {
+            background: rgba(0, 0, 0, 0.2);
+            color: #F8C24A;
+        }
 
-.header .quantity strong {
-    color: #F8C24A;
-    font-weight: 700;
-}
+        .all-chamados-card .analista-name,
+        .all-chamados-card .analista-desc {
+            color: #0a0a0a;
+        }
 
-/* ==========================================================================
-   4. LAYOUT DE CARDS
-   ========================================================================== */
-.cards {
-    display: grid;
-    /* Cria colunas responsivas que se adaptam ao tamanho da tela */
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
-    gap: 25px;
-}
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 0;
+                overflow: hidden;
+            }
 
-.card {
-    background: linear-gradient(135deg, #1e1e30 0%, #252538 100%);
-    padding: 28px;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    border-left: 4px solid #F8C24A;
-    border-top: 1px solid rgba(248, 194, 74, 0.1);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    word-wrap: break-word;
-    position: relative;
-    overflow: hidden;
-}
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
 
-.card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 100px;
-    height: 100px;
-    background: radial-gradient(circle, rgba(248, 194, 74, 0.1) 0%, transparent 70%);
-    border-radius: 50%;
-    transform: translate(30%, -30%);
-}
+            .page-header h1 {
+                font-size: 28px;
+            }
 
-.card:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 15px 40px rgba(248, 194, 74, 0.2), 0 0 0 1px rgba(248, 194, 74, 0.3);
-    border-left-width: 6px;
-}
-
-.card p.label {
-    font-size: 1rem;
-    color: #d4d4d8;
-    margin-bottom: 14px;
-    line-height: 1.6;
-}
-
-.card p.label strong {
-    color: #F8C24A;
-    font-weight: 700;
-    margin-right: 8px;
-    letter-spacing: 0.3px;
-}
-
-/* NOVO ESTILO PARA O LINK "VER TODOS" */
-.view-all-link {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: #F8C24A;
-    text-decoration: none;
-    background: linear-gradient(135deg, #1e1e30 0%, #252538 100%);
-    border-radius: 16px;
-    padding: 25px;
-    text-align: center;
-    min-height: 150px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    border-left: 4px solid #F8C24A;
-    border-top: 1px solid rgba(248, 194, 74, 0.1);
-    position: relative;
-    overflow: hidden;
-}
-
-.view-all-link::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 100px;
-    height: 100px;
-    background: radial-gradient(circle, rgba(248, 194, 74, 0.1) 0%, transparent 70%);
-    border-radius: 50%;
-    transform: translate(30%, -30%);
-}
-
-.view-all-link:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 15px 40px rgba(248, 194, 74, 0.2), 0 0 0 1px rgba(248, 194, 74, 0.3);
-    color: #ffd166;
-    border-left-width: 6px;
-}
-
-/* ==========================================================================
-   5. RESPONSIVIDADE
-   ========================================================================== */
-@media (max-width: 600px) {
-    .container {
-        padding: 15px;
-    }
-    
-    .header h1 {
-        font-size: 2rem;
-    }
-
-    .card, .view-all-link {
-        padding: 20px;
-    }
-}
-   </style>
-
-
-
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- SIDEBAR -->
     <div class="sidebar">
-        <div class="sidebar-logo">
-            <img src="{% static 'img/logo.png' %}" alt="Attend Services">
+        <div class="logo">
+            <img src="{% static 'img/logo.png' %}" alt="Attend Services Logo">
         </div>
-        
-        <div class="sidebar-links">
-            <a href="{% url 'nomes_analistas' %}" class="active">
-                <span>👥</span> Analistas
-            </a>
-            <a href="{% url 'cadastrar_chamado' %}">
-                <span>➕</span> Registrar Chamado
-            </a>
-            <a href="{% url 'views' %}">
-                <span>📋</span> Chamados de Hoje
-            </a>
-            <a href="{% url 'dashboards' %}">
-                <span>📊</span> Dashboards
-            </a>
-        </div>
+        <nav>
+            <a href="{% url 'dashboards' %}">Dashboards</a>
+            <a href="{% url 'nomes_analistas' %}" class="active">Analistas</a>
+            <a href="{% url 'cadastrar_chamado' %}">Registrar Chamado</a>
+            <a href="{% url 'todos_chamados' %}">Todos os Chamados</a>
+        </nav>
     </div>
 
     <!-- MAIN CONTENT -->
     <div class="main-content">
-        <div class="container">
-        <div class="cards">
-            {% for analista, id in analistas %}
-                <div class="card">
-          
-                    <a href="{% url 'ver_analista' id %}" class="view-all-link">{{analista}}</a>
-   
-                </div>
-            {% endfor%}
-
-         
-                <a href="{% url 'todos_chamados' %}" class="view-all-link">Ver todos os chamados...</a>
-   
-              
-
-               
+        <div class="page-header">
+            <h1>👥 Analistas</h1>
+            <p>Selecione um analista para ver seus chamados</p>
         </div>
+
+        <div class="cards-grid">
+            {% for analista, id in analistas %}
+            <div class="analista-card">
+                <a href="{% url 'ver_analista' id %}">
+                    <div class="analista-icon">{{ analista|slice:":1" }}</div>
+                    <div class="analista-name">{{ analista }}</div>
+                    <div class="analista-desc">Ver Chamados</div>
+                </a>
+            </div>
+            {% endfor %}
+
+            <!-- VER TODOS OS CHAMADOS -->
+            <div class="analista-card all-chamados-card">
+                <a href="{% url 'todos_chamados' %}">
+                    <div class="analista-icon">📋</div>
+                    <div class="analista-name">Ver Todos</div>
+                    <div class="analista-desc">Todos os Chamados</div>
+                </a>
+            </div>
         </div>
     </div>
-    
 </body>
 </html>
