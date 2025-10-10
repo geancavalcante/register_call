@@ -17,13 +17,26 @@
 
         body {
             font-family: 'Inter', 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, rgba(10, 10, 10, 0.8) 0%, rgba(26, 26, 26, 0.8) 100%), url('{% static "img/back 01.jpeg" %}');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
+            background: url('{% static "img/back 02.jpeg" %}') !important;
+            background-size: cover !important;
+            background-position: center !important;
+            background-attachment: fixed !important;
+            background-repeat: no-repeat !important;
             color: #fff;
             min-height: 100vh;
             overflow-x: hidden;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(10, 10, 10, 0.8) 0%, rgba(26, 26, 26, 0.8) 100%);
+            z-index: -1;
         }
 
         /* SIDEBAR */
@@ -398,6 +411,7 @@
                 <div class="filter-group">
                     <label class="filter-label">📅 Período</label>
                     <select id="periodFilter" class="filter-select">
+                        <option value="hoje">Hoje</option>
                         <option value="7">Últimos 7 dias</option>
                         <option value="30" selected>Últimos 30 dias</option>
                         <option value="90">Últimos 3 meses</option>
@@ -978,7 +992,7 @@
                     scales: {
                         y: {
                             beginAtZero: true,
-                            suggestedMax: 2,
+                            max: Math.max(...analistasValues) + Math.ceil(Math.max(...analistasValues) * 0.2),
                             ticks: { 
                                 color: '#999', 
                                 font: { size: 12 },
@@ -1153,7 +1167,7 @@
                     scales: {
                         y: {
                             beginAtZero: true,
-                            suggestedMax: 100,
+                            max: Math.max(...tempoMedioValues) + Math.ceil(Math.max(...tempoMedioValues) * 0.2),
                             ticks: { 
                                 color: '#999', 
                                 font: { size: 12 },

@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -14,10 +15,26 @@
 
 body {
             font-family: 'Inter', 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            background: url('{% static "img/back 02.jpeg" %}') !important;
+            background-size: cover !important;
+            background-position: center !important;
+            background-attachment: fixed !important;
+            background-repeat: no-repeat !important;
             color: #fff;
             min-height: 100vh;
             overflow-x: hidden;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(10, 10, 10, 0.8) 0%, rgba(26, 26, 26, 0.8) 100%);
+            z-index: -1;
         }
 
         /* SIDEBAR */
@@ -315,12 +332,18 @@ body {
 
         <!-- DATE FILTER -->
         <div class="date-filter">
-            <h3>🔍 Filtrar por Data</h3>
-            <form method="POST">
+            <h3>🔍 Filtrar por Período</h3>
+            <form method="POST" id="dateForm">
             {% csrf_token %}
-                <input type="date" name="data" value="{{ data_especificada|date:'Y-m-d' }}" required>
-            <button type="submit">Filtrar</button>
-        </form>
+                <input type="date" name="data" id="dateInput" value="{{ data_especificada|date:'Y-m-d' }}" required>
+                <button type="submit">Filtrar por Data</button>
+            </form>
+            
+            <div style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                <button type="button" onclick="setToday()" style="background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%); padding: 12px 20px; border: none; border-radius: 8px; color: white; font-weight: 700; cursor: pointer; transition: all 0.3s ease;">
+                    📅 Ver Chamados de Hoje
+                </button>
+            </div>
     </div>
     
         <!-- CHAMADOS GRID -->
@@ -373,5 +396,22 @@ body {
             {% endfor %}
         </div>
     </div>
+
+    <script>
+        function setToday() {
+            // Obter a data de hoje no formato YYYY-MM-DD
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            const todayString = `${year}-${month}-${day}`;
+            
+            // Definir o valor do input de data para hoje
+            document.getElementById('dateInput').value = todayString;
+            
+            // Submeter o formulário automaticamente
+            document.getElementById('dateForm').submit();
+        }
+    </script>
 </body>
 </html>

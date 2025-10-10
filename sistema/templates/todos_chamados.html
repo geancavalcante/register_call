@@ -15,13 +15,26 @@
 
         body {
             font-family: 'Inter', 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, rgba(10, 10, 10, 0.8) 0%, rgba(26, 26, 26, 0.8) 100%), url('{% static "img/back 02.jpeg" %}');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
+            background: url('{% static "img/back 02.jpeg" %}') !important;
+            background-size: cover !important;
+            background-position: center !important;
+            background-attachment: fixed !important;
+            background-repeat: no-repeat !important;
             color: #fff;
             min-height: 100vh;
             overflow-x: hidden;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(10, 10, 10, 0.8) 0%, rgba(26, 26, 26, 0.8) 100%);
+            z-index: -1;
         }
 
         /* SIDEBAR */

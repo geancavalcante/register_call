@@ -15,13 +15,26 @@
 
         body {
             font-family: 'Inter', 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, rgba(10, 10, 10, 0.8) 0%, rgba(26, 26, 26, 0.8) 100%), url('{% static "img/back 02.jpeg" %}');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
+            background: url('{% static "img/back 02.jpeg" %}') !important;
+            background-size: cover !important;
+            background-position: center !important;
+            background-attachment: fixed !important;
+            background-repeat: no-repeat !important;
             color: #fff;
             min-height: 100vh;
             overflow-x: hidden;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(10, 10, 10, 0.8) 0%, rgba(26, 26, 26, 0.8) 100%);
+            z-index: -1;
         }
 
         /* SIDEBAR */
@@ -282,15 +295,15 @@
                 <label for="nome_analista">Nome do Analista:</label>
                 <select id="nome_analista" name="nome_analista" required>
                     <option value="">Selecione...</option>
-                    <option value="Gean_Cavalcante">Gean Cavalcante</option>
-                    <option value="Paulo_Henrique">Paulo Henrique</option>
-                    <option value="Joao_Cezar">João Cezar</option>
-                    <option value="Ramon_Farias">Ramon Farias</option>
-                    <option value="Pedro_Alexandre">Pedro Alexandre</option>
-                    <option value="Adryson_Costa">Adryson Costa</option>
-                    <option value="Mateus_Bezerra">Mateus Bezerra</option>
-                    <option value="Guilherme_Palmiere">Guilherme Palmiere</option>
-                    <option value="Miguel_Campos">Miguel Campos</option>
+                    <option value="gean_cavalcante">Gean Cavalcante</option>
+                    <option value="paulo_henrique">Paulo Henrique</option>
+                    <option value="joao_cezar">João Cezar</option>
+                    <option value="ramon_farias">Ramon Farias</option>
+                    <option value="pedro_alexandre">Pedro Alexandre</option>
+                    <option value="adryson_costa">Adryson Costa</option>
+                    <option value="mateus_bezerra">Mateus Bezerra</option>
+                    <option value="guilherme_palmiere">Guilherme Palmiere</option>
+                    <option value="miguel_campos">Miguel Campos</option>
                 </select>
 
                 <label for="ID_chamado">ID do Chamado:</label>
@@ -344,13 +357,55 @@
         let button = document.getElementsByClassName("submit-button")[0]   
         button.addEventListener("click", function(e){
             e.preventDefault();
+            
+            // Validar se um analista foi selecionado
+            const analistaSelect = document.getElementById("nome_analista");
+            const analistaValue = analistaSelect.value.trim();
+            
+            if (!analistaValue) {
+                alert("Por favor, selecione um analista!");
+                return;
+            }
+            
+            // Log do valor para debug
+            console.log("Analista selecionado:", analistaValue);
+            
             question = confirm("Deseja registrar esse chamado?")
 
             if (question){
+                // Garantir que o valor está limpo antes de enviar
+                analistaSelect.value = analistaValue;
                 alert("Chamado registrado!")
                 button.closest('form').submit();
             }
         })
+        
+        // Validação adicional quando o usuário muda a seleção
+        document.getElementById("nome_analista").addEventListener("change", function() {
+            console.log("Analista selecionado:", this.value);
+            console.log("Tamanho do valor:", this.value.length);
+        });
+        
+        // Garantir que o formulário sempre envie valores limpos
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const analistaSelect = document.getElementById("nome_analista");
+            const value = analistaSelect.value.trim();
+            
+            // Verificar se o valor é válido
+            const validValues = [
+                'gean_cavalcante', 'paulo_henrique', 'joao_cezar', 'ramon_farias',
+                'pedro_alexandre', 'adryson_costa', 'mateus_bezerra', 
+                'guilherme_palmiere', 'miguel_campos'
+            ];
+            
+            if (!validValues.includes(value)) {
+                e.preventDefault();
+                alert("Erro: Valor do analista inválido. Por favor, selecione um analista válido.");
+                return false;
+            }
+            
+            console.log("Valor final enviado:", value);
+        });
     </script>
 </body>
 </html>
