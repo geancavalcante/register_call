@@ -1,0 +1,1279 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboards - Attend Services</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, rgba(10, 10, 10, 0.8) 0%, rgba(26, 26, 26, 0.8) 100%), url('{% static "img/back 01.jpeg" %}');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: linear-gradient(180deg, #1a1a1a 0%, #0f0f0f 100%);
+            border-right: 2px solid rgba(248, 194, 74, 0.2);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo {
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(248, 194, 74, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            border-radius: 50%;
+            background: transparent;
+        }
+
+        nav {
+            flex: 1;
+            padding: 20px 0;
+        }
+
+        nav a {
+            display: block;
+            padding: 15px 25px;
+            color: #ccc;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        nav a:hover {
+            color: #F8C24A;
+            background: rgba(248, 194, 74, 0.1);
+            border-left-color: #F8C24A;
+        }
+
+        nav a.active {
+            color: #F8C24A;
+            background: rgba(248, 194, 74, 0.15);
+            border-left-color: #F8C24A;
+            font-weight: 600;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            margin-left: 260px;
+            padding: 30px 40px;
+            min-height: 100vh;
+        }
+
+        /* HEADER */
+        .page-header {
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(248, 194, 74, 0.2);
+        }
+
+        .page-header h1 {
+            font-size: 42px;
+            font-weight: 800;
+            color: #F8C24A;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .page-header p {
+            color: #999;
+            font-size: 18px;
+        }
+
+        /* STATS CARDS */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #1f1f1f 0%, #141414 100%);
+            border: 1px solid rgba(248, 194, 74, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(248, 194, 74, 0.1);
+            border-color: rgba(248, 194, 74, 0.4);
+        }
+
+        .stat-label {
+            color: #999;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 800;
+            color: #F8C24A;
+            margin-bottom: 8px;
+        }
+
+        .stat-desc {
+            color: #666;
+            font-size: 12px;
+        }
+
+        /* CHARTS */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 30px;
+            height: 800px;
+        }
+
+
+        .chart-container {
+            background: linear-gradient(135deg, #1f1f1f 0%, #141414 100%);
+            border: 1px solid rgba(248, 194, 74, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .chart-container:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(248, 194, 74, 0.1);
+        }
+
+        .chart-container h3 {
+            color: #F8C24A;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 280px;
+        }
+
+        /* FILTROS */
+        .filters-section {
+            background: linear-gradient(135deg, #1f1f1f 0%, #141414 100%);
+            border: 1px solid rgba(248, 194, 74, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr auto;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-label {
+            color: #F8C24A;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .filter-select, .filter-date {
+            background: #2a2a2a;
+            border: 1px solid rgba(248, 194, 74, 0.3);
+            border-radius: 8px;
+            padding: 10px 12px;
+            color: #fff;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-select:focus, .filter-date:focus {
+            outline: none;
+            border-color: #F8C24A;
+            box-shadow: 0 0 10px rgba(248, 194, 74, 0.2);
+        }
+
+
+        .date-range {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 160px;
+        }
+
+        .filter-btn {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            width: 100%;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .filter-btn.primary {
+            background: linear-gradient(135deg, #F8C24A 0%, #C69A3A 100%);
+            color: #0a0a0a;
+        }
+
+        .filter-btn.secondary {
+            background: #2a2a2a;
+            color: #F8C24A;
+            border: 1px solid #F8C24A;
+        }
+
+        .filter-btn.tertiary {
+            background: #1a4d80;
+            color: #fff;
+            border: 1px solid #2a6db0;
+        }
+
+        .filter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1200px) {
+            .filters-grid {
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: auto auto auto;
+                gap: 15px;
+            }
+            
+            .filter-actions {
+                grid-column: 1 / -1;
+                flex-direction: row;
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .filter-btn {
+                width: auto;
+                flex: 1;
+                max-width: 200px;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+                grid-template-rows: repeat(4, 1fr);
+                height: auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .filters-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .filter-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .filter-btn {
+                width: 100%;
+                max-width: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 0;
+                overflow: hidden;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .page-header h1 {
+                font-size: 28px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="logo">
+            <img src="{% static 'img/logo.png' %}" alt="Attend Services Logo">
+        </div>
+        <nav>
+            <a href="{% url 'dashboards' %}" class="active">Dashboards</a>
+            <a href="{% url 'nomes_analistas' %}">Analistas</a>
+            <a href="{% url 'cadastrar_chamado' %}">Registrar Chamado</a>
+            <a href="{% url 'todos_chamados' %}">Todos os Chamados</a>
+        </nav>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <!-- HEADER -->
+        <div class="page-header">
+            <h1>Dashboards Analíticos</h1>
+            <p>Visão geral do desempenho e estatísticas dos chamados</p>
+            <p style="color: #F8C24A; font-size: 14px; margin-top: 10px;">
+                DEBUG BACKEND: {{ chamados|length }} chamado(s) recebido(s) do Django
+            </p>
+        </div>
+
+        <!-- FILTROS -->
+        <div class="filters-section">
+            <h2 style="color: #F8C24A; margin-bottom: 20px; font-size: 24px;">🎯 Filtros e Períodos</h2>
+            
+            <div class="filters-grid">
+                <!-- Filtro de Período -->
+                <div class="filter-group">
+                    <label class="filter-label">📅 Período</label>
+                    <select id="periodFilter" class="filter-select">
+                        <option value="7">Últimos 7 dias</option>
+                        <option value="30" selected>Últimos 30 dias</option>
+                        <option value="90">Últimos 3 meses</option>
+                        <option value="custom">Período personalizado</option>
+                    </select>
+                </div>
+
+                <!-- Date Picker Personalizado -->
+                <div class="filter-group" id="customDateGroup" style="display: none;">
+                    <label class="filter-label">🗓️ Período Personalizado</label>
+                    <div class="date-range">
+                        <input type="date" id="startDate" class="filter-date">
+                        <span style="color: #F8C24A; margin: 0 10px;">até</span>
+                        <input type="date" id="endDate" class="filter-date">
+                    </div>
+                </div>
+
+                <!-- Filtro de Analistas -->
+                <div class="filter-group">
+                    <label class="filter-label">👥 Analistas</label>
+                    <select id="analystFilter" class="filter-select">
+                        <option value="all" selected>Todos os analistas</option>
+                        <option value="Paulo_Henrique">Paulo Henrique</option>
+                        <option value="Joao_Cezar">João Cezar</option>
+                        <option value="Ramon_Farias">Ramon Farias</option>
+                        <option value="Pedro_Alexandre">Pedro Alexandre</option>
+                        <option value="Adryson_Costa">Adryson Costa</option>
+                        <option value="Mateus_Bezerra">Mateus Bezerra</option>
+                        <option value="Guilherme_Palmiere">Guilherme Palmiere</option>
+                        <option value="Miguel_Campos">Miguel Campos</option>
+                        <option value="Gean_Cavalcante">Gean Cavalcante</option>
+                    </select>
+                </div>
+
+                <!-- Filtro de Tipo de Atividade -->
+                <div class="filter-group">
+                    <label class="filter-label">📋 Tipo de Atividade</label>
+                    <select id="activityFilter" class="filter-select">
+                        <option value="all" selected>Todos os tipos</option>
+                        <option value="Migração">Migração</option>
+                        <option value="Suporte">Suporte</option>
+                        <option value="Manutenção">Manutenção</option>
+                        <option value="Desenvolvimento">Desenvolvimento</option>
+                    </select>
+                </div>
+
+                <!-- Filtro de Produtividade -->
+                <div class="filter-group">
+                    <label class="filter-label">✅ Produtividade</label>
+                    <select id="productivityFilter" class="filter-select">
+                        <option value="all" selected>Todos</option>
+                        <option value="true">Só produtivos</option>
+                        <option value="false">Só não-produtivos</option>
+                    </select>
+                </div>
+
+                <!-- Botões de Ação -->
+                <div class="filter-actions">
+                    <button id="applyFilters" class="filter-btn primary">🔍 Aplicar Filtros</button>
+                    <button id="clearFilters" class="filter-btn secondary">🔄 Limpar Filtros</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- STATS CARDS -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total de Chamados</div>
+                <div class="stat-value" id="totalChamados">0</div>
+                <div class="stat-desc">Registrados no sistema</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Tempo Médio</div>
+                <div class="stat-value" id="tempoMedio">0h 0m</div>
+                <div class="stat-desc">Por chamado</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Taxa de Produtividade</div>
+                <div class="stat-value" id="taxaProdutividade">0%</div>
+                <div class="stat-desc">Chamados produtivos</div>
+            </div>
+        </div>
+
+        <!-- CHARTS -->
+        <div class="charts-grid">
+            <!-- GRÁFICO 1: Distribuição por Tipo de Atividade -->
+            <div class="chart-container">
+                <h3>📊 Distribuição por Tipo de Atividade</h3>
+                <div class="chart-wrapper">
+                    <canvas id="chartTipoAtividade"></canvas>
+                </div>
+            </div>
+
+            <!-- GRÁFICO 2: Chamados por Analista -->
+            <div class="chart-container">
+                <h3>👥 Chamados por Analista</h3>
+                <div class="chart-wrapper">
+                    <canvas id="chartAnalista"></canvas>
+                </div>
+            </div>
+
+            <!-- GRÁFICO 3: Tempo Médio por Mês -->
+            <div class="chart-container">
+                <h3>📅 Tempo Médio por Mês</h3>
+                <div class="chart-wrapper">
+                    <canvas id="chartTempoMes"></canvas>
+                </div>
+            </div>
+
+            <!-- GRÁFICO 4: Tempo Médio por Analista -->
+            <div class="chart-container">
+                <h3>⏱️ Tempo Médio por Analista</h3>
+                <div class="chart-wrapper">
+                    <canvas id="chartTempoAnalista"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        console.log('🚀 DASHBOARD INICIANDO...');
+        
+        // Plugin simples para mostrar valores
+        const showValuesPlugin = {
+            id: 'showValues',
+            afterDatasetsDraw: function(chart) {
+                const ctx = chart.ctx;
+                chart.data.datasets.forEach((dataset, datasetIndex) => {
+                    const meta = chart.getDatasetMeta(datasetIndex);
+                    meta.data.forEach((element, index) => {
+                        const data = dataset.data[index];
+                        if (data && data > 0) {
+                            ctx.save();
+                            
+                            ctx.font = 'bold 12px Inter, sans-serif';
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'middle';
+                            
+                            let text = data.toString();
+                            let x, y;
+                            
+                            if (chart.config.type === 'bar') {
+                                x = element.x;
+                                y = element.y - 20;
+                                ctx.fillStyle = '#F8C24A';
+                            } else if (chart.config.type === 'line') {
+                                x = element.x;
+                                y = element.y - 25;
+                                ctx.fillStyle = '#F8C24A';
+                            } else if (chart.config.type === 'doughnut') {
+                                const centerX = element.x;
+                                const centerY = element.y;
+                                const angle = element.startAngle + (element.endAngle - element.startAngle) / 2;
+                                const radius = element.outerRadius + 15; // Mais perto da rosca
+                                x = centerX + Math.cos(angle) * radius;
+                                y = centerY + Math.sin(angle) * radius;
+                                
+                                const total = dataset.data.reduce((a, b) => a + b, 0);
+                                const percent = ((data / total) * 100).toFixed(1);
+                                text = `${data} (${percent}%)`;
+                                
+                                // Desenhar fundo primeiro
+                                ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+                                ctx.strokeStyle = '#F8C24A';
+                                ctx.lineWidth = 1;
+                                
+                                const textMetrics = ctx.measureText(text);
+                                const textWidth = textMetrics.width;
+                                const textHeight = 16;
+                                const padding = 6;
+                                
+                                const rectX = x - (textWidth / 2) - padding;
+                                const rectY = y - (textHeight / 2) - padding;
+                                const rectWidth = textWidth + (padding * 2);
+                                const rectHeight = textHeight + (padding * 2);
+                                
+                                // Fundo com bordas arredondadas
+                                ctx.fillRect(rectX, rectY, rectWidth, rectHeight);
+                                ctx.strokeRect(rectX, rectY, rectWidth, rectHeight);
+                                
+                                // Cor do texto
+                                ctx.fillStyle = '#F8C24A';
+                            }
+                            
+                            // Formatação especial para tempo
+                            if (chart.canvas.id === 'chartTempoAnalista' || chart.canvas.id === 'chartTempoMes') {
+                                text = formatTime(data);
+                            }
+                            
+                            ctx.fillText(text, x, y);
+                            ctx.restore();
+                        }
+                    });
+                });
+            }
+        };
+        
+        Chart.register(showValuesPlugin);
+        
+        // Variáveis globais para filtros
+        let filteredChamados = [];
+        let currentFilters = {
+            period: 30,
+            startDate: null,
+            endDate: null,
+            analysts: 'all',
+            activityType: 'all',
+            productivity: 'all'
+        };
+
+        // Dados do Django
+        const chamados = [
+            {% for chamado in chamados %}
+            {
+                nome_analista: "{{ chamado.nome_analista }}",
+                tipo_atividade: "{{ chamado.tipo_atividade }}",
+                total_horas: "{{ chamado.total_horas }}",
+                produtiva: {% if chamado.produtiva %}true{% else %}false{% endif %},
+                data: "{{ chamado.data|date:'Y-m-d' }}"
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ];
+
+        console.log('📊 Dados carregados:', chamados);
+        console.log('📈 Quantidade de chamados:', chamados.length);
+
+        // Função para converter tempo HH:MM:SS para minutos
+        function timeToMinutes(timeStr) {
+            if (!timeStr) return 0;
+            const parts = timeStr.split(':');
+            const hours = parseInt(parts[0]) || 0;
+            const minutes = parseInt(parts[1]) || 0;
+            const seconds = parseInt(parts[2]) || 0;
+            return hours * 60 + minutes + (seconds / 60);
+        }
+
+        // Função para formatar minutos como "Xh Ym"
+        function formatTime(totalMinutes) {
+            const hours = Math.floor(totalMinutes / 60);
+            const minutes = Math.round(totalMinutes % 60);
+            if (hours === 0) {
+                return `${minutes}m`;
+            }
+            return `${hours}h ${minutes}m`;
+        }
+
+        // FUNÇÕES DE FILTRO
+        function applyFilters() {
+            console.log('🔍 Aplicando filtros...', currentFilters);
+            
+            filteredChamados = chamados.filter(chamado => {
+                // Filtro por período
+                if (currentFilters.period !== 'custom') {
+                    const days = parseInt(currentFilters.period);
+                    const limitDate = new Date();
+                    limitDate.setDate(limitDate.getDate() - days);
+                    const chamadoDate = new Date(chamado.data);
+                    
+                    if (chamadoDate < limitDate) return false;
+                } else if (currentFilters.startDate && currentFilters.endDate) {
+                    const startDate = new Date(currentFilters.startDate);
+                    const endDate = new Date(currentFilters.endDate);
+                    const chamadoDate = new Date(chamado.data);
+                    
+                    if (chamadoDate < startDate || chamadoDate > endDate) return false;
+                }
+
+                // Filtro por analista
+                if (currentFilters.analysts !== 'all' && chamado.nome_analista !== currentFilters.analysts) {
+                    return false;
+                }
+
+                // Filtro por tipo de atividade
+                if (currentFilters.activityType !== 'all' && chamado.tipo_atividade !== currentFilters.activityType) {
+                    return false;
+                }
+
+                // Filtro por produtividade
+                if (currentFilters.productivity !== 'all') {
+                    const isProductive = currentFilters.productivity === 'true';
+                    if (chamado.produtiva !== isProductive) return false;
+                }
+
+                return true;
+            });
+
+            console.log('📊 Chamados filtrados:', filteredChamados.length);
+            updateAllCharts();
+            showSmartAlerts();
+        }
+
+        function clearFilters() {
+            console.log('🔄 Limpando filtros...');
+            
+            // Resetar filtros
+            currentFilters = {
+                period: 30,
+                startDate: null,
+                endDate: null,
+                analysts: 'all',
+                activityType: 'all',
+                productivity: 'all'
+            };
+
+            // Resetar interface
+            document.getElementById('periodFilter').value = '30';
+            document.getElementById('analystFilter').selectedIndex = 0;
+            document.getElementById('activityFilter').value = 'all';
+            document.getElementById('productivityFilter').value = 'all';
+            document.getElementById('customDateGroup').style.display = 'none';
+            document.getElementById('startDate').value = '';
+            document.getElementById('endDate').value = '';
+
+            // Aplicar filtros limpos
+            filteredChamados = chamados;
+            updateAllCharts();
+        }
+
+        function updateAllCharts() {
+            console.log('🎨 Atualizando todos os gráficos...');
+            
+            // Destruir gráficos existentes
+            Chart.helpers.each(Chart.instances, function(instance) {
+                instance.destroy();
+            });
+
+            // Recriar gráficos com dados filtrados
+            createChart1();
+            createChart2();
+            createChart3();
+            createChart4();
+            updateStats();
+        }
+
+        // ALERTAS INTELIGENTES
+        function showSmartAlerts() {
+            const totalChamados = filteredChamados.length;
+            const chamadosProdutivos = filteredChamados.filter(c => c.produtiva).length;
+            const taxaProdutividade = totalChamados > 0 ? (chamadosProdutivos / totalChamados) * 100 : 0;
+            
+            let alertas = [];
+
+            // Alerta de produtividade baixa
+            if (taxaProdutividade < 80 && totalChamados > 0) {
+                alertas.push({
+                    tipo: 'warning',
+                    titulo: '⚠️ Produtividade Baixa',
+                    mensagem: `Taxa de produtividade está em ${taxaProdutividade.toFixed(1)}%, abaixo dos 80% esperados.`
+                });
+            }
+
+            // Alerta de poucos chamados
+            if (totalChamados < 5 && currentFilters.period >= 7) {
+                alertas.push({
+                    tipo: 'info',
+                    titulo: '📊 Poucos Chamados',
+                    mensagem: `Apenas ${totalChamados} chamado(s) no período selecionado.`
+                });
+            }
+
+            // Alerta de tempo médio alto
+            const tempoTotal = filteredChamados.reduce((acc, c) => acc + timeToMinutes(c.total_horas), 0);
+            const tempoMedio = totalChamados > 0 ? tempoTotal / totalChamados : 0;
+            
+            if (tempoMedio > 60) { // Mais de 1 hora
+                alertas.push({
+                    tipo: 'danger',
+                    titulo: '⏰ Tempo Médio Alto',
+                    mensagem: `Tempo médio de ${formatTime(tempoMedio)} por chamado está acima do esperado.`
+                });
+            }
+
+            // Mostrar alertas
+            displayAlerts(alertas);
+        }
+
+        function displayAlerts(alertas) {
+            // Remover alertas existentes
+            const existingAlerts = document.querySelectorAll('.alert');
+            existingAlerts.forEach(alert => alert.remove());
+
+            if (alertas.length === 0) return;
+
+            // Criar container de alertas
+            const alertsContainer = document.createElement('div');
+            alertsContainer.className = 'alerts-container';
+            alertsContainer.style.cssText = `
+                margin-bottom: 20px;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            `;
+
+            alertas.forEach(alerta => {
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `alert alert-${alerta.tipo}`;
+                alertDiv.style.cssText = `
+                    padding: 15px;
+                    border-radius: 8px;
+                    border-left: 4px solid;
+                    background: rgba(0, 0, 0, 0.3);
+                    color: #fff;
+                    font-weight: 500;
+                `;
+
+                if (alerta.tipo === 'warning') {
+                    alertDiv.style.borderLeftColor = '#ffa500';
+                } else if (alerta.tipo === 'danger') {
+                    alertDiv.style.borderLeftColor = '#ff4444';
+                } else if (alerta.tipo === 'info') {
+                    alertDiv.style.borderLeftColor = '#4ade80';
+                }
+
+                alertDiv.innerHTML = `
+                    <strong>${alerta.titulo}</strong><br>
+                    ${alerta.mensagem}
+                `;
+
+                alertsContainer.appendChild(alertDiv);
+            });
+
+            // Inserir alertas após os filtros
+            const filtersSection = document.querySelector('.filters-section');
+            filtersSection.insertAdjacentElement('afterend', alertsContainer);
+        }
+
+        // ATUALIZAR CARDS
+        function updateStats() {
+            const dataToUse = filteredChamados.length > 0 ? filteredChamados : chamados;
+            const totalChamados = dataToUse.length;
+            const chamadosProdutivos = dataToUse.filter(c => c.produtiva).length;
+            const taxaProdutividade = totalChamados > 0 ? ((chamadosProdutivos / totalChamados) * 100).toFixed(1) : 0;
+            const tempoTotal = dataToUse.reduce((acc, c) => acc + timeToMinutes(c.total_horas), 0);
+            const tempoMedio = totalChamados > 0 ? tempoTotal / totalChamados : 0;
+
+            console.log('📊 Estatísticas calculadas:', {
+                totalChamados,
+                chamadosProdutivos,
+                taxaProdutividade,
+                tempoMedio: formatTime(tempoMedio)
+            });
+
+            // Atualizar elementos
+            document.getElementById('totalChamados').textContent = totalChamados;
+            document.getElementById('tempoMedio').textContent = formatTime(tempoMedio);
+            document.getElementById('taxaProdutividade').textContent = taxaProdutividade + '%';
+        }
+
+        // GRÁFICO 1: Distribuição por Tipo de Atividade (Doughnut)
+        function createChart1() {
+            console.log('🎨 Criando Gráfico 1...');
+            
+            const dataToUse = filteredChamados.length > 0 ? filteredChamados : chamados;
+            const tiposAtividade = {};
+            dataToUse.forEach(c => {
+                tiposAtividade[c.tipo_atividade] = (tiposAtividade[c.tipo_atividade] || 0) + 1;
+            });
+
+            const tiposLabels = Object.keys(tiposAtividade);
+            const tiposValues = Object.values(tiposAtividade);
+            const totalChamados = dataToUse.length;
+
+            console.log('📊 Dados Gráfico 1:', { tiposAtividade, tiposLabels, tiposValues });
+
+            const ctx = document.getElementById('chartTipoAtividade').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: tiposLabels,
+                    datasets: [{
+                        data: tiposValues,
+                        backgroundColor: [
+                            '#F8C24A',
+                            '#FFD666',
+                            '#FFEB99',
+                            '#FFF5CC',
+                            '#C69A3A'
+                        ],
+                        borderColor: '#1a1a1a',
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#fff',
+                                padding: 15,
+                                font: { size: 13, weight: '600' }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#F8C24A',
+                            bodyColor: '#fff',
+                            padding: 12,
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.parsed;
+                                    const percent = ((value / totalChamados) * 100).toFixed(1);
+                                    return `${label}: ${value} (${percent}%)`;
+                                }
+                            }
+                        }
+                    },
+                    layout: {
+                        padding: {
+                            top: 20,
+                            bottom: 20,
+                            left: 20,
+                            right: 20
+                        }
+                    }
+                }
+            });
+            
+            console.log('✅ Gráfico 1 criado com sucesso!');
+        }
+
+        // GRÁFICO 2: Chamados por Analista (Bar)
+        function createChart2() {
+            console.log('🎨 Criando Gráfico 2...');
+            
+            const dataToUse = filteredChamados.length > 0 ? filteredChamados : chamados;
+            
+            // Lista de todos os analistas do sistema
+            const todosAnalistas = [
+                'Paulo_Henrique', 'Joao_Cezar', 'Ramon_Farias',
+                'Pedro_Alexandre', 'Adryson_Costa', 'Mateus_Bezerra',
+                'Guilherme_Palmiere', 'Miguel_Campos', 'Gean_Cavalcante'
+            ];
+            
+            const chamadosPorAnalista = {};
+            dataToUse.forEach(c => {
+                chamadosPorAnalista[c.nome_analista] = (chamadosPorAnalista[c.nome_analista] || 0) + 1;
+            });
+
+            // Garantir que todos os analistas apareçam (mesmo com 0)
+            const analistasLabels = todosAnalistas;
+            const analistasValues = todosAnalistas.map(analista => chamadosPorAnalista[analista] || 0);
+
+            console.log('📊 Dados Gráfico 2:', { chamadosPorAnalista, analistasLabels, analistasValues });
+
+            const ctx = document.getElementById('chartAnalista').getContext('2d');
+            const chartAnalista = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: analistasLabels,
+                    datasets: [{
+                        data: analistasValues,
+                        backgroundColor: '#F8C24A',
+                        borderColor: '#C69A3A',
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#F8C24A',
+                            bodyColor: '#fff',
+                            padding: 12,
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: ${context.parsed.y} chamado(s)`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            suggestedMax: 2,
+                            ticks: { 
+                                color: '#999', 
+                                font: { size: 12 },
+                                stepSize: 1
+                            },
+                            grid: { color: 'rgba(248, 194, 74, 0.1)' }
+                        },
+                        x: {
+                            ticks: { 
+                                color: '#999', 
+                                font: { size: 10 },
+                                maxRotation: 45
+                            },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+            
+            console.log('✅ Gráfico 2 criado com sucesso!');
+        }
+
+        // GRÁFICO 3: Tempo Médio por Mês (Line)
+        function createChart3() {
+            console.log('🎨 Criando Gráfico 3...');
+            
+            const dataToUse = filteredChamados.length > 0 ? filteredChamados : chamados;
+            const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+            const tempoPorMes = {};
+            
+            // Inicializar todos os meses com 0
+            meses.forEach(mes => tempoPorMes[mes] = 0);
+            
+            // Calcular tempo médio por mês
+            dataToUse.forEach(c => {
+                const data = new Date(c.data);
+                const mes = meses[data.getMonth()];
+                tempoPorMes[mes] += timeToMinutes(c.total_horas);
+            });
+
+            const tempoMedioPorMes = Object.values(tempoPorMes);
+
+            console.log('📊 Dados Gráfico 3:', { tempoPorMes, tempoMedioPorMes });
+
+            const ctx = document.getElementById('chartTempoMes').getContext('2d');
+            const chartTempoMes = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: meses,
+                    datasets: [{
+                        data: tempoMedioPorMes,
+                        borderColor: '#F8C24A',
+                        backgroundColor: 'rgba(248, 194, 74, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#F8C24A',
+                        pointBorderColor: '#C69A3A',
+                        pointBorderWidth: 2,
+                        pointRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#F8C24A',
+                            bodyColor: '#fff',
+                            padding: 12,
+                            callbacks: {
+                                label: function(context) {
+                                    return `Tempo médio: ${formatTime(context.parsed.y)}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            suggestedMax: 100,
+                            ticks: { 
+                                color: '#999', 
+                                font: { size: 12 },
+                                callback: function(value) {
+                                    return formatTime(value);
+                                },
+                                stepSize: 20
+                            },
+                            grid: { color: 'rgba(248, 194, 74, 0.1)' }
+                        },
+                        x: {
+                            ticks: { color: '#999', font: { size: 12 } },
+                            grid: { color: 'rgba(248, 194, 74, 0.1)' }
+                        }
+                    }
+                }
+            });
+            
+            console.log('✅ Gráfico 3 criado com sucesso!');
+        }
+
+        // GRÁFICO 4: Tempo Médio por Analista (Bar)
+        function createChart4() {
+            console.log('🎨 Criando Gráfico 4...');
+            
+            const dataToUse = filteredChamados.length > 0 ? filteredChamados : chamados;
+            
+            // Lista de todos os analistas do sistema
+            const todosAnalistas = [
+                'Paulo_Henrique', 'Joao_Cezar', 'Ramon_Farias',
+                'Pedro_Alexandre', 'Adryson_Costa', 'Mateus_Bezerra',
+                'Guilherme_Palmiere', 'Miguel_Campos', 'Gean_Cavalcante'
+            ];
+            
+            const tempoPorAnalista = {};
+            const chamadosPorAnalista = {};
+            
+            dataToUse.forEach(c => {
+                const tempo = timeToMinutes(c.total_horas);
+                tempoPorAnalista[c.nome_analista] = (tempoPorAnalista[c.nome_analista] || 0) + tempo;
+                chamadosPorAnalista[c.nome_analista] = (chamadosPorAnalista[c.nome_analista] || 0) + 1;
+            });
+
+            // Calcular tempo médio por analista (incluindo os com 0)
+            const tempoMedioPorAnalista = {};
+            todosAnalistas.forEach(analista => {
+                if (chamadosPorAnalista[analista]) {
+                    tempoMedioPorAnalista[analista] = tempoPorAnalista[analista] / chamadosPorAnalista[analista];
+                } else {
+                    tempoMedioPorAnalista[analista] = 0;
+                }
+            });
+
+            const analistasLabels = todosAnalistas;
+            const tempoMedioValues = todosAnalistas.map(analista => tempoMedioPorAnalista[analista] || 0);
+
+            console.log('📊 Dados Gráfico 4:', { tempoMedioPorAnalista, analistasLabels, tempoMedioValues });
+
+            const ctx = document.getElementById('chartTempoAnalista').getContext('2d');
+            const chartTempoAnalista = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: analistasLabels,
+                    datasets: [{
+                        data: tempoMedioValues,
+                        backgroundColor: '#F8C24A',
+                        borderColor: '#C69A3A',
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#F8C24A',
+                            bodyColor: '#fff',
+                            padding: 12,
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: ${formatTime(context.parsed.y)}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            suggestedMax: 100,
+                            ticks: { 
+                                color: '#999', 
+                                font: { size: 12 },
+                                callback: function(value) {
+                                    return formatTime(value);
+                                },
+                                stepSize: 20
+                            },
+                            grid: { color: 'rgba(248, 194, 74, 0.1)' }
+                        },
+                        x: {
+                            ticks: { 
+                                color: '#999', 
+                                font: { size: 10 },
+                                maxRotation: 45
+                            },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+            
+            console.log('✅ Gráfico 4 criado com sucesso!');
+        }
+
+
+        // EVENT LISTENERS PARA FILTROS
+        function setupEventListeners() {
+            // Filtro de período
+            document.getElementById('periodFilter').addEventListener('change', function() {
+                const value = this.value;
+                currentFilters.period = value;
+                
+                if (value === 'custom') {
+                    document.getElementById('customDateGroup').style.display = 'block';
+                } else {
+                    document.getElementById('customDateGroup').style.display = 'none';
+                }
+            });
+
+            // Date pickers
+            document.getElementById('startDate').addEventListener('change', function() {
+                currentFilters.startDate = this.value;
+            });
+
+            document.getElementById('endDate').addEventListener('change', function() {
+                currentFilters.endDate = this.value;
+            });
+
+            // Filtro de analistas
+            document.getElementById('analystFilter').addEventListener('change', function() {
+                currentFilters.analysts = this.value;
+            });
+
+            // Filtro de tipo de atividade
+            document.getElementById('activityFilter').addEventListener('change', function() {
+                currentFilters.activityType = this.value;
+            });
+
+            // Filtro de produtividade
+            document.getElementById('productivityFilter').addEventListener('change', function() {
+                currentFilters.productivity = this.value;
+            });
+
+            // Botões
+            document.getElementById('applyFilters').addEventListener('click', applyFilters);
+            document.getElementById('clearFilters').addEventListener('click', clearFilters);
+        }
+
+        // INICIALIZAR TUDO
+        function initDashboard() {
+            console.log('🚀 Inicializando dashboard...');
+            
+            if (chamados.length === 0) {
+                console.log('⚠️ Nenhum chamado encontrado');
+                document.querySelector('.charts-grid').innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 60px; color: #F8C24A; font-size: 18px;">
+                        <h3>📊 Nenhum Dado Disponível</h3>
+                        <p style="color: #999; margin-top: 10px;">Registre alguns chamados para ver os gráficos e estatísticas.</p>
+                        <a href="/cadastrar_chamado/" style="display: inline-block; margin-top: 20px; padding: 12px 24px; background: linear-gradient(135deg, #F8C24A 0%, #C69A3A 100%); color: #0a0a0a; text-decoration: none; border-radius: 8px; font-weight: 600;">
+                            ➕ Registrar Primeiro Chamado
+                        </a>
+                    </div>
+                `;
+                return;
+            }
+
+            // Atualizar estatísticas
+            updateStats();
+
+            // Configurar event listeners
+            setupEventListeners();
+
+            // Inicializar dados filtrados
+            filteredChamados = chamados;
+
+            // Criar gráficos
+            try {
+                createChart1();
+                createChart2();
+                createChart3();
+                createChart4();
+                console.log('🎉 TODOS OS GRÁFICOS CRIADOS COM SUCESSO!');
+            } catch (error) {
+                console.error('❌ Erro ao criar gráficos:', error);
+            }
+        }
+
+        // Aguardar carregamento da página
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📄 DOM carregado, iniciando dashboard...');
+            initDashboard();
+        });
+
+        // Fallback se DOM já estiver carregado
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initDashboard);
+        } else {
+            initDashboard();
+        }
+    </script>
+</body>
+</html>

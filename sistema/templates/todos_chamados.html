@@ -1,168 +1,410 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-     <style>
-          /* Reset básico */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+    <title>Todos os Chamados - Attend Services</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #e0e0e0;
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, rgba(10, 10, 10, 0.8) 0%, rgba(26, 26, 26, 0.8) 100%), url('{% static "img/back 02.jpeg" %}');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
 
-}
+        /* SIDEBAR */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%);
+            border-right: 1px solid rgba(248, 194, 74, 0.1);
+            padding: 30px 0;
+            z-index: 1000;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
+        }
 
-/* NAVBAR */
-.navbar {
-    width: 100%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 15px 30px;
-    display: flex;
-    justify-content: center;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    margin-bottom: 3rem;
-}
+        .sidebar .logo {
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(248, 194, 74, 0.1);
+            margin-bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
 
-/* Links da Navbar */
-.navbar a {
-    color: white;
-    margin: 0 15px;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 16px;
-    transition: 0.3s;
-    padding: 8px 15px;
-    border-radius: 6px;
-}
+        .sidebar .logo img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            border-radius: 50%;
+            background: transparent;
+        }
 
-.navbar a:hover {
-    background: rgba(255,255,255,0.2);
-}
+        .sidebar nav a {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            color: #ccc;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
 
-/* CONTAINER */
-.container {
-    width: 100%; /* ocupa 100% da tela */
-    margin: 0;
-    padding: 20px 30px; /* espaço só interno */
-}
+        .sidebar nav a:hover {
+            background: rgba(248, 194, 74, 0.1);
+            color: #F8C24A;
+            border-left-color: #F8C24A;
+        }
 
-/* HEADER */
-.header {
-    text-align: center;
-    margin-bottom: 40px;
-}
+        .sidebar nav a.active {
+            background: rgba(248, 194, 74, 0.15);
+            color: #F8C24A;
+            border-left-color: #F8C24A;
+            font-weight: 600;
+        }
 
-.header h1 {
-    font-size: 2.5rem;
-    color: #4a00e0;
-    margin-bottom: 10px;
-}
+        .sidebar nav a::before {
+            content: "▸";
+            margin-right: 12px;
+            font-size: 18px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
 
-.quantity {
-    font-size: 1.1rem;
-    color: #666;
-}
+        .sidebar nav a:hover::before,
+        .sidebar nav a.active::before {
+            opacity: 1;
+        }
 
-/* CARDS */
-.cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
-    gap: 25px;
-    width: 100%; /* ocupa toda a largura */
-}
+        /* MAIN CONTENT */
+        .main-content {
+            margin-left: 260px;
+            padding: 30px 40px;
+            min-height: 100vh;
+        }
 
-/* CARD */
-.card {
-    background-color: #fff;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    border-top: 6px solid #8e2de2;
-    transition: transform 0.3s ease;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    white-space: normal;
-}
+        /* HEADER */
+        .page-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(248, 194, 74, 0.2);
+        }
 
-.card:hover {
-    transform: translateY(-6px);
-}
+        .page-header h1 {
+            font-size: 36px;
+            font-weight: 800;
+            color: #F8C24A;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
 
-/* Texto dentro do Card */
-p.label {
-    font-size: 1.2rem;
-    color: #333;
-    margin-bottom: 12px;
-}
+        .page-header .quantity {
+            color: #999;
+            font-size: 18px;
+            margin-top: 10px;
+        }
 
-p.label strong {
-    color: #4a00e0;
-    font-weight: 600;
-    margin-right: 6px;
-}
+        .page-header .quantity strong {
+            color: #F8C24A;
+            font-size: 24px;
+        }
 
-a{
-    text-decoration: none;
-}
+        /* DATE FILTER */
+        .date-filter {
+            background: linear-gradient(135deg, #1f1f1f 0%, #141414 100%);
+            border: 1px solid rgba(248, 194, 74, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
 
-/* RESPONSIVIDADE */
-@media (max-width: 600px) {
-    .header h1 {
-        font-size: 2rem;
-    }
+        .date-filter h3 {
+            color: #F8C24A;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
 
-    .card {
-        padding: 20px;
-    }
-}
+        .filter-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
 
+        .filter-controls input[type="date"] {
+            padding: 12px 16px;
+            border: 2px solid rgba(248, 194, 74, 0.2);
+            border-radius: 8px;
+            font-size: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .filter-controls input[type="date"]:focus {
+            border-color: #F8C24A;
+            outline: none;
+            background: rgba(248, 194, 74, 0.1);
+        }
+
+        .filter-controls button {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #F8C24A 0%, #C69A3A 100%);
+            color: #0a0a0a;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            width: auto;
+        }
+
+        .filter-controls button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(248, 194, 74, 0.4);
+        }
+
+        /* CHAMADOS GRID */
+        .chamados-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .chamado-card {
+            background: linear-gradient(135deg, #1f1f1f 0%, #141414 100%);
+            border: 1px solid rgba(248, 194, 74, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .chamado-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(248, 194, 74, 0.2);
+            border-color: #F8C24A;
+        }
+
+        .chamado-card .field {
+            margin-bottom: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+            word-wrap: break-word;
+        }
+
+        .chamado-card .field strong {
+            color: #F8C24A;
+            font-weight: 600;
+            display: inline-block;
+            min-width: 120px;
+        }
+
+        .chamado-card .field span {
+            color: #ccc;
+        }
+
+        .chamado-card .field.produtiva {
+            padding: 8px 12px;
+            background: rgba(74, 222, 128, 0.1);
+            border-left: 3px solid #4ade80;
+            border-radius: 4px;
+        }
+
+        .chamado-card .field.improdutiva {
+            padding: 8px 12px;
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 3px solid #ef4444;
+            border-radius: 4px;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 0;
+                overflow: hidden;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .page-header h1 {
+                font-size: 28px;
+            }
+
+            .chamados-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
-       <div class="navbar">
-        <a href="{% url 'nomes_analistas'%}">Analistas</a>
-        <a href="{% url 'cadastrar_chamado' %}">Registrar Chamado</a>
-        <a href="{% url 'views' %}">Chamados de Hoje</a>
-    </div>
-    <div class="container">
-        <div class="header">
-            <h1>Quantidade de todos os chamados: {{quantidade}}</h1>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="logo">
+            <img src="{% static 'img/logo.png' %}" alt="Attend Services Logo">
         </div>
-        
-        <div class="cards">
-            {% for chamado in chamados%}
- 
-                    <div class="card">
-                                <p class="label"><strong>Nome do Analista:</strong>{{chamado.nome_analista}}</p>
-                                <p class="label"><strong>ID do Chamado:</strong> {{ chamado.ID_chamado }}</p>
-                                <p class="label"><strong>Tpo da Atividade:</strong> {{ chamado.tipo_atividade }}</p>
-                                <p class="label"><strong>Técnico:</strong> {{ chamado.nome_tecnico }}</p>
-                                <p class="label"><strong>Data:</strong> {{ chamado.data }}</p>
-                                <p class="label"><strong>Início:</strong> {{ chamado.inicio }}</p>
-                                <p class="label"><strong>Conclusão:</strong> {{ chamado.conclusao }}</p>
-                                {% if chamado.total_horas >= hora %}
-                                    <p class="label"><strong>Tempo de chamado:</strong> {{ chamado.total_horas }} Hrs</p>
-                                {% else %}
-                                    <p class="label"><strong>Tempo de chamado:</strong> {{ chamado.total_horas }} Mins</p>
-                                {% endif%}
-                                {% if chamado.produtiva%}
-                                    <p class="label"><strong>Produtiva:</strong> Produtiva</p>
-                                {% else%}
-                                    <p class="label"><strong>Produtiva:</strong> Produtiva</p>
-                                {% endif%}
+        <nav>
+            <a href="{% url 'dashboards' %}">Dashboards</a>
+            <a href="{% url 'nomes_analistas' %}">Analistas</a>
+            <a href="{% url 'cadastrar_chamado' %}">Registrar Chamado</a>
+            <a href="{% url 'todos_chamados' %}" class="active">Todos os Chamados</a>
+        </nav>
+    </div>
 
-                                <p class="label"><strong>Senha:</strong> {{ chamado.senha }}</p>
-                            <p class="label"><strong>Observação:</strong> {{ chamado.observacao }}</p>
-                    </div>
-            
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <div class="page-header">
+            <h1>📋 Todos os Chamados</h1>
+            <div class="quantity">Total de chamados: <strong id="totalChamados">{{ quantidade }}</strong></div>
+        </div>
+
+        <!-- DATE FILTER -->
+        <div class="date-filter">
+            <h3>🔍 Filtrar por Data</h3>
+            <div class="filter-controls">
+                <input type="date" id="filtroData" placeholder="Selecione uma data">
+                <button onclick="filtrarPorData()">Filtrar</button>
+                <button onclick="limparFiltro()" style="background: linear-gradient(135deg, #666 0%, #444 100%);">Limpar Filtro</button>
+            </div>
+        </div>
+
+        <div class="chamados-grid" id="chamadosGrid">
+            {% for chamado in chamados %}
+            <div class="chamado-card" data-data="{{ chamado.data|date:'Y-m-d' }}">
+                <div class="field">
+                    <strong>Analista:</strong> <span>{{ chamado.nome_analista }}</span>
+                </div>
+                <div class="field">
+                    <strong>ID Chamado:</strong> <span>{{ chamado.ID_chamado }}</span>
+                </div>
+                <div class="field">
+                    <strong>Tipo Atividade:</strong> <span>{{ chamado.tipo_atividade }}</span>
+                </div>
+                <div class="field">
+                    <strong>Técnico:</strong> <span>{{ chamado.nome_tecnico }}</span>
+                </div>
+                <div class="field">
+                    <strong>Data:</strong> <span>{{ chamado.data|date:"d/m/Y" }}</span>
+                </div>
+                <div class="field">
+                    <strong>Horário:</strong> <span>{{ chamado.inicio }} - {{ chamado.conclusao }}</span>
+                </div>
+                <div class="field">
+                    <strong>Tempo Total:</strong> <span>{{ chamado.total_horas }}</span>
+                </div>
+                <div class="field {% if chamado.produtiva %}produtiva{% else %}improdutiva{% endif %}">
+                    <strong>Status:</strong> 
+                    <span>{% if chamado.produtiva %}✓ Produtiva{% else %}✗ Improdutiva{% endif %}</span>
+                </div>
+                <div class="field">
+                    <strong>Senha:</strong> <span>{{ chamado.senha }}</span>
+                </div>
+                <div class="field">
+                    <strong>Observação:</strong> <span>{{ chamado.observacao|default:"Sem observações" }}</span>
+                </div>
+            </div>
+            {% empty %}
+            <div id="mensagemVazia" style="grid-column: 1 / -1; text-align: center; color: #999; padding: 40px;">
+                Nenhum chamado registrado ainda.
+            </div>
             {% endfor %}
         </div>
     </div>
+
+    <script>
+        // FILTRO DE DATA - JAVASCRIPT (SEM MODIFICAR BACKEND)
+        function filtrarPorData() {
+            const dataFiltro = document.getElementById('filtroData').value;
+            if (!dataFiltro) {
+                alert('Por favor, selecione uma data primeiro!');
+                return;
+            }
+
+            const cards = document.querySelectorAll('.chamado-card');
+            let contador = 0;
+
+            cards.forEach(card => {
+                const dataCard = card.getAttribute('data-data');
+                if (dataCard === dataFiltro) {
+                    card.style.display = 'block';
+                    contador++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Atualizar contador
+            document.getElementById('totalChamados').textContent = contador;
+
+            // Mostrar/ocultar mensagem vazia
+            const mensagemVazia = document.getElementById('mensagemVazia');
+            if (mensagemVazia) {
+                mensagemVazia.style.display = contador === 0 ? 'block' : 'none';
+                if (contador === 0) {
+                    mensagemVazia.textContent = 'Nenhum chamado encontrado para esta data.';
+                }
+            }
+        }
+
+        function limparFiltro() {
+            const cards = document.querySelectorAll('.chamado-card');
+            cards.forEach(card => {
+                card.style.display = 'block';
+            });
+
+            document.getElementById('filtroData').value = '';
+            document.getElementById('totalChamados').textContent = {{ quantidade }};
+
+            const mensagemVazia = document.getElementById('mensagemVazia');
+            if (mensagemVazia) {
+                mensagemVazia.style.display = {{ quantidade }} === 0 ? 'block' : 'none';
+                if ({{ quantidade }} === 0) {
+                    mensagemVazia.textContent = 'Nenhum chamado registrado ainda.';
+                }
+            }
+        }
+
+        // Permitir filtrar ao pressionar Enter
+        document.getElementById('filtroData').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                filtrarPorData();
+            }
+        });
+
+        // Definir data de hoje como padrão
+        const hoje = new Date().toISOString().split('T')[0];
+        document.getElementById('filtroData').value = hoje;
+    </script>
 </body>
 </html>

@@ -1,329 +1,356 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrar Chamado</title>
+    <title>Registrar Chamado - Attend Services</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-<style>
-   body {
-    font-family: 'Roboto', sans-serif;
-    background: #e0e0e0;
-    margin: 0;
-    padding: 0;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: #333;
-}
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, rgba(10, 10, 10, 0.8) 0%, rgba(26, 26, 26, 0.8) 100%), url('{% static "img/back 02.jpeg" %}');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
 
-/* NAVBAR */
-.navbar {
-    width: 100%;
-    display: flex;
-    align-items: center; /* centraliza verticalmente */
-   justify-content: center;
-    padding: 15px 0px; /* espaço nas laterais */
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-}
+        /* SIDEBAR */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%);
+            border-right: 1px solid rgba(248, 194, 74, 0.1);
+            padding: 30px 0;
+            z-index: 1000;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
+        }
 
-.navbar a {
-    color: white;
-    margin: 0 15px;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 16px;
-    padding: 8px 15px;
-    border-radius: 6px;
-    transition: 0.3s;
-}
+        .sidebar .logo {
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(248, 194, 74, 0.1);
+            margin-bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
 
-.navbar a:hover {
-    background: rgba(255,255,255,0.2);
-}
+        .sidebar .logo img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            border-radius: 50%;
+            background: transparent;
+        }
 
-/* FORM DA NAVBAR (INPUT + BOTÃO) */
-.navbar .date-form {
+        .sidebar nav a {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            color: #ccc;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
 
-    /* centraliza verticalmente */
-    justify-content: center;    /* centraliza horizontalmente */
-    gap: 10px;  
+        .sidebar nav a:hover {
+            background: rgba(248, 194, 74, 0.1);
+            color: #F8C24A;
+            border-left-color: #F8C24A;
+        }
 
-    display: flex;
-    align-items: center;
-    margin-left: 0; /* empurra pro lado direito */
-    gap: 8px; /* espaço entre input e botão */
-    background: rgba(255, 255, 255, 0.15);
-    padding: 6px 20px;
-    border-radius: 10px;
-    backdrop-filter: blur(6px);
-}
+        .sidebar nav a.active {
+            background: rgba(248, 194, 74, 0.15);
+            color: #F8C24A;
+            border-left-color: #F8C24A;
+            font-weight: 600;
+        }
 
-.navbar .date-form input[type="date"] {
-    margin-top: 1rem;
-    padding: 6px 10px;
-    border-radius: 6px;
-    border: none;
-    font-size: 14px;
-    background: rgba(255,255,255,0.9);
-}
+        .sidebar nav a::before {
+            content: "▸";
+            margin-right: 12px;
+            font-size: 18px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
 
-.navbar .date-form button {
-    padding: 6px 12px;
-    font-size: 14px;
-    border-radius: 6px;
-    border: none;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    cursor: pointer;
-    transition: 0.3s;
-}
+        .sidebar nav a:hover::before,
+        .sidebar nav a.active::before {
+            opacity: 1;
+        }
 
-.navbar .date-form button:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
-}
+        /* MAIN CONTENT */
+        .main-content {
+            margin-left: 260px;
+            padding: 40px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-/* CONTAINER PRINCIPAL */
-.container {
-    max-width: 700px;
-    width: 100%;
-    padding: 20px;
-    margin-top: 30px;
-    min-height: 500px;
-}
+        /* FORM CONTAINER */
+        .form-container {
+            max-width: 700px;
+            width: 100%;
+            background: linear-gradient(135deg, #1f1f1f 0%, #141414 100%);
+            border: 1px solid rgba(248, 194, 74, 0.2);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
 
-h1 {
-    text-align: center;
-    color: #333;
-    margin: 0 0 25px 0;
-    font-weight: 700;
-    font-size: 2em;
-    text-shadow: none;
-    word-wrap: break-word;
-}
+        h1 {
+            text-align: center;
+            color: #F8C24A;
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
 
-/* FORMULÁRIO */
-form {
-    background: rgba(255, 255, 255, 0.95);
-    padding: 40px 35px;
-    border-radius: 15px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    animation: fadeInUp 0.6s ease-out;
-}
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #ccc;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        input[type="time"],
+        input[type="password"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 14px 16px;
+            margin-bottom: 20px;
+            border: 2px solid rgba(248, 194, 74, 0.2);
+            border-radius: 8px;
+            font-size: 15px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+        }
 
-label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
-    color: #555;
-    font-size: 14px;
-}
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #F8C24A;
+            outline: none;
+            background: rgba(248, 194, 74, 0.1);
+            box-shadow: 0 0 0 3px rgba(248, 194, 74, 0.1);
+        }
 
-input[type="text"],
-input[type="number"],
-input[type="date"],
-input[type="time"],
-input[type="password"],
-select,
-textarea {
-    width: 100%;
-    padding: 12px 15px;
-    margin-bottom: 20px;
-    border: 2px solid #e1e5e9;
-    border-radius: 8px;
-    font-size: 16px;
-    box-sizing: border-box;
-    transition: all 0.3s ease;
-    background: #f8f9fa;
-}
+        select option {
+            background: #1a1a1a;
+            color: #fff;
+        }
 
-input:focus,
-select:focus,
-textarea:focus {
-    border-color: #667eea;
-    outline: none;
-    background: white;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
 
-textarea {
-    resize: vertical; 
-    word-wrap: break-word;
-    white-space: pre-wrap;
-}
+        .radio-group {
+            margin-bottom: 25px;
+            display: flex;
+            gap: 20px;
+            background: rgba(248, 194, 74, 0.05);
+            padding: 14px 16px;
+            border-radius: 8px;
+            border: 2px solid rgba(248, 194, 74, 0.2);
+        }
 
-input[type="checkbox"] {
-    transform: scale(1.2);
-    margin-right: 10px;
-    vertical-align: middle;
-}
+        .radio-option {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
 
-.checkbox-container {
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    background: #f8f9fa;
-    padding: 12px 15px;
-    border-radius: 8px;
-    border: 2px solid #e1e5e9;
-}
+        .radio-option input[type="radio"] {
+            width: auto;
+            margin: 0 8px 0 0;
+            transform: scale(1.2);
+            cursor: pointer;
+            accent-color: #F8C24A;
+        }
 
-.checkbox-container label {
-    margin-bottom: 0;
-    cursor: pointer;
-}
+        .radio-option label {
+            margin: 0;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+        }
 
-/* BOTÃO PRINCIPAL DO FORM */
-button {
-    width: 100%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 15px 0;
-    font-size: 18px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-}
+        .radio-option:has(input[type="radio"]:checked) label {
+            color: #F8C24A;
+        }
 
-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-}
+        button {
+            width: 100%;
+            background: linear-gradient(135deg, #F8C24A 0%, #C69A3A 100%);
+            color: #0a0a0a;
+            padding: 16px 0;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(248, 194, 74, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
 
-button:active {
-    transform: translateY(0);
-}
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(248, 194, 74, 0.6);
+            background: linear-gradient(135deg, #FFD666 0%, #F8C24A 100%);
+        }
 
-/* RESPONSIVO */
-@media (max-width: 480px) {
-    .container {
-        padding: 10px;
-    }
-    form {
-        padding: 30px 20px;
-    }
-    h1 {
-        font-size: 2em;
-    }
-    .navbar {
-        flex-wrap: wrap;
-    }
-    .navbar .date-form {
-        margin-left: 0;
-        margin-top: 10px;
-        width: 100%;
-        justify-content: center;
-    }
-}
+        button:active {
+            transform: translateY(0);
+        }
 
-</style>
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 0;
+                overflow: hidden;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .form-container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 26px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="navbar">
-        <a href="{% url 'nomes_analistas'%}">Analistas</a>
-        <a href="{% url 'cadastrar_chamado' %}">Registrar Chamado</a>
-        <a href="{% url 'views' %}">Chamados de Hoje</a>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="logo">
+            <img src="{% static 'img/logo.png' %}" alt="Attend Services Logo">
+        </div>
+        <nav>
+            <a href="{% url 'dashboards' %}">Dashboards</a>
+            <a href="{% url 'nomes_analistas' %}">Analistas</a>
+            <a href="{% url 'cadastrar_chamado' %}" class="active">Registrar Chamado</a>
+            <a href="{% url 'todos_chamados' %}">Todos os Chamados</a>
+        </nav>
     </div>
 
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <div class="form-container">
+            <h1>Registrar Chamado</h1>
+            <form method="POST">
+                {% csrf_token %}
 
-    <div class="container">
-        <h1>Registrar Chamado</h1>
-        <form method="POST">
-            {% csrf_token %}
+                <label for="nome_analista">Nome do Analista:</label>
+                <select id="nome_analista" name="nome_analista" required>
+                    <option value="">Selecione...</option>
+                    <option value="Gean_Cavalcante">Gean Cavalcante</option>
+                    <option value="Paulo_Henrique">Paulo Henrique</option>
+                    <option value="Joao_Cezar">João Cezar</option>
+                    <option value="Ramon_Farias">Ramon Farias</option>
+                    <option value="Pedro_Alexandre">Pedro Alexandre</option>
+                    <option value="Adryson_Costa">Adryson Costa</option>
+                    <option value="Mateus_Bezerra">Mateus Bezerra</option>
+                    <option value="Guilherme_Palmiere">Guilherme Palmiere</option>
+                    <option value="Miguel_Campos">Miguel Campos</option>
+                </select>
 
-            <label for="nome_analista">Nome do Analista:</label>
-            <select id="nome_analista" name="nome_analista" required>
-                <option value="">Selecione...</option>
-                <option value="Gean_Cavalcante">Gean Cavalcante</option>
-                <option value="Paulo_Henrique">Paulo Henrique</option>
-                <option value="Joao_Cezar">João Cezar</option>
-                <option value="Ramon_Farias">Ramon Farias</option>
-                <option value="Pedro_Alexandre">Pedro Alexandre</option>mkeeAtte
-                <option value="Adryson_Costa">Adryson Costa</option>
-                <option value="Mateus_Bezerra">Mateus Bezerra</option>
-                <option value="Guilherme_Palmiere">Guilherme Palmiere</option>
-                <option value="Guilherme_Palmiere">Miguel Campos</option>
-            </select>
+                <label for="ID_chamado">ID do Chamado:</label>
+                <input type="number" id="ID_chamado" name="ID_chamado" required>
 
-            <label for="ID_chamado">ID do Chamado:</label>
-            <input type="number" id="ID_chamado" name="ID_chamado" required>
+                <label for="tipo_atividade">Tipo da Atividade:</label>
+                <select id="tipo_atividade" name="tipo_atividade" required>
+                    <option value="">Selecione...</option>
+                    <option value="Manutenção">Manutenção</option>
+                    <option value="Migração">Migração</option>
+                    <option value="Mudança de Endereço">Mudança de Endereço</option>
+                    <option value="Remanejamento">Remanejamento</option>
+                </select>
 
-            <label for="tipo_atividade">Tipo da Atividade:</label>
-            <select id="tipo_atividade" name="tipo_atividade" required>
-                <option value="">Selecione...</option>
-                <option value="Manutenção">Manutenção</option>
-                <option value="Migração">Migração</option>
-                <option value="Mudança de Endereço">Mudança de Endereço</option>
-                <option value="Remanejamento">Remanejamento</option>
-            </select>
+                <label for="tecnico">Técnico:</label>
+                <input type="text" id="tecnico" name="tecnico" maxlength="30" required>
 
-            <label for="tecnico">Técnico:</label>
-            <input type="text" id="tecnico" name="tecnico" maxlength="30" required>
+                <label for="data">Data:</label>
+                <input type="date" id="data" name="data" required>
 
-            <label for="data">Data:</label>
-            <input type="date" id="data" name="data" required>
+                <label for="inicio">Início:</label>
+                <input type="time" id="inicio" name="inicio" required>
 
-            <label for="inicio">Início:</label>
-            <input type="time" id="inicio" name="inicio" required>
+                <label for="conclusao">Conclusão:</label>
+                <input type="time" id="conclusao" name="conclusao" required>
 
-            <label for="conclusao">Conclusão:</label>
-            <input type="time" id="conclusao" name="conclusao" required>
+                <label>Status do Chamado:</label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="produtiva" name="produtiva" value="on" checked>
+                        <label for="produtiva">✓ Produtiva</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="improdutiva" name="produtiva" value="off">
+                        <label for="improdutiva">✗ Improdutiva</label>
+                    </div>
+                </div>
 
-            <div class="checkbox-container">
-                <input type="checkbox" id="produtiva" name="produtiva" checked>
-                <label for="produtiva">Produtiva</label>
-            </div>
+                <label for="senha">Senha:</label>
+                <input type="text" id="senha" name="senha" maxlength="12" required>
 
-            <label for="senha">Senha:</label>
-            <input type="text" id="senha" name="senha" maxlength="12" required>
+                <label for="observacao">Observação:</label>
+                <textarea id="observacao" name="observacao" rows="5" placeholder="Digite observações aqui..."></textarea>
 
-            <label for="observacao">Observação:</label>
-            <textarea id="observacao" name="observacao" rows="5" wrap="hard" placeholder="Digite observações aqui..."></textarea>
-
-            <button type="submit" class="submit-button">Enviar</button>
-        </form>
+                <button type="submit" class="submit-button">Enviar</button>
+            </form>
+        </div>
     </div>
-</body>
-
-
 
     <script>
         let button = document.getElementsByClassName("submit-button")[0]   
-        button.addEventListener("click", function(){
+        button.addEventListener("click", function(e){
+            e.preventDefault();
             question = confirm("Deseja registrar esse chamado?")
 
             if (question){
                 alert("Chamado registrado!")
-            } else{
-                location.reload()
+                button.closest('form').submit();
             }
-            
-            
         })
-
-    
-
-
     </script>
 </body>
 </html>
