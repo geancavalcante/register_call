@@ -20,7 +20,7 @@ class Chamados(models.Model):
     inicio = models.TimeField()
     conclusao = models.TimeField()
     total_horas = models.TimeField()
-    status = models.CharField(max_length=20, default="opa")
+    status = models.CharField(max_length=20, default="opaaa")
     produtiva = models.BooleanField(default=True)
     senha = models.CharField(max_length=12)
     observacao = models.TextField()
