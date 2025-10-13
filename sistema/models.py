@@ -2,6 +2,13 @@ from django.db import models
 from datetime import datetime
 from django.contrib.auth.models import User
 
+class Chamados_planejados(models.Model):
+    chamados_hoje = models.IntegerField()
+    data = models.DateField(default=datetime.today)
+
+    def __str__(self):
+        return f"{self.data}"
+
 
 class Chamados(models.Model):
 
@@ -13,6 +20,7 @@ class Chamados(models.Model):
     inicio = models.TimeField()
     conclusao = models.TimeField()
     total_horas = models.TimeField()
+    status = models.CharField(max_length=20, default="opaaa")
     produtiva = models.BooleanField(default=True)
     senha = models.CharField(max_length=12)
     observacao = models.TextField()
@@ -22,4 +30,3 @@ class Chamados(models.Model):
         return f"{self.nome_analista} || {self.data}  || {self.inicio}" 
 
 
-    

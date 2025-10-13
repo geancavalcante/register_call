@@ -1,0 +1,346 @@
+/* ==================== ATTEND SERVICES THEME ==================== */
+/* Inspirado em https://www.attend.services/ */
+/* Cores principais: #F8C24A (amarelo), #1a1a2e (dark blue), #16213e (dark purple) */
+
+/* Reset */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: url('../img/background 2.jpg') center center/cover no-repeat fixed;
+    position: relative;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #e4e4e7;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(26, 26, 46, 0.85) 0%, rgba(22, 33, 62, 0.85) 100%);
+    z-index: -1;
+}
+
+/* ==================== NAVBAR ==================== */
+.navbar {
+    width: 100%;
+    background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+    padding: 20px 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 20px rgba(248, 194, 74, 0.15);
+    border-bottom: 2px solid rgba(248, 194, 74, 0.2);
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+}
+
+.navbar a {
+    color: #e4e4e7;
+    margin: 0 20px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    padding: 10px 24px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    letter-spacing: 0.5px;
+    position: relative;
+}
+
+.navbar a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 2px;
+    background: #F8C24A;
+    transition: width 0.3s ease;
+}
+
+.navbar a:hover {
+    color: #F8C24A;
+    background: rgba(248, 194, 74, 0.1);
+}
+
+.navbar a:hover::after {
+    width: 80%;
+}
+
+/* ==================== HEADERS ==================== */
+.header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.header h1 {
+    font-size: 2.8rem;
+    color: #F8C24A;
+    margin-bottom: 15px;
+    font-weight: 700;
+    text-shadow: 0 2px 10px rgba(248, 194, 74, 0.3);
+}
+
+.quantity, .stat-info {
+    font-size: 1.2rem;
+    color: #a1a1aa;
+    font-weight: 500;
+}
+
+.quantity strong, .stat-info strong {
+    color: #F8C24A;
+    font-weight: 700;
+}
+
+/* ==================== CARDS ==================== */
+.card {
+    background: linear-gradient(135deg, #1e1e30 0%, #252538 100%);
+    padding: 28px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    border-left: 4px solid #F8C24A;
+    border-top: 1px solid rgba(248, 194, 74, 0.1);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    position: relative;
+    overflow: hidden;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100px;
+    height: 100px;
+    background: radial-gradient(circle, rgba(248, 194, 74, 0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    transform: translate(30%, -30%);
+}
+
+.card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 15px 40px rgba(248, 194, 74, 0.2), 0 0 0 1px rgba(248, 194, 74, 0.3);
+    border-left-width: 6px;
+}
+
+p.label {
+    font-size: 1rem;
+    color: #d4d4d8;
+    margin-bottom: 14px;
+    line-height: 1.6;
+}
+
+p.label strong {
+    color: #F8C24A;
+    font-weight: 700;
+    margin-right: 8px;
+    letter-spacing: 0.3px;
+}
+
+/* ==================== DASHBOARD STAT CARDS ==================== */
+.stat-card {
+    background: linear-gradient(135deg, #1e1e30 0%, #252538 100%);
+    padding: 30px;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    color: white;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(248, 194, 74, 0.15);
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, #F8C24A 0%, #f4a261 100%);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+}
+
+.stat-card::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(248, 194, 74, 0.1) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.stat-card:hover::before {
+    transform: scaleX(1);
+}
+
+.stat-card:hover::after {
+    opacity: 1;
+}
+
+.stat-card:hover {
+    transform: translateY(-10px) scale(1.03);
+    box-shadow: 0 20px 50px rgba(248, 194, 74, 0.3);
+    border-color: rgba(248, 194, 74, 0.4);
+}
+
+.stat-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    filter: drop-shadow(0 4px 8px rgba(248, 194, 74, 0.3));
+}
+
+.stat-value {
+    font-size: 3rem;
+    font-weight: 800;
+    margin: 12px 0;
+    background: linear-gradient(135deg, #F8C24A 0%, #ffd166 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.stat-label {
+    font-size: 0.95rem;
+    opacity: 0.85;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: #a1a1aa;
+}
+
+/* ==================== CHART CONTAINERS ==================== */
+.chart-container {
+    background: linear-gradient(135deg, #1e1e30 0%, #252538 100%);
+    padding: 35px;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    margin-bottom: 30px;
+    border: 1px solid rgba(248, 194, 74, 0.15);
+    border-left: 4px solid #F8C24A;
+    transition: all 0.3s ease;
+}
+
+.chart-container:hover {
+    box-shadow: 0 15px 40px rgba(248, 194, 74, 0.2);
+    border-left-width: 6px;
+}
+
+.chart-title {
+    font-size: 1.6rem;
+    color: #F8C24A;
+    margin-bottom: 25px;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 10px rgba(248, 194, 74, 0.2);
+}
+
+/* ==================== FORMS ==================== */
+input[type="text"],
+input[type="number"],
+input[type="date"],
+input[type="time"],
+input[type="password"],
+input[type="email"],
+select,
+textarea {
+    width: 100%;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    border: 2px solid rgba(248, 194, 74, 0.3);
+    border-radius: 10px;
+    font-size: 15px;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+    background: rgba(30, 30, 48, 0.6);
+    color: #e4e4e7;
+    font-family: 'Inter', sans-serif;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: #F8C24A;
+    outline: none;
+    background: rgba(30, 30, 48, 0.9);
+    box-shadow: 0 0 0 4px rgba(248, 194, 74, 0.1);
+}
+
+button, .btn {
+    padding: 12px 28px;
+    font-size: 16px;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(135deg, #F8C24A 0%, #f4a261 100%);
+    color: #0f0f23;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 15px rgba(248, 194, 74, 0.3);
+}
+
+button:hover, .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(248, 194, 74, 0.5);
+    background: linear-gradient(135deg, #ffd166 0%, #F8C24A 100%);
+}
+
+button:active, .btn:active {
+    transform: translateY(-1px);
+}
+
+/* ==================== LINKS ==================== */
+a {
+    color: #F8C24A;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #ffd166;
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 768px) {
+    .header h1 {
+        font-size: 2.2rem;
+    }
+    
+    .navbar {
+        padding: 15px 20px;
+    }
+    
+    .navbar a {
+        margin: 5px 10px;
+        font-size: 14px;
+    }
+    
+    .stat-value {
+        font-size: 2.2rem;
+    }
+}
+

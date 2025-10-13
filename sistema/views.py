@@ -5,6 +5,8 @@ from django.contrib.auth.models import User
 from datetime import datetime, date, timedelta
 from django.http import HttpResponse
 from django.utils import timezone
+from datetime import datetime, date
+
 
 
 def dashboards(request):
@@ -186,12 +188,4 @@ class RegistrarChamado(View):
             )
 
 
-def exportar_relatorio_pdf(request):
-    """
-    Função simples para exportar relatório em PDF
-    """
-    # Por enquanto, retorna uma resposta simples
-    # Você pode implementar a geração de PDF aqui se necessário
-    response = HttpResponse("Função de exportar PDF - Em desenvolvimento", content_type='text/plain')
-    return response
 
