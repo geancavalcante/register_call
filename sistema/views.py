@@ -170,8 +170,7 @@ class RegistrarChamado(View):
         self.total_horas = str(conclusao - inicio)
     
 
-    def _salvador_chamado(self):
-            print(self.tipo_atividade)
+    def _salvador_inicio_chamado(self):
 
             Chamados.objects.create(
                 nome_analista = User.objects.get(username=self.nome_analista),
@@ -180,12 +179,18 @@ class RegistrarChamado(View):
                 nome_tecnico = self.nome_tecnico,
                 data = self.data,
                 inicio =  self.inicio,
-                conclusao = self.conclusao,
-                total_horas = self.total_horas,
-                produtiva = self.situacao,
-                senha = self.senha,
-                observacao = self.observacao,
             )
+
+    def _salvar_conclusao_chamado(self):
+
+        Chamados.objects.create(
+        conclusao = self.conclusao,
+        total_horas = self.total_horas,
+        produtiva = self.situacao,
+        senha = self.senha,
+        observacao = self.observacao,)
+
+        #filtrar o chamado que ta la e mudar os esses campos, 
 
 
 
