@@ -114,6 +114,86 @@
             border-radius: 15px;
             padding: 40px;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .form-subtitle {
+            color: #999;
+            font-size: 16px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        /* RESUMO CONTAINER */
+        .resumo-container {
+            background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
+            border: 1px solid rgba(248, 194, 74, 0.3);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .resumo-container h3 {
+            color: #F8C24A;
+            font-size: 18px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .resumo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .resumo-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background: rgba(248, 194, 74, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(248, 194, 74, 0.2);
+        }
+
+        .resumo-label {
+            color: #ccc;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .resumo-value {
+            color: #F8C24A;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        /* FORM ACTIONS */
+        .form-actions {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .back-button {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #2a2a2a;
+            color: #F8C24A;
+            border: 1px solid #F8C24A;
+            font-size: 16px;
+        }
+
+        .back-button:hover {
+            background: #F8C24A;
+            color: #0a0a0a;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(248, 194, 74, 0.3);
         }
 
         h1 {
@@ -274,11 +354,12 @@
 
     <!-- MAIN CONTENT -->
     <div class="main-content">
-        <div class="form-container">
-            <h1>Registrar Chamado</h1>
-            <form method="POST">
-                {% csrf_token %}
-
+        <!-- FORMULÁRIO 1: INÍCIO DO CHAMADO -->
+        <div class="form-container" id="formInicio">
+            <h1>📝 Iniciar Chamado</h1>
+            <p class="form-subtitle">Preencha os dados iniciais do chamado</p>
+            
+            <form id="formInicioChamado">
                 <label for="nome_analista">Nome do Analista:</label>
                 <select id="nome_analista" name="nome_analista" required>
                     <option value="">Selecione...</option>
@@ -314,6 +395,57 @@
                 <label for="inicio">Início:</label>
                 <input type="time" id="inicio" name="inicio" required>
 
+                <button type="submit" class="submit-button">📋 Continuar para Finalização</button>
+            </form>
+        </div>
+
+        <!-- FORMULÁRIO 2: FINALIZAÇÃO DO CHAMADO -->
+        <div class="form-container" id="formFinalizacao" style="display: none;">
+            <h1>✅ Finalizar Chamado</h1>
+            <p class="form-subtitle">Complete os dados finais do chamado</p>
+            
+            <!-- RESUMO DOS DADOS INICIAIS -->
+            <div class="resumo-container">
+                <h3>📋 Resumo do Chamado</h3>
+                <div class="resumo-grid">
+                    <div class="resumo-item">
+                        <span class="resumo-label">Analista:</span>
+                        <span class="resumo-value" id="resumoAnalista">-</span>
+                    </div>
+                    <div class="resumo-item">
+                        <span class="resumo-label">ID:</span>
+                        <span class="resumo-value" id="resumoId">-</span>
+                    </div>
+                    <div class="resumo-item">
+                        <span class="resumo-label">Tipo:</span>
+                        <span class="resumo-value" id="resumoTipo">-</span>
+                    </div>
+                    <div class="resumo-item">
+                        <span class="resumo-label">Técnico:</span>
+                        <span class="resumo-value" id="resumoTecnico">-</span>
+                    </div>
+                    <div class="resumo-item">
+                        <span class="resumo-label">Data:</span>
+                        <span class="resumo-value" id="resumoData">-</span>
+                    </div>
+                    <div class="resumo-item">
+                        <span class="resumo-label">Início:</span>
+                        <span class="resumo-value" id="resumoInicio">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <form id="formFinalizarChamado" method="POST">
+                {% csrf_token %}
+                
+                <!-- Campos hidden para enviar os dados do primeiro formulário -->
+                <input type="hidden" id="hidden_nome_analista" name="nome_analista">
+                <input type="hidden" id="hidden_ID_chamado" name="ID_chamado">
+                <input type="hidden" id="hidden_tipo_atividade" name="tipo_atividade">
+                <input type="hidden" id="hidden_tecnico" name="tecnico">
+                <input type="hidden" id="hidden_data" name="data">
+                <input type="hidden" id="hidden_inicio" name="inicio">
+
                 <label for="conclusao">Conclusão:</label>
                 <input type="time" id="conclusao" name="conclusao" required>
 
@@ -335,22 +467,137 @@
                 <label for="observacao">Observação:</label>
                 <textarea id="observacao" name="observacao" rows="5" placeholder="Digite observações aqui..."></textarea>
 
-                <button type="submit" class="submit-button">Enviar</button>
+                <div class="form-actions">
+                    <button type="button" class="back-button" id="voltarInicio">⬅️ Voltar</button>
+                    <button type="submit" class="submit-button">✅ Finalizar Chamado</button>
+                </div>
             </form>
         </div>
     </div>
 
     <script>
-        let button = document.getElementsByClassName("submit-button")[0]   
-        button.addEventListener("click", function(e){
-            e.preventDefault();
-            question = confirm("Deseja registrar esse chamado?")
+        // VARIÁVEIS GLOBAIS
+        let dadosInicio = {};
 
-            if (question){
-                alert("Chamado registrado!")
-                button.closest('form').submit();
+        // FUNÇÃO PARA IR PARA O SEGUNDO FORMULÁRIO
+        function irParaFinalizacao() {
+            // Coletar dados do primeiro formulário
+            dadosInicio = {
+                nome_analista: document.getElementById('nome_analista').value,
+                ID_chamado: document.getElementById('ID_chamado').value,
+                tipo_atividade: document.getElementById('tipo_atividade').value,
+                tecnico: document.getElementById('tecnico').value,
+                data: document.getElementById('data').value,
+                inicio: document.getElementById('inicio').value
+            };
+
+            // Validar se todos os campos estão preenchidos
+            for (let campo in dadosInicio) {
+                if (!dadosInicio[campo]) {
+                    alert('Por favor, preencha todos os campos do formulário inicial.');
+                    return;
+                }
             }
-        })
+
+            // Preencher o resumo
+            document.getElementById('resumoAnalista').textContent = dadosInicio.nome_analista.replace('_', ' ');
+            document.getElementById('resumoId').textContent = dadosInicio.ID_chamado;
+            document.getElementById('resumoTipo').textContent = dadosInicio.tipo_atividade;
+            document.getElementById('resumoTecnico').textContent = dadosInicio.tecnico;
+            document.getElementById('resumoData').textContent = formatarData(dadosInicio.data);
+            document.getElementById('resumoInicio').textContent = dadosInicio.inicio;
+
+            // Preencher campos hidden
+            document.getElementById('hidden_nome_analista').value = dadosInicio.nome_analista;
+            document.getElementById('hidden_ID_chamado').value = dadosInicio.ID_chamado;
+            document.getElementById('hidden_tipo_atividade').value = dadosInicio.tipo_atividade;
+            document.getElementById('hidden_tecnico').value = dadosInicio.tecnico;
+            document.getElementById('hidden_data').value = dadosInicio.data;
+            document.getElementById('hidden_inicio').value = dadosInicio.inicio;
+
+            // Esconder primeiro formulário e mostrar segundo
+            document.getElementById('formInicio').style.display = 'none';
+            document.getElementById('formFinalizacao').style.display = 'block';
+
+            // Scroll para o topo
+            window.scrollTo(0, 0);
+        }
+
+        // FUNÇÃO PARA VOLTAR AO PRIMEIRO FORMULÁRIO
+        function voltarParaInicio() {
+            document.getElementById('formFinalizacao').style.display = 'none';
+            document.getElementById('formInicio').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        // FUNÇÃO PARA FORMATAR DATA
+        function formatarData(data) {
+            const [ano, mes, dia] = data.split('-');
+            return `${dia}/${mes}/${ano}`;
+        }
+
+        // FUNÇÃO PARA CALCULAR TEMPO TOTAL
+        function calcularTempoTotal(inicio, conclusao) {
+            const [horaInicio, minutoInicio] = inicio.split(':').map(Number);
+            const [horaConclusao, minutoConclusao] = conclusao.split(':').map(Number);
+            
+            const inicioMinutos = horaInicio * 60 + minutoInicio;
+            const conclusaoMinutos = horaConclusao * 60 + minutoConclusao;
+            
+            let diferencaMinutos = conclusaoMinutos - inicioMinutos;
+            
+            // Se a conclusão for no dia seguinte
+            if (diferencaMinutos < 0) {
+                diferencaMinutos += 24 * 60; // Adicionar 24 horas
+            }
+            
+            const horas = Math.floor(diferencaMinutos / 60);
+            const minutos = diferencaMinutos % 60;
+            
+            return `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}:00`;
+        }
+
+        // EVENT LISTENERS
+        document.addEventListener('DOMContentLoaded', function() {
+            // Formulário de início
+            document.getElementById('formInicioChamado').addEventListener('submit', function(e) {
+                e.preventDefault();
+                irParaFinalizacao();
+            });
+
+            // Botão voltar
+            document.getElementById('voltarInicio').addEventListener('click', function() {
+                voltarParaInicio();
+            });
+
+            // Formulário de finalização
+            document.getElementById('formFinalizarChamado').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Confirmação final
+                const confirmacao = confirm("Deseja finalizar e registrar este chamado?");
+                if (confirmacao) {
+                    // Calcular tempo total automaticamente
+                    const inicio = dadosInicio.inicio;
+                    const conclusao = document.getElementById('conclusao').value;
+                    const tempoTotal = calcularTempoTotal(inicio, conclusao);
+                    
+                    // Adicionar campo hidden para tempo total
+                    const tempoTotalInput = document.createElement('input');
+                    tempoTotalInput.type = 'hidden';
+                    tempoTotalInput.name = 'total_horas';
+                    tempoTotalInput.value = tempoTotal;
+                    this.appendChild(tempoTotalInput);
+                    
+                    // Enviar formulário
+                    this.submit();
+                }
+            });
+
+            // Definir data atual como padrão
+            const hoje = new Date().toISOString().split('T')[0];
+            document.getElementById('data').value = hoje;
+        });
     </script>
 </body>
 </html>

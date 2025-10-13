@@ -138,6 +138,13 @@
             border-color: rgba(248, 194, 74, 0.4);
         }
 
+        .stat-card.clickable:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(248, 194, 74, 0.2);
+            border-color: rgba(248, 194, 74, 0.6);
+            background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
+        }
+
         .stat-label {
             color: #999;
             font-size: 14px;
@@ -292,6 +299,155 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
+        /* TOAST NOTIFICATIONS */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            pointer-events: none;
+        }
+
+        .toast {
+            min-width: 300px;
+            max-width: 380px;
+            padding: 16px 20px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #1f1f1f 0%, #141414 100%);
+            border: 1px solid rgba(248, 194, 74, 0.2);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            pointer-events: all;
+            cursor: pointer;
+            animation: slideInRight 0.3s ease-out;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+
+        .toast.hiding {
+            animation: slideOutRight 0.3s ease-in forwards;
+        }
+
+        .toast-icon {
+            font-size: 20px;
+            line-height: 1;
+            flex-shrink: 0;
+            opacity: 0.9;
+        }
+
+        .toast-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .toast-title {
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1.3;
+            margin: 0;
+            color: #F8C24A;
+        }
+
+        .toast-message {
+            font-size: 13px;
+            line-height: 1.4;
+            color: #ccc;
+            margin: 0;
+        }
+
+        .toast-close {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #999;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            opacity: 0;
+        }
+
+        .toast:hover .toast-close {
+            opacity: 1;
+        }
+
+        .toast-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #F8C24A;
+            transform: scale(1.1);
+        }
+
+
+        /* Toast Types - Dark Theme */
+        .toast.warning {
+            border-left: 3px solid #ffa500;
+        }
+
+        .toast.warning .toast-icon {
+            color: #ffa500;
+        }
+
+        .toast.danger {
+            border-left: 3px solid #ff4444;
+        }
+
+        .toast.danger .toast-icon {
+            color: #ff4444;
+        }
+
+        .toast.info {
+            border-left: 3px solid #4ade80;
+        }
+
+        .toast.info .toast-icon {
+            color: #4ade80;
+        }
+
+        .toast.success {
+            border-left: 3px solid #F8C24A;
+        }
+
+        .toast.success .toast-icon {
+            color: #F8C24A;
+        }
+
         /* RESPONSIVE */
         @media (max-width: 1200px) {
             .filters-grid {
@@ -355,6 +511,18 @@
             .page-header h1 {
                 font-size: 28px;
             }
+
+            .toast-container {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+            }
+
+            .toast {
+                min-width: auto;
+                width: 100%;
+                padding: 14px 16px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -365,6 +533,9 @@
     </style>
 </head>
 <body>
+    <!-- TOAST CONTAINER -->
+    <div class="toast-container" id="toastContainer"></div>
+
     <!-- SIDEBAR -->
     <div class="sidebar">
         <div class="logo">
@@ -384,9 +555,6 @@
         <div class="page-header">
             <h1>Dashboards Analíticos</h1>
             <p>Visão geral do desempenho e estatísticas dos chamados</p>
-            <p style="color: #F8C24A; font-size: 14px; margin-top: 10px;">
-                DEBUG BACKEND: {{ chamados|length }} chamado(s) recebido(s) do Django
-            </p>
         </div>
 
         <!-- FILTROS -->
@@ -398,6 +566,7 @@
                 <div class="filter-group">
                     <label class="filter-label">📅 Período</label>
                     <select id="periodFilter" class="filter-select">
+                        <option value="0">Hoje</option>
                         <option value="7">Últimos 7 dias</option>
                         <option value="30" selected>Últimos 30 dias</option>
                         <option value="90">Últimos 3 meses</option>
@@ -456,7 +625,7 @@
 
                 <!-- Botões de Ação -->
                 <div class="filter-actions">
-                    <button id="applyFilters" class="filter-btn primary">🔍 Aplicar Filtros</button>
+                    <button id="applyFilters" class="filter-btn primary">🔍 Forçar Aplicar</button>
                     <button id="clearFilters" class="filter-btn secondary">🔄 Limpar Filtros</button>
                 </div>
             </div>
@@ -464,7 +633,7 @@
 
         <!-- STATS CARDS -->
         <div class="stats-grid">
-            <div class="stat-card">
+            <div class="stat-card clickable" id="totalChamadosCard" style="cursor: pointer;" title="Clique para ver todos os chamados com os filtros aplicados">
                 <div class="stat-label">Total de Chamados</div>
                 <div class="stat-value" id="totalChamados">0</div>
                 <div class="stat-desc">Registrados no sistema</div>
@@ -474,7 +643,7 @@
                 <div class="stat-value" id="tempoMedio">0h 0m</div>
                 <div class="stat-desc">Por chamado</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card clickable" id="taxaProdutividadeCard" style="cursor: pointer;" title="Clique para ver todos os chamados produtivos">
                 <div class="stat-label">Taxa de Produtividade</div>
                 <div class="stat-value" id="taxaProdutividade">0%</div>
                 <div class="stat-desc">Chamados produtivos</div>
@@ -607,6 +776,19 @@
             activityType: 'all',
             productivity: 'all'
         };
+        
+        // Debounce para evitar aplicações muito frequentes
+        let filterTimeout = null;
+        
+        // Função com debounce para aplicar filtros automaticamente
+        function applyFiltersDebounced() {
+            if (filterTimeout) {
+                clearTimeout(filterTimeout);
+            }
+            filterTimeout = setTimeout(() => {
+                applyFilters(false); // Não mostrar toast em aplicações automáticas
+            }, 300); // 300ms de delay
+        }
 
         // Dados do Django
         const chamados = [
@@ -621,8 +803,69 @@
             {% endfor %}
         ];
 
+        // Função para obter mapeamento dos analistas via AJAX
+        let analistasMapping = {};
+        
+        async function carregarMapeamentoAnalistas() {
+            try {
+                const response = await fetch('/analistas/');
+                const text = await response.text();
+                
+                // Extrair os IDs dos analistas do HTML da página
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(text, 'text/html');
+                const links = doc.querySelectorAll('a[href*="/ver_analista/"]');
+                
+                analistasMapping = {};
+                links.forEach(link => {
+                    const href = link.getAttribute('href');
+                    const match = href.match(/\/ver_analista\/(\d+)\//);
+                    if (match) {
+                        const id = match[1];
+                        const nomeElement = link.querySelector('.analista-name');
+                        if (nomeElement) {
+                            const nome = nomeElement.textContent.trim();
+                            analistasMapping[nome] = parseInt(id);
+                        }
+                    }
+                });
+                
+                console.log('🗺️ Mapeamento carregado via AJAX:', analistasMapping);
+            } catch (error) {
+                console.error('❌ Erro ao carregar mapeamento:', error);
+                // Fallback para mapeamento básico
+                analistasMapping = {
+                    'Paulo Henrique': 1,
+                    'João Cezar': 2,
+                    'Ramon Farias': 3,
+                    'Pedro Alexandre': 4,
+                    'Adryson Costa': 5,
+                    'Mateus Bezerra': 6,
+                    'Guilherme Palmiere': 7,
+                    'Miguel Campos': 8,
+                    'Gean Cavalcante': 9
+                };
+            }
+        }
+
         console.log('📊 Dados carregados:', chamados);
         console.log('📈 Quantidade de chamados:', chamados.length);
+
+        // Função para obter nome formatado do analista
+        function getNomeAnalista(analystKey) {
+            const nomesAnalistas = {
+                'Paulo_Henrique': 'Paulo Henrique',
+                'Joao_Cezar': 'João Cezar',
+                'Ramon_Farias': 'Ramon Farias',
+                'Pedro_Alexandre': 'Pedro Alexandre',
+                'Adryson_Costa': 'Adryson Costa',
+                'Mateus_Bezerra': 'Mateus Bezerra',
+                'Guilherme_Palmiere': 'Guilherme Palmiere',
+                'Miguel_Campos': 'Miguel Campos',
+                'Gean_Cavalcante': 'Gean Cavalcante'
+            };
+            return nomesAnalistas[analystKey] || analystKey;
+        }
 
         // Função para converter tempo HH:MM:SS para minutos
         function timeToMinutes(timeStr) {
@@ -645,18 +888,32 @@
         }
 
         // FUNÇÕES DE FILTRO
-        function applyFilters() {
+        function applyFilters(showToast = false) {
             console.log('🔍 Aplicando filtros...', currentFilters);
             
             filteredChamados = chamados.filter(chamado => {
                 // Filtro por período
                 if (currentFilters.period !== 'custom') {
                     const days = parseInt(currentFilters.period);
-                    const limitDate = new Date();
-                    limitDate.setDate(limitDate.getDate() - days);
                     const chamadoDate = new Date(chamado.data);
                     
-                    if (chamadoDate < limitDate) return false;
+                    if (days === 0) {
+                        // Filtro "Hoje" - compara apenas a data (ignora hora e timezone)
+                        const hoje = new Date();
+                        const hojeSemHora = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+                        
+                        // Parsear data do chamado corretamente (formato: YYYY-MM-DD)
+                        const [ano, mes, dia] = chamado.data.split('-').map(Number);
+                        const chamadoSemHora = new Date(ano, mes - 1, dia);
+                        
+                        if (chamadoSemHora.getTime() !== hojeSemHora.getTime()) return false;
+                    } else {
+                        // Filtros de período (7, 30, 90 dias)
+                        const limitDate = new Date();
+                        limitDate.setDate(limitDate.getDate() - days);
+                        
+                        if (chamadoDate < limitDate) return false;
+                    }
                 } else if (currentFilters.startDate && currentFilters.endDate) {
                     const startDate = new Date(currentFilters.startDate);
                     const endDate = new Date(currentFilters.endDate);
@@ -687,6 +944,14 @@
             console.log('📊 Chamados filtrados:', filteredChamados.length);
             updateAllCharts();
             showSmartAlerts();
+            
+            // Toast de sucesso ao aplicar filtros (apenas quando solicitado)
+            if (showToast) {
+                const mensagemToast = currentFilters.analysts !== 'all' 
+                    ? `${filteredChamados.length} chamado(s) encontrado(s) para ${getNomeAnalista(currentFilters.analysts)}`
+                    : `${filteredChamados.length} chamado(s) encontrado(s)`;
+                showToast('success', '🔍 Filtros Aplicados', mensagemToast);
+            }
         }
 
         function clearFilters() {
@@ -714,6 +979,9 @@
             // Aplicar filtros limpos
             filteredChamados = chamados;
             updateAllCharts();
+            
+            // Toast de sucesso ao limpar filtros
+            showToast('info', '🔄 Filtros Limpos', 'Mostrando todos os chamados');
         }
 
         function updateAllCharts() {
@@ -734,11 +1002,21 @@
 
         // ALERTAS INTELIGENTES
         function showSmartAlerts() {
+            // SEMPRE usar os dados filtrados, mesmo se for 0
             const totalChamados = filteredChamados.length;
             const chamadosProdutivos = filteredChamados.filter(c => c.produtiva).length;
             const taxaProdutividade = totalChamados > 0 ? (chamadosProdutivos / totalChamados) * 100 : 0;
             
             let alertas = [];
+
+            // Alerta especial quando não há chamados
+            if (totalChamados === 0) {
+                alertas.push({
+                    tipo: 'info',
+                    titulo: '📭 Nenhum Chamado Encontrado',
+                    mensagem: `Não há chamados registrados para os filtros selecionados.`
+                });
+            }
 
             // Alerta de produtividade baixa
             if (taxaProdutividade < 80 && totalChamados > 0) {
@@ -750,7 +1028,7 @@
             }
 
             // Alerta de poucos chamados
-            if (totalChamados < 5 && currentFilters.period >= 7) {
+            if (totalChamados < 5 && totalChamados > 0 && currentFilters.period >= 7) {
                 alertas.push({
                     tipo: 'info',
                     titulo: '📊 Poucos Chamados',
@@ -775,58 +1053,216 @@
         }
 
         function displayAlerts(alertas) {
-            // Remover alertas existentes
-            const existingAlerts = document.querySelectorAll('.alert');
-            existingAlerts.forEach(alert => alert.remove());
-
             if (alertas.length === 0) return;
 
-            // Criar container de alertas
-            const alertsContainer = document.createElement('div');
-            alertsContainer.className = 'alerts-container';
-            alertsContainer.style.cssText = `
-                margin-bottom: 20px;
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
-            `;
-
-            alertas.forEach(alerta => {
-                const alertDiv = document.createElement('div');
-                alertDiv.className = `alert alert-${alerta.tipo}`;
-                alertDiv.style.cssText = `
-                    padding: 15px;
-                    border-radius: 8px;
-                    border-left: 4px solid;
-                    background: rgba(0, 0, 0, 0.3);
-                    color: #fff;
-                    font-weight: 500;
-                `;
-
-                if (alerta.tipo === 'warning') {
-                    alertDiv.style.borderLeftColor = '#ffa500';
-                } else if (alerta.tipo === 'danger') {
-                    alertDiv.style.borderLeftColor = '#ff4444';
-                } else if (alerta.tipo === 'info') {
-                    alertDiv.style.borderLeftColor = '#4ade80';
-                }
-
-                alertDiv.innerHTML = `
-                    <strong>${alerta.titulo}</strong><br>
-                    ${alerta.mensagem}
-                `;
-
-                alertsContainer.appendChild(alertDiv);
+            const toastContainer = document.getElementById('toastContainer');
+            
+            alertas.forEach((alerta, index) => {
+                // Delay para mostrar toasts sequencialmente
+                setTimeout(() => {
+                    showToast(alerta.tipo, alerta.titulo, alerta.mensagem);
+                }, index * 200); // 200ms de delay entre cada toast
             });
+        }
 
-            // Inserir alertas após os filtros
-            const filtersSection = document.querySelector('.filters-section');
-            filtersSection.insertAdjacentElement('afterend', alertsContainer);
+        // Função para criar e mostrar um toast
+        function showToast(tipo, titulo, mensagem) {
+            const toastContainer = document.getElementById('toastContainer');
+            
+            // Ícones por tipo
+            const icones = {
+                warning: '⚠️',
+                danger: '⏰',
+                info: '📊',
+                success: '✅'
+            };
+            
+            const toastDiv = document.createElement('div');
+            toastDiv.className = `toast ${tipo}`;
+            toastDiv.innerHTML = `
+                <div class="toast-icon">${icones[tipo] || '📌'}</div>
+                <div class="toast-content">
+                    <div class="toast-title">${titulo}</div>
+                    <div class="toast-message">${mensagem}</div>
+                </div>
+                <button class="toast-close" onclick="removeToast(this)">✕</button>
+            `;
+            
+            toastContainer.appendChild(toastDiv);
+            
+            // Auto-remover após 4 segundos
+            setTimeout(() => {
+                removeToast(toastDiv);
+            }, 4000);
+            
+            // Remover ao clicar no toast
+            toastDiv.addEventListener('click', function(e) {
+                if (!e.target.classList.contains('toast-close')) {
+                    removeToast(this);
+                }
+            });
+        }
+
+        // Função para remover um toast
+        function removeToast(element) {
+            const toast = element.classList && element.classList.contains('toast') ? element : element.parentElement.parentElement;
+            
+            if (toast && toast.classList.contains('toast')) {
+                toast.classList.add('hiding');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300); // Tempo da animação de saída
+            }
+        }
+
+        // Função para criar URL com filtros aplicados
+        function criarUrlComFiltros() {
+            const params = new URLSearchParams();
+            
+            // Filtro de período - Mapear valores do dashboard para valores da página todos_chamados
+            if (currentFilters.period === 'custom' && currentFilters.startDate && currentFilters.endDate) {
+                params.set('startDate', currentFilters.startDate);
+                params.set('endDate', currentFilters.endDate);
+            } else if (currentFilters.period !== '30') { // 30 é o padrão
+                // Mapear valores do dashboard para valores esperados pela página todos_chamados
+                const periodoMapping = {
+                    '0': 'today',    // Dashboard usa '0' para hoje, todos_chamados espera 'today'
+                    '7': '7',        // Mesmo valor
+                    '90': '90'       // Mesmo valor
+                };
+                const periodoValue = periodoMapping[currentFilters.period] || currentFilters.period;
+                params.set('period', periodoValue);
+            }
+            
+            // Nota: Os filtros de analista, tipo de atividade e produtividade são aplicados via JavaScript
+            // na página todos_chamados, não via parâmetros URL do backend
+            // Por isso não os incluímos nos parâmetros da URL
+            
+            const queryString = params.toString();
+            const baseUrl = "{% url 'todos_chamados' %}";
+            
+            return queryString ? `${baseUrl}?${queryString}` : baseUrl;
+        }
+
+        // Função para redirecionar para todos os chamados com filtros
+        function irParaTodosChamados() {
+            const url = criarUrlComFiltros();
+            console.log('🔗 Redirecionando para todos os chamados com filtros:', url);
+            
+            // Toast informativo
+            const filtrosBackend = [];
+            const filtrosFrontend = [];
+            
+            // Filtros que serão aplicados pelo backend (via URL)
+            if (currentFilters.period !== '30') {
+                const periodos = {
+                    '0': 'Hoje',
+                    '7': 'Últimos 7 dias',
+                    '90': 'Últimos 3 meses',
+                    'custom': 'Período personalizado'
+                };
+                filtrosBackend.push(`Período: ${periodos[currentFilters.period] || 'Personalizado'}`);
+            }
+            
+            // Filtros que serão aplicados pelo frontend (JavaScript)
+            if (currentFilters.analysts !== 'all') {
+                filtrosFrontend.push(`Analista: ${getNomeAnalista(currentFilters.analysts)}`);
+            }
+            if (currentFilters.activityType !== 'all') {
+                filtrosFrontend.push(`Tipo: ${currentFilters.activityType}`);
+            }
+            if (currentFilters.productivity !== 'all') {
+                filtrosFrontend.push(`Produtividade: ${currentFilters.productivity === 'true' ? 'Produtivos' : 'Não-produtivos'}`);
+            }
+            
+            let mensagem = '';
+            if (filtrosBackend.length > 0 && filtrosFrontend.length > 0) {
+                mensagem = `Filtros aplicados: ${filtrosBackend.join(', ')} + ${filtrosFrontend.join(', ')}`;
+            } else if (filtrosBackend.length > 0) {
+                mensagem = `Filtros aplicados: ${filtrosBackend.join(', ')}`;
+            } else if (filtrosFrontend.length > 0) {
+                mensagem = `Filtros aplicados: ${filtrosFrontend.join(', ')}`;
+            } else {
+                mensagem = 'Mostrando todos os chamados';
+            }
+                
+            showToast('info', '📋 Redirecionando', mensagem);
+            
+            // Redirecionar após um pequeno delay para mostrar o toast
+            setTimeout(() => {
+                window.location.href = url;
+            }, 800);
+        }
+
+        // Função para redirecionar para chamados produtivos
+        function irParaChamadosProdutivos() {
+            const params = new URLSearchParams();
+            
+            // Aplicar filtro de produtividade = true (chamados produtivos)
+            params.set('productivity', 'true');
+            
+            // Manter outros filtros ativos do dashboard
+            if (currentFilters.period !== '30') {
+                const periodoMapping = {
+                    '0': 'today',
+                    '7': '7',
+                    '90': '90'
+                };
+                const periodoValue = periodoMapping[currentFilters.period] || currentFilters.period;
+                params.set('period', periodoValue);
+            }
+            
+            if (currentFilters.analysts !== 'all') {
+                params.set('analyst', currentFilters.analysts);
+            }
+            
+            if (currentFilters.activityType !== 'all') {
+                params.set('activityType', currentFilters.activityType);
+            }
+            
+            const queryString = params.toString();
+            const baseUrl = "{% url 'todos_chamados' %}";
+            const url = queryString ? `${baseUrl}?${queryString}` : baseUrl;
+            
+            console.log('🔗 Redirecionando para chamados produtivos:', url);
+            
+            // Toast informativo
+            const filtrosAtivos = ['Produtividade: Produtivos'];
+            
+            if (currentFilters.period !== '30') {
+                const periodos = {
+                    '0': 'Hoje',
+                    '7': 'Últimos 7 dias',
+                    '90': 'Últimos 3 meses',
+                    'custom': 'Período personalizado'
+                };
+                filtrosAtivos.push(`Período: ${periodos[currentFilters.period] || 'Personalizado'}`);
+            }
+            
+            if (currentFilters.analysts !== 'all') {
+                filtrosAtivos.push(`Analista: ${getNomeAnalista(currentFilters.analysts)}`);
+            }
+            
+            if (currentFilters.activityType !== 'all') {
+                filtrosAtivos.push(`Tipo: ${currentFilters.activityType}`);
+            }
+            
+            const mensagem = filtrosAtivos.length > 1 
+                ? `Filtros aplicados: ${filtrosAtivos.join(', ')}`
+                : 'Mostrando apenas chamados produtivos';
+                
+            showToast('success', '✅ Chamados Produtivos', mensagem);
+            
+            // Redirecionar após um pequeno delay para mostrar o toast
+            setTimeout(() => {
+                window.location.href = url;
+            }, 800);
         }
 
         // ATUALIZAR CARDS
         function updateStats() {
-            const dataToUse = filteredChamados.length > 0 ? filteredChamados : chamados;
+            // SEMPRE usar os dados filtrados, mesmo se for 0
+            const dataToUse = filteredChamados;
             const totalChamados = dataToUse.length;
             const chamadosProdutivos = dataToUse.filter(c => c.produtiva).length;
             const taxaProdutividade = totalChamados > 0 ? ((chamadosProdutivos / totalChamados) * 100).toFixed(1) : 0;
@@ -837,7 +1273,9 @@
                 totalChamados,
                 chamadosProdutivos,
                 taxaProdutividade,
-                tempoMedio: formatTime(tempoMedio)
+                tempoMedio: formatTime(tempoMedio),
+                dadosFiltrados: filteredChamados.length,
+                dadosTotais: chamados.length
             });
 
             // Atualizar elementos
@@ -850,7 +1288,8 @@
         function createChart1() {
             console.log('🎨 Criando Gráfico 1...');
             
-            const dataToUse = filteredChamados.length > 0 ? filteredChamados : chamados;
+            // SEMPRE usar os dados filtrados, mesmo se for 0
+            const dataToUse = filteredChamados;
             const tiposAtividade = {};
             dataToUse.forEach(c => {
                 tiposAtividade[c.tipo_atividade] = (tiposAtividade[c.tipo_atividade] || 0) + 1;
@@ -863,7 +1302,7 @@
             console.log('📊 Dados Gráfico 1:', { tiposAtividade, tiposLabels, tiposValues });
 
             const ctx = document.getElementById('chartTipoAtividade').getContext('2d');
-            new Chart(ctx, {
+            const chart1 = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
                     labels: tiposLabels,
@@ -914,6 +1353,16 @@
                             left: 20,
                             right: 20
                         }
+                    },
+                    onClick: function(event, elements) {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const tipoSelecionado = tiposLabels[index];
+                            
+                            // Redirecionar para todos os chamados com filtro aplicado
+                            const url = `{% url 'todos_chamados' %}?activityType=${encodeURIComponent(tipoSelecionado)}`;
+                            window.location.href = url;
+                        }
                     }
                 }
             });
@@ -925,25 +1374,37 @@
         function createChart2() {
             console.log('🎨 Criando Gráfico 2...');
             
-            const dataToUse = filteredChamados.length > 0 ? filteredChamados : chamados;
+            // SEMPRE usar os dados filtrados, mesmo se for 0
+            const dataToUse = filteredChamados;
             
-            // Lista de todos os analistas do sistema
-            const todosAnalistas = [
-                'Paulo_Henrique', 'Joao_Cezar', 'Ramon_Farias',
-                'Pedro_Alexandre', 'Adryson_Costa', 'Mateus_Bezerra',
-                'Guilherme_Palmiere', 'Miguel_Campos', 'Gean_Cavalcante'
-            ];
+            let analistasLabels, analistasValues;
             
-            const chamadosPorAnalista = {};
-            dataToUse.forEach(c => {
-                chamadosPorAnalista[c.nome_analista] = (chamadosPorAnalista[c.nome_analista] || 0) + 1;
-            });
+            // Se um analista específico foi selecionado, mostrar apenas ele
+            if (currentFilters.analysts !== 'all') {
+                analistasLabels = [getNomeAnalista(currentFilters.analysts)];
+                const chamadosDoAnalista = dataToUse.filter(c => c.nome_analista === currentFilters.analysts).length;
+                analistasValues = [chamadosDoAnalista];
+                
+                console.log('📊 Gráfico 2 - Analista específico:', currentFilters.analysts, chamadosDoAnalista);
+            } else {
+                // Lista de todos os analistas do sistema
+                const todosAnalistas = [
+                    'Paulo_Henrique', 'Joao_Cezar', 'Ramon_Farias',
+                    'Pedro_Alexandre', 'Adryson_Costa', 'Mateus_Bezerra',
+                    'Guilherme_Palmiere', 'Miguel_Campos', 'Gean_Cavalcante'
+                ];
+                
+                const chamadosPorAnalista = {};
+                dataToUse.forEach(c => {
+                    chamadosPorAnalista[c.nome_analista] = (chamadosPorAnalista[c.nome_analista] || 0) + 1;
+                });
 
-            // Garantir que todos os analistas apareçam (mesmo com 0)
-            const analistasLabels = todosAnalistas;
-            const analistasValues = todosAnalistas.map(analista => chamadosPorAnalista[analista] || 0);
-
-            console.log('📊 Dados Gráfico 2:', { chamadosPorAnalista, analistasLabels, analistasValues });
+                // Garantir que todos os analistas apareçam (mesmo com 0)
+                analistasLabels = todosAnalistas.map(a => getNomeAnalista(a));
+                analistasValues = todosAnalistas.map(analista => chamadosPorAnalista[analista] || 0);
+                
+                console.log('📊 Gráfico 2 - Todos analistas:', { chamadosPorAnalista, analistasLabels, analistasValues });
+            }
 
             const ctx = document.getElementById('chartAnalista').getContext('2d');
             const chartAnalista = new Chart(ctx, {
@@ -978,7 +1439,8 @@
                     scales: {
                         y: {
                             beginAtZero: true,
-                            suggestedMax: 2,
+                            suggestedMax: Math.max(...analistasValues) + 1,
+                            max: Math.max(...analistasValues) + 1,
                             ticks: { 
                                 color: '#999', 
                                 font: { size: 12 },
@@ -989,10 +1451,34 @@
                         x: {
                             ticks: { 
                                 color: '#999', 
-                                font: { size: 10 },
-                                maxRotation: 45
+                                font: { size: currentFilters.analysts !== 'all' ? 14 : 10 },
+                                maxRotation: currentFilters.analysts !== 'all' ? 0 : 45
                             },
                             grid: { display: false }
+                        }
+                    },
+                    onClick: function(event, elements) {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const nomeClicado = analistasLabels[index]; // Pegar o nome que foi clicado
+                            
+                            console.log('🖱️ Clique no analista - Nome:', nomeClicado, 'Index:', index);
+                            console.log('🗺️ Mapeamento disponível:', analistasMapping);
+                            
+                            // Usar o mapeamento dinâmico do backend
+                            const analistaId = analistasMapping[nomeClicado];
+                            
+                            console.log('🆔 ID do analista encontrado:', analistaId);
+                            
+                            if (analistaId) {
+                                // Redirecionar diretamente para o relatório do analista
+                                const url = `/ver_analista/${analistaId}/`;
+                                console.log('🔗 Redirecionando para:', url);
+                                window.location.href = url;
+                            } else {
+                                console.error('❌ ID não encontrado para o analista:', nomeClicado);
+                                showToast('danger', '❌ Erro', `Analista "${nomeClicado}" não encontrado!`);
+                            }
                         }
                     }
                 }
@@ -1005,23 +1491,46 @@
         function createChart3() {
             console.log('🎨 Criando Gráfico 3...');
             
-            const dataToUse = filteredChamados.length > 0 ? filteredChamados : chamados;
+            // SEMPRE usar os dados filtrados, mesmo se for 0
+            const dataToUse = filteredChamados;
             const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
             const tempoPorMes = {};
+            const chamadosPorMes = {};
             
             // Inicializar todos os meses com 0
-            meses.forEach(mes => tempoPorMes[mes] = 0);
+            meses.forEach(mes => {
+                tempoPorMes[mes] = 0;
+                chamadosPorMes[mes] = 0;
+            });
             
-            // Calcular tempo médio por mês
+            // Calcular tempo total e quantidade de chamados por mês
             dataToUse.forEach(c => {
                 const data = new Date(c.data);
                 const mes = meses[data.getMonth()];
                 tempoPorMes[mes] += timeToMinutes(c.total_horas);
+                chamadosPorMes[mes] += 1;
             });
 
-            const tempoMedioPorMes = Object.values(tempoPorMes);
+            // Calcular tempo MÉDIO por mês (divisão)
+            const tempoMedioPorMes = meses.map(mes => {
+                if (chamadosPorMes[mes] > 0) {
+                    return tempoPorMes[mes] / chamadosPorMes[mes];
+                } else {
+                    return 0;
+                }
+            });
 
-            console.log('📊 Dados Gráfico 3:', { tempoPorMes, tempoMedioPorMes });
+            // Calcular o valor máximo para ajustar o eixo Y
+            const valorMaximo = Math.max(...tempoMedioPorMes);
+            const suggestedMax = valorMaximo > 0 ? Math.ceil(valorMaximo * 1.2) : 60; // 20% a mais que o máximo
+
+            console.log('📊 Dados Gráfico 3:', { 
+                tempoPorMes, 
+                chamadosPorMes, 
+                tempoMedioPorMes, 
+                valorMaximo, 
+                suggestedMax 
+            });
 
             const ctx = document.getElementById('chartTempoMes').getContext('2d');
             const chartTempoMes = new Chart(ctx, {
@@ -1053,7 +1562,10 @@
                             padding: 12,
                             callbacks: {
                                 label: function(context) {
-                                    return `Tempo médio: ${formatTime(context.parsed.y)}`;
+                                    const mes = context.label;
+                                    const chamadosNoMes = chamadosPorMes[mes];
+                                    const tempoMedio = formatTime(context.parsed.y);
+                                    return `Tempo médio: ${tempoMedio} (${chamadosNoMes} chamado${chamadosNoMes !== 1 ? 's' : ''})`;
                                 }
                             }
                         }
@@ -1061,20 +1573,31 @@
                     scales: {
                         y: {
                             beginAtZero: true,
-                            suggestedMax: 100,
+                            suggestedMax: suggestedMax,
+                            max: suggestedMax,
                             ticks: { 
                                 color: '#999', 
                                 font: { size: 12 },
                                 callback: function(value) {
                                     return formatTime(value);
                                 },
-                                stepSize: 20
+                                stepSize: Math.ceil(suggestedMax / 5) // 5 divisões no eixo Y
                             },
                             grid: { color: 'rgba(248, 194, 74, 0.1)' }
                         },
                         x: {
                             ticks: { color: '#999', font: { size: 12 } },
                             grid: { color: 'rgba(248, 194, 74, 0.1)' }
+                        }
+                    },
+                    onClick: function(event, elements) {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const mesSelecionado = meses[index];
+                            
+                            // Redirecionar para a aba de analistas
+                            const url = `{% url 'nomes_analistas' %}`;
+                            window.location.href = url;
                         }
                     }
                 }
@@ -1087,38 +1610,60 @@
         function createChart4() {
             console.log('🎨 Criando Gráfico 4...');
             
-            const dataToUse = filteredChamados.length > 0 ? filteredChamados : chamados;
+            // SEMPRE usar os dados filtrados, mesmo se for 0
+            const dataToUse = filteredChamados;
             
-            // Lista de todos os analistas do sistema
-            const todosAnalistas = [
-                'Paulo_Henrique', 'Joao_Cezar', 'Ramon_Farias',
-                'Pedro_Alexandre', 'Adryson_Costa', 'Mateus_Bezerra',
-                'Guilherme_Palmiere', 'Miguel_Campos', 'Gean_Cavalcante'
-            ];
+            let analistasLabels, tempoMedioValues;
             
-            const tempoPorAnalista = {};
-            const chamadosPorAnalista = {};
-            
-            dataToUse.forEach(c => {
-                const tempo = timeToMinutes(c.total_horas);
-                tempoPorAnalista[c.nome_analista] = (tempoPorAnalista[c.nome_analista] || 0) + tempo;
-                chamadosPorAnalista[c.nome_analista] = (chamadosPorAnalista[c.nome_analista] || 0) + 1;
-            });
-
-            // Calcular tempo médio por analista (incluindo os com 0)
-            const tempoMedioPorAnalista = {};
-            todosAnalistas.forEach(analista => {
-                if (chamadosPorAnalista[analista]) {
-                    tempoMedioPorAnalista[analista] = tempoPorAnalista[analista] / chamadosPorAnalista[analista];
+            // Se um analista específico foi selecionado, mostrar apenas ele
+            if (currentFilters.analysts !== 'all') {
+                const analistaSelecionado = currentFilters.analysts;
+                const chamadosDoAnalista = dataToUse.filter(c => c.nome_analista === analistaSelecionado);
+                
+                if (chamadosDoAnalista.length > 0) {
+                    const tempoTotal = chamadosDoAnalista.reduce((acc, c) => acc + timeToMinutes(c.total_horas), 0);
+                    const tempoMedio = tempoTotal / chamadosDoAnalista.length;
+                    
+                    analistasLabels = [getNomeAnalista(analistaSelecionado)];
+                    tempoMedioValues = [tempoMedio];
                 } else {
-                    tempoMedioPorAnalista[analista] = 0;
+                    analistasLabels = [getNomeAnalista(analistaSelecionado)];
+                    tempoMedioValues = [0];
                 }
-            });
+                
+                console.log('📊 Gráfico 4 - Analista específico:', analistaSelecionado, tempoMedioValues);
+            } else {
+                // Lista de todos os analistas do sistema
+                const todosAnalistas = [
+                    'Paulo_Henrique', 'Joao_Cezar', 'Ramon_Farias',
+                    'Pedro_Alexandre', 'Adryson_Costa', 'Mateus_Bezerra',
+                    'Guilherme_Palmiere', 'Miguel_Campos', 'Gean_Cavalcante'
+                ];
+                
+                const tempoPorAnalista = {};
+                const chamadosPorAnalista = {};
+                
+                dataToUse.forEach(c => {
+                    const tempo = timeToMinutes(c.total_horas);
+                    tempoPorAnalista[c.nome_analista] = (tempoPorAnalista[c.nome_analista] || 0) + tempo;
+                    chamadosPorAnalista[c.nome_analista] = (chamadosPorAnalista[c.nome_analista] || 0) + 1;
+                });
 
-            const analistasLabels = todosAnalistas;
-            const tempoMedioValues = todosAnalistas.map(analista => tempoMedioPorAnalista[analista] || 0);
+                // Calcular tempo médio por analista (incluindo os com 0)
+                const tempoMedioPorAnalista = {};
+                todosAnalistas.forEach(analista => {
+                    if (chamadosPorAnalista[analista]) {
+                        tempoMedioPorAnalista[analista] = tempoPorAnalista[analista] / chamadosPorAnalista[analista];
+                    } else {
+                        tempoMedioPorAnalista[analista] = 0;
+                    }
+                });
 
-            console.log('📊 Dados Gráfico 4:', { tempoMedioPorAnalista, analistasLabels, tempoMedioValues });
+                analistasLabels = todosAnalistas.map(a => getNomeAnalista(a));
+                tempoMedioValues = todosAnalistas.map(analista => tempoMedioPorAnalista[analista] || 0);
+                
+                console.log('📊 Gráfico 4 - Todos analistas:', { tempoMedioPorAnalista, analistasLabels, tempoMedioValues });
+            }
 
             const ctx = document.getElementById('chartTempoAnalista').getContext('2d');
             const chartTempoAnalista = new Chart(ctx, {
@@ -1153,24 +1698,49 @@
                     scales: {
                         y: {
                             beginAtZero: true,
-                            suggestedMax: 100,
+                            suggestedMax: Math.max(...tempoMedioValues) * 1.3,
+                            max: Math.max(...tempoMedioValues) * 1.3,
                             ticks: { 
                                 color: '#999', 
                                 font: { size: 12 },
                                 callback: function(value) {
                                     return formatTime(value);
                                 },
-                                stepSize: 20
+                                stepSize: Math.ceil((Math.max(...tempoMedioValues) * 1.3) / 5)
                             },
                             grid: { color: 'rgba(248, 194, 74, 0.1)' }
                         },
                         x: {
                             ticks: { 
                                 color: '#999', 
-                                font: { size: 10 },
-                                maxRotation: 45
+                                font: { size: currentFilters.analysts !== 'all' ? 14 : 10 },
+                                maxRotation: currentFilters.analysts !== 'all' ? 0 : 45
                             },
                             grid: { display: false }
+                        }
+                    },
+                    onClick: function(event, elements) {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const nomeClicado = analistasLabels[index]; // Pegar o nome que foi clicado
+                            
+                            console.log('🖱️ Clique no analista (Tempo Médio) - Nome:', nomeClicado, 'Index:', index);
+                            console.log('🗺️ Mapeamento disponível:', analistasMapping);
+                            
+                            // Usar o mapeamento dinâmico do backend
+                            const analistaId = analistasMapping[nomeClicado];
+                            
+                            console.log('🆔 ID do analista encontrado:', analistaId);
+                            
+                            if (analistaId) {
+                                // Redirecionar diretamente para o relatório do analista
+                                const url = `/ver_analista/${analistaId}/`;
+                                console.log('🔗 Redirecionando para:', url);
+                                window.location.href = url;
+                            } else {
+                                console.error('❌ ID não encontrado para o analista:', nomeClicado);
+                                showToast('danger', '❌ Erro', `Analista "${nomeClicado}" não encontrado!`);
+                            }
                         }
                     }
                 }
@@ -1182,7 +1752,7 @@
 
         // EVENT LISTENERS PARA FILTROS
         function setupEventListeners() {
-            // Filtro de período
+            // Filtro de período - Aplicar automaticamente
             document.getElementById('periodFilter').addEventListener('change', function() {
                 const value = this.value;
                 currentFilters.period = value;
@@ -1192,40 +1762,69 @@
                 } else {
                     document.getElementById('customDateGroup').style.display = 'none';
                 }
+                
+                // Aplicar filtros automaticamente com debounce
+                applyFiltersDebounced();
             });
 
-            // Date pickers
+            // Date pickers - Aplicar automaticamente quando ambos estiverem preenchidos
             document.getElementById('startDate').addEventListener('change', function() {
                 currentFilters.startDate = this.value;
+                
+                // Aplicar apenas se ambos os campos estiverem preenchidos
+                const endDate = document.getElementById('endDate').value;
+                if (this.value && endDate) {
+                    applyFiltersDebounced();
+                }
             });
 
             document.getElementById('endDate').addEventListener('change', function() {
                 currentFilters.endDate = this.value;
+                
+                // Aplicar apenas se ambos os campos estiverem preenchidos
+                const startDate = document.getElementById('startDate').value;
+                if (this.value && startDate) {
+                    applyFiltersDebounced();
+                }
             });
 
-            // Filtro de analistas
+            // Filtro de analistas - Aplicar automaticamente
             document.getElementById('analystFilter').addEventListener('change', function() {
                 currentFilters.analysts = this.value;
+                applyFiltersDebounced();
             });
 
-            // Filtro de tipo de atividade
+            // Filtro de tipo de atividade - Aplicar automaticamente
             document.getElementById('activityFilter').addEventListener('change', function() {
                 currentFilters.activityType = this.value;
+                applyFiltersDebounced();
             });
 
-            // Filtro de produtividade
+            // Filtro de produtividade - Aplicar automaticamente
             document.getElementById('productivityFilter').addEventListener('change', function() {
                 currentFilters.productivity = this.value;
+                applyFiltersDebounced();
             });
 
             // Botões
-            document.getElementById('applyFilters').addEventListener('click', applyFilters);
+            document.getElementById('applyFilters').addEventListener('click', function() {
+                applyFilters(true); // Mostrar toast quando clicado manualmente
+            });
             document.getElementById('clearFilters').addEventListener('click', clearFilters);
+            
+            // Card de Total de Chamados (clique para ir para todos os chamados)
+            document.getElementById('totalChamadosCard').addEventListener('click', irParaTodosChamados);
+            
+            // Card de Taxa de Produtividade (clique para ir para chamados produtivos)
+            document.getElementById('taxaProdutividadeCard').addEventListener('click', irParaChamadosProdutivos);
         }
 
         // INICIALIZAR TUDO
-        function initDashboard() {
+        async function initDashboard() {
             console.log('🚀 Inicializando dashboard...');
+            
+            // Carregar mapeamento dos analistas primeiro
+            await carregarMapeamentoAnalistas();
             
             if (chamados.length === 0) {
                 console.log('⚠️ Nenhum chamado encontrado');
@@ -1257,6 +1856,11 @@
                 createChart3();
                 createChart4();
                 console.log('🎉 TODOS OS GRÁFICOS CRIADOS COM SUCESSO!');
+                
+                // Toast de boas-vindas
+                setTimeout(() => {
+                    showToast('success', '✨ Dashboard Carregado', 'Seus dados foram carregados com sucesso!');
+                }, 500);
             } catch (error) {
                 console.error('❌ Erro ao criar gráficos:', error);
             }

@@ -129,8 +129,8 @@
             font-size: 24px;
         }
 
-        /* DATE FILTER */
-        .date-filter {
+        /* FILTROS */
+        .filters-section {
             background: linear-gradient(135deg, #1f1f1f 0%, #141414 100%);
             border: 1px solid rgba(248, 194, 74, 0.2);
             border-radius: 15px;
@@ -139,57 +139,81 @@
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
         }
 
-        .date-filter h3 {
-            color: #F8C24A;
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        .filters-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr auto;
+            gap: 20px;
+            align-items: start;
         }
 
-        .filter-controls {
+        .filter-group {
             display: flex;
-            gap: 15px;
-            align-items: center;
-            flex-wrap: wrap;
+            flex-direction: column;
         }
 
-        .filter-controls input[type="date"] {
-            padding: 12px 16px;
-            border: 2px solid rgba(248, 194, 74, 0.2);
+        .filter-label {
+            color: #F8C24A;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .filter-select, .filter-date {
+            background: #2a2a2a;
+            border: 1px solid rgba(248, 194, 74, 0.3);
             border-radius: 8px;
-            font-size: 15px;
-            background: rgba(255, 255, 255, 0.05);
+            padding: 10px 12px;
             color: #fff;
-            font-family: 'Inter', sans-serif;
+            font-size: 14px;
             transition: all 0.3s ease;
         }
 
-        .filter-controls input[type="date"]:focus {
-            border-color: #F8C24A;
+        .filter-select:focus, .filter-date:focus {
             outline: none;
-            background: rgba(248, 194, 74, 0.1);
+            border-color: #F8C24A;
+            box-shadow: 0 0 10px rgba(248, 194, 74, 0.2);
         }
 
-        .filter-controls button {
-            padding: 12px 30px;
-            background: linear-gradient(135deg, #F8C24A 0%, #C69A3A 100%);
-            color: #0a0a0a;
+        .date-range {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 160px;
+        }
+
+        .filter-btn {
+            padding: 12px 16px;
             border: none;
             border-radius: 8px;
-            font-size: 15px;
-            font-weight: 700;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            width: auto;
+            font-size: 14px;
+            width: 100%;
+            text-align: center;
+            white-space: nowrap;
         }
 
-        .filter-controls button:hover {
+        .filter-btn.primary {
+            background: linear-gradient(135deg, #F8C24A 0%, #C69A3A 100%);
+            color: #0a0a0a;
+        }
+
+        .filter-btn.secondary {
+            background: #2a2a2a;
+            color: #F8C24A;
+            border: 1px solid #F8C24A;
+        }
+
+        .filter-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(248, 194, 74, 0.4);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
         /* CHAMADOS GRID */
@@ -247,6 +271,27 @@
         }
 
         /* RESPONSIVE */
+        @media (max-width: 1200px) {
+            .filters-grid {
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: auto auto auto;
+                gap: 15px;
+            }
+            
+            .filter-actions {
+                grid-column: 1 / -1;
+                flex-direction: row;
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .filter-btn {
+                width: auto;
+                flex: 1;
+                max-width: 200px;
+            }
+        }
+
         @media (max-width: 768px) {
             .sidebar {
                 width: 0;
@@ -260,6 +305,21 @@
 
             .page-header h1 {
                 font-size: 28px;
+            }
+
+            .filters-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .filter-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .filter-btn {
+                width: 100%;
+                max-width: none;
             }
 
             .chamados-grid {
@@ -289,19 +349,87 @@
             <div class="quantity">Total de chamados: <strong id="totalChamados">{{ quantidade }}</strong></div>
         </div>
 
-        <!-- DATE FILTER -->
-        <div class="date-filter">
-            <h3>🔍 Filtrar por Data</h3>
-            <div class="filter-controls">
-                <input type="date" id="filtroData" placeholder="Selecione uma data">
-                <button onclick="filtrarPorData()">Filtrar</button>
-                <button onclick="limparFiltro()" style="background: linear-gradient(135deg, #666 0%, #444 100%);">Limpar Filtro</button>
+        <!-- FILTROS -->
+        <div class="filters-section">
+            <h2 style="color: #F8C24A; margin-bottom: 20px; font-size: 24px;">🎯 Filtros e Períodos</h2>
+            
+            <div class="filters-grid">
+                <!-- Filtro de Período -->
+                <div class="filter-group">
+                    <label class="filter-label">📅 Período</label>
+                    <select id="periodFilter" class="filter-select">
+                        <option value="0">Hoje</option>
+                        <option value="7">Últimos 7 dias</option>
+                        <option value="30" selected>Últimos 30 dias</option>
+                        <option value="90">Últimos 3 meses</option>
+                        <option value="custom">Período personalizado</option>
+                    </select>
+                </div>
+
+                <!-- Date Picker Personalizado -->
+                <div class="filter-group" id="customDateGroup" style="display: none;">
+                    <label class="filter-label">🗓️ Período Personalizado</label>
+                    <div class="date-range">
+                        <input type="date" id="startDate" class="filter-date">
+                        <span style="color: #F8C24A; margin: 0 10px;">até</span>
+                        <input type="date" id="endDate" class="filter-date">
+                    </div>
+                </div>
+
+                <!-- Filtro de Analistas -->
+                <div class="filter-group">
+                    <label class="filter-label">👥 Analistas</label>
+                    <select id="analystFilter" class="filter-select">
+                        <option value="all" selected>Todos os analistas</option>
+                        <option value="Paulo_Henrique">Paulo Henrique</option>
+                        <option value="Joao_Cezar">João Cezar</option>
+                        <option value="Ramon_Farias">Ramon Farias</option>
+                        <option value="Pedro_Alexandre">Pedro Alexandre</option>
+                        <option value="Adryson_Costa">Adryson Costa</option>
+                        <option value="Mateus_Bezerra">Mateus Bezerra</option>
+                        <option value="Guilherme_Palmiere">Guilherme Palmiere</option>
+                        <option value="Miguel_Campos">Miguel Campos</option>
+                        <option value="Gean_Cavalcante">Gean Cavalcante</option>
+                    </select>
+                </div>
+
+                <!-- Filtro de Tipo de Atividade -->
+                <div class="filter-group">
+                    <label class="filter-label">📋 Tipo de Atividade</label>
+                    <select id="activityFilter" class="filter-select">
+                        <option value="all" selected>Todos os tipos</option>
+                        <option value="Migração">Migração</option>
+                        <option value="Suporte">Suporte</option>
+                        <option value="Manutenção">Manutenção</option>
+                        <option value="Desenvolvimento">Desenvolvimento</option>
+                    </select>
+                </div>
+
+                <!-- Filtro de Produtividade -->
+                <div class="filter-group">
+                    <label class="filter-label">✅ Produtividade</label>
+                    <select id="productivityFilter" class="filter-select">
+                        <option value="all" selected>Todos</option>
+                        <option value="true">Só produtivos</option>
+                        <option value="false">Só não-produtivos</option>
+                    </select>
+                </div>
+
+                <!-- Botões de Ação -->
+                <div class="filter-actions">
+                    <button id="applyFilters" class="filter-btn primary">🔍 Forçar Aplicar</button>
+                    <button id="clearFilters" class="filter-btn secondary">🔄 Limpar Filtros</button>
+                </div>
             </div>
         </div>
 
         <div class="chamados-grid" id="chamadosGrid">
             {% for chamado in chamados %}
-            <div class="chamado-card" data-data="{{ chamado.data|date:'Y-m-d' }}">
+            <div class="chamado-card" 
+                 data-data="{{ chamado.data|date:'Y-m-d' }}"
+                 data-analista="{{ chamado.nome_analista }}"
+                 data-tipo="{{ chamado.tipo_atividade }}"
+                 data-produtiva="{% if chamado.produtiva %}true{% else %}false{% endif %}">
                 <div class="field">
                     <strong>Analista:</strong> <span>{{ chamado.nome_analista }}</span>
                 </div>
@@ -343,20 +471,160 @@
     </div>
 
     <script>
-        // FILTRO DE DATA - JAVASCRIPT (SEM MODIFICAR BACKEND)
-        function filtrarPorData() {
-            const dataFiltro = document.getElementById('filtroData').value;
-            if (!dataFiltro) {
-                alert('Por favor, selecione uma data primeiro!');
-                return;
-            }
+        console.log('🚀 TODOS OS CHAMADOS INICIANDO...');
+        
+        // Variáveis globais para filtros
+        let currentFilters = {
+            period: 30,
+            startDate: null,
+            endDate: null,
+            analysts: 'all',
+            activityType: 'all',
+            productivity: 'all'
+        };
 
+        // Quantidade inicial de chamados
+        const quantidadeInicial = {{ quantidade }};
+
+        // Função para criar e mostrar um toast (copiada do dashboards.html)
+        function showToast(tipo, titulo, mensagem) {
+            // Criar container se não existir
+            let toastContainer = document.getElementById('toastContainer');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.className = 'toast-container';
+                toastContainer.id = 'toastContainer';
+                toastContainer.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    z-index: 9999;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 15px;
+                    pointer-events: none;
+                `;
+                document.body.appendChild(toastContainer);
+            }
+            
+            // Ícones por tipo
+            const icones = {
+                warning: '⚠️',
+                danger: '⏰',
+                info: '📊',
+                success: '✅'
+            };
+            
+            const toastDiv = document.createElement('div');
+            toastDiv.className = `toast ${tipo}`;
+            toastDiv.style.cssText = `
+                min-width: 300px;
+                max-width: 380px;
+                padding: 16px 20px;
+                border-radius: 8px;
+                background: linear-gradient(135deg, #1f1f1f 0%, #141414 100%);
+                border: 1px solid rgba(248, 194, 74, 0.2);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                pointer-events: all;
+                cursor: pointer;
+                animation: slideInRight 0.3s ease-out;
+                position: relative;
+                overflow: hidden;
+            `;
+            
+            toastDiv.innerHTML = `
+                <div style="font-size: 20px; line-height: 1; flex-shrink: 0; opacity: 0.9; color: ${tipo === 'warning' ? '#ffa500' : tipo === 'danger' ? '#ff4444' : tipo === 'info' ? '#4ade80' : '#F8C24A'};">
+                    ${icones[tipo] || '📌'}
+                </div>
+                <div style="flex: 1; display: flex; flex-direction: column; gap: 2px;">
+                    <div style="font-size: 14px; font-weight: 600; line-height: 1.3; margin: 0; color: #F8C24A;">${titulo}</div>
+                    <div style="font-size: 13px; line-height: 1.4; color: #ccc; margin: 0;">${mensagem}</div>
+                </div>
+                <button onclick="this.parentElement.remove()" style="position: absolute; top: 6px; right: 6px; width: 18px; height: 18px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); border: none; color: #999; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; opacity: 0;">✕</button>
+            `;
+            
+            toastContainer.appendChild(toastDiv);
+            
+            // Auto-remover após 4 segundos
+            setTimeout(() => {
+                if (toastDiv.parentElement) {
+                    toastDiv.remove();
+                }
+            }, 4000);
+        }
+
+        // FUNÇÕES DE FILTRO
+        function applyFilters(showToast = false) {
+            console.log('🔍 Aplicando filtros...', currentFilters);
+            
             const cards = document.querySelectorAll('.chamado-card');
             let contador = 0;
 
             cards.forEach(card => {
+                let mostrar = true;
+
+                // Filtro por período
                 const dataCard = card.getAttribute('data-data');
-                if (dataCard === dataFiltro) {
+                if (currentFilters.period !== 'custom') {
+                    const days = parseInt(currentFilters.period);
+                    const chamadoDate = new Date(dataCard);
+                    
+                    if (days === 0) {
+                        // Filtro "Hoje" - compara apenas a data (ignora hora e timezone)
+                        const hoje = new Date();
+                        const hojeSemHora = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+                        
+                        // Parsear data do chamado corretamente (formato: YYYY-MM-DD)
+                        const [ano, mes, dia] = dataCard.split('-').map(Number);
+                        const chamadoSemHora = new Date(ano, mes - 1, dia);
+                        
+                        if (chamadoSemHora.getTime() !== hojeSemHora.getTime()) {
+                            mostrar = false;
+                        }
+                    } else {
+                        // Filtros de período (7, 30, 90 dias)
+                        const limitDate = new Date();
+                        limitDate.setDate(limitDate.getDate() - days);
+                        
+                        if (chamadoDate < limitDate) {
+                            mostrar = false;
+                        }
+                    }
+                } else if (currentFilters.startDate && currentFilters.endDate) {
+                    const startDate = new Date(currentFilters.startDate);
+                    const endDate = new Date(currentFilters.endDate);
+                    const chamadoDate = new Date(dataCard);
+                    
+                    if (chamadoDate < startDate || chamadoDate > endDate) {
+                        mostrar = false;
+                    }
+                }
+
+                // Filtro por analista
+                const analistaCard = card.getAttribute('data-analista');
+                if (currentFilters.analysts !== 'all' && analistaCard !== currentFilters.analysts) {
+                    mostrar = false;
+                }
+
+                // Filtro por tipo de atividade
+                const tipoCard = card.getAttribute('data-tipo');
+                if (currentFilters.activityType !== 'all' && tipoCard !== currentFilters.activityType) {
+                    mostrar = false;
+                }
+
+                // Filtro por produtividade
+                const produtivaCard = card.getAttribute('data-produtiva');
+                if (currentFilters.productivity !== 'all') {
+                    if (produtivaCard !== currentFilters.productivity) {
+                        mostrar = false;
+                    }
+                }
+
+                // Aplicar visibilidade
+                if (mostrar) {
                     card.style.display = 'block';
                     contador++;
                 } else {
@@ -364,47 +632,248 @@
                 }
             });
 
-            // Atualizar contador
+            // Atualizar contador - SEMPRE usar os dados filtrados
             document.getElementById('totalChamados').textContent = contador;
 
             // Mostrar/ocultar mensagem vazia
             const mensagemVazia = document.getElementById('mensagemVazia');
             if (mensagemVazia) {
-                mensagemVazia.style.display = contador === 0 ? 'block' : 'none';
                 if (contador === 0) {
-                    mensagemVazia.textContent = 'Nenhum chamado encontrado para esta data.';
+                    mensagemVazia.style.display = 'block';
+                    mensagemVazia.textContent = 'Nenhum chamado encontrado com os filtros selecionados.';
+                } else {
+                    mensagemVazia.style.display = 'none';
                 }
+            }
+
+            console.log('📊 Chamados filtrados:', contador, 'de', document.querySelectorAll('.chamado-card').length, 'total');
+            
+            // Toast de sucesso ao aplicar filtros (apenas quando solicitado)
+            if (showToast) {
+                const mensagemToast = currentFilters.analysts !== 'all' 
+                    ? `${contador} chamado(s) encontrado(s) para ${currentFilters.analysts.replace('_', ' ')}`
+                    : `${contador} chamado(s) encontrado(s)`;
+                showToast('success', '🔍 Filtros Aplicados', mensagemToast);
             }
         }
 
-        function limparFiltro() {
+        function clearFilters() {
+            console.log('🔄 Limpando filtros...');
+            
+            // Resetar filtros
+            currentFilters = {
+                period: 30,
+                startDate: null,
+                endDate: null,
+                analysts: 'all',
+                activityType: 'all',
+                productivity: 'all'
+            };
+
+            // Resetar interface
+            document.getElementById('periodFilter').value = '30';
+            document.getElementById('analystFilter').value = 'all';
+            document.getElementById('activityFilter').value = 'all';
+            document.getElementById('productivityFilter').value = 'all';
+            document.getElementById('customDateGroup').style.display = 'none';
+            document.getElementById('startDate').value = '';
+            document.getElementById('endDate').value = '';
+
+            // Mostrar todos os cards
             const cards = document.querySelectorAll('.chamado-card');
             cards.forEach(card => {
                 card.style.display = 'block';
             });
 
-            document.getElementById('filtroData').value = '';
-            document.getElementById('totalChamados').textContent = {{ quantidade }};
+            // Atualizar contador
+            document.getElementById('totalChamados').textContent = quantidadeInicial;
 
+            // Mostrar/ocultar mensagem vazia
             const mensagemVazia = document.getElementById('mensagemVazia');
             if (mensagemVazia) {
-                mensagemVazia.style.display = {{ quantidade }} === 0 ? 'block' : 'none';
-                if ({{ quantidade }} === 0) {
+                if (quantidadeInicial === 0) {
+                    mensagemVazia.style.display = 'block';
                     mensagemVazia.textContent = 'Nenhum chamado registrado ainda.';
+                } else {
+                    mensagemVazia.style.display = 'none';
                 }
             }
         }
 
-        // Permitir filtrar ao pressionar Enter
-        document.getElementById('filtroData').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                filtrarPorData();
+        // Debounce para evitar aplicações muito frequentes
+        let filterTimeout = null;
+        
+        // Função com debounce para aplicar filtros automaticamente
+        function applyFiltersDebounced() {
+            if (filterTimeout) {
+                clearTimeout(filterTimeout);
             }
+            filterTimeout = setTimeout(() => {
+                applyFilters(false); // Não mostrar toast em aplicações automáticas
+            }, 300); // 300ms de delay
+        }
+
+        // EVENT LISTENERS PARA FILTROS
+        function setupEventListeners() {
+            // Filtro de período - Aplicar automaticamente
+            document.getElementById('periodFilter').addEventListener('change', function() {
+                const value = this.value;
+                currentFilters.period = value;
+                
+                if (value === 'custom') {
+                    document.getElementById('customDateGroup').style.display = 'block';
+                } else {
+                    document.getElementById('customDateGroup').style.display = 'none';
+                }
+                
+                // Aplicar filtros automaticamente com debounce
+                applyFiltersDebounced();
+            });
+
+            // Date pickers - Aplicar automaticamente quando ambos estiverem preenchidos
+            document.getElementById('startDate').addEventListener('change', function() {
+                currentFilters.startDate = this.value;
+                
+                // Aplicar apenas se ambos os campos estiverem preenchidos
+                const endDate = document.getElementById('endDate').value;
+                if (this.value && endDate) {
+                    applyFiltersDebounced();
+                }
+            });
+
+            document.getElementById('endDate').addEventListener('change', function() {
+                currentFilters.endDate = this.value;
+                
+                // Aplicar apenas se ambos os campos estiverem preenchidos
+                const startDate = document.getElementById('startDate').value;
+                if (this.value && startDate) {
+                    applyFiltersDebounced();
+                }
+            });
+
+            // Filtro de analistas - Aplicar automaticamente
+            document.getElementById('analystFilter').addEventListener('change', function() {
+                currentFilters.analysts = this.value;
+                applyFiltersDebounced();
+            });
+
+            // Filtro de tipo de atividade - Aplicar automaticamente
+            document.getElementById('activityFilter').addEventListener('change', function() {
+                currentFilters.activityType = this.value;
+                applyFiltersDebounced();
+            });
+
+            // Filtro de produtividade - Aplicar automaticamente
+            document.getElementById('productivityFilter').addEventListener('change', function() {
+                currentFilters.productivity = this.value;
+                applyFiltersDebounced();
+            });
+
+            // Botões
+            document.getElementById('applyFilters').addEventListener('click', function() {
+                applyFilters(true); // Mostrar toast quando clicado manualmente
+            });
+            document.getElementById('clearFilters').addEventListener('click', clearFilters);
+        }
+
+        // INICIALIZAR
+        function initPage() {
+            console.log('📄 Inicializando página de chamados...');
+            
+            // Verificar se há filtros na URL
+            const urlParams = new URLSearchParams(window.location.search);
+            let filtrosAplicados = [];
+            
+            // Filtro de período
+            const period = urlParams.get('period');
+            if (period) {
+                console.log('🔗 Filtro de período detectado:', period);
+                
+                // Mapear valores da URL para valores do frontend
+                const periodMapping = {
+                    'today': '0',    // URL 'today' → Frontend '0'
+                    '7': '7',        // Mesmo valor
+                    '30': '30',      // Mesmo valor
+                    '90': '90'       // Mesmo valor
+                };
+                
+                const periodValue = periodMapping[period] || period;
+                currentFilters.period = periodValue;
+                document.getElementById('periodFilter').value = periodValue;
+                filtrosAplicados.push(`Período: ${period === 'today' ? 'Hoje' : `${period} dias`}`);
+            }
+            
+            // Filtro de analista
+            const analyst = urlParams.get('analyst');
+            if (analyst) {
+                console.log('🔗 Filtro de analista detectado:', analyst);
+                currentFilters.analysts = analyst;
+                document.getElementById('analystFilter').value = analyst;
+                filtrosAplicados.push(`Analista: ${analyst.replace('_', ' ')}`);
+            }
+            
+            // Filtro de tipo de atividade
+            const activityType = urlParams.get('activityType');
+            if (activityType) {
+                console.log('🔗 Filtro de atividade detectado:', activityType);
+                currentFilters.activityType = activityType;
+                document.getElementById('activityFilter').value = activityType;
+                filtrosAplicados.push(`Tipo: ${activityType}`);
+            }
+            
+            // Filtro de produtividade
+            const productivity = urlParams.get('productivity');
+            if (productivity) {
+                console.log('🔗 Filtro de produtividade detectado:', productivity);
+                currentFilters.productivity = productivity;
+                document.getElementById('productivityFilter').value = productivity;
+                filtrosAplicados.push(`Produtividade: ${productivity === 'true' ? 'Produtivos' : 'Não-produtivos'}`);
+            }
+            
+            // Filtro de período personalizado
+            const startDate = urlParams.get('startDate');
+            const endDate = urlParams.get('endDate');
+            if (startDate && endDate) {
+                console.log('🔗 Filtro de período personalizado detectado:', startDate, 'até', endDate);
+                currentFilters.period = 'custom';
+                currentFilters.startDate = startDate;
+                currentFilters.endDate = endDate;
+                document.getElementById('periodFilter').value = 'custom';
+                document.getElementById('startDate').value = startDate;
+                document.getElementById('endDate').value = endDate;
+                document.getElementById('customDateGroup').style.display = 'block';
+                filtrosAplicados.push(`Período: ${startDate} até ${endDate}`);
+            }
+            
+            // Aplicar filtros se algum foi detectado
+            if (filtrosAplicados.length > 0) {
+                console.log('🔗 Aplicando filtros da URL:', filtrosAplicados);
+                applyFilters(false); // Não mostrar toast automático
+                
+                // Mostrar toast informativo sobre filtros aplicados
+                setTimeout(() => {
+                    showToast('info', '🔗 Filtros da URL', `Aplicados: ${filtrosAplicados.join(', ')}`);
+                }, 500);
+            }
+            
+            // Configurar event listeners
+            setupEventListeners();
+
+            console.log('✅ Página inicializada com sucesso!');
+        }
+
+        // Aguardar carregamento da página
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📄 DOM carregado, iniciando página...');
+            initPage();
         });
 
-        // Definir data de hoje como padrão
-        const hoje = new Date().toISOString().split('T')[0];
-        document.getElementById('filtroData').value = hoje;
+        // Fallback se DOM já estiver carregado
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initPage);
+        } else {
+            initPage();
+        }
     </script>
 </body>
 </html>
