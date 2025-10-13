@@ -13,6 +13,7 @@ class Chamados(models.Model):
     inicio = models.TimeField()
     conclusao = models.TimeField()
     total_horas = models.TimeField()
+    status = models.CharField(max_length=20, default=None)
     produtiva = models.BooleanField(default=True)
     senha = models.CharField(max_length=12)
     observacao = models.TextField()
@@ -22,4 +23,3 @@ class Chamados(models.Model):
         return f"{self.nome_analista} || {self.data}  || {self.inicio}" 
 
 
-    
