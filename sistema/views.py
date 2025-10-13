@@ -9,44 +9,13 @@ from django.utils import timezone
 
 def dashboards(request):
     """
-    View de dashboards com suporte a filtros de período.
-    Usa date.today() para obter a data atual do sistema.
+    View de dashboards - todos os filtros são aplicados no frontend.
     """
-    # Obter data atual usando date.today()
-    hoje = date.today()
-    
     # Buscar todos os chamados ordenados por data (mais recentes primeiro)
     chamados = Chamados.objects.all().order_by('-data', '-id')
     
-    # Filtros opcionais via GET parameters (para uso futuro)
-    filtro_periodo = request.GET.get('period', None)
-    
-    if filtro_periodo == 'today':
-        # Filtrar apenas chamados de hoje
-        chamados = Chamados.objects.filter(data=hoje).order_by('-id')
-        print(f"🗓️ Filtro HOJE aplicado (backend): {hoje} - {chamados.count()} chamados")
-    
-    elif filtro_periodo == '7':
-        # Últimos 7 dias
-        data_limite = hoje - timedelta(days=7)
-        chamados = Chamados.objects.filter(data__gte=data_limite).order_by('-data', '-id')
-        print(f"📅 Filtro 7 DIAS: de {data_limite} até {hoje} - {chamados.count()} chamados")
-    
-    elif filtro_periodo == '30':
-        # Últimos 30 dias
-        data_limite = hoje - timedelta(days=30)
-        chamados = Chamados.objects.filter(data__gte=data_limite).order_by('-data', '-id')
-        print(f"📅 Filtro 30 DIAS: de {data_limite} até {hoje} - {chamados.count()} chamados")
-    
-    elif filtro_periodo == '90':
-        # Últimos 90 dias (3 meses)
-        data_limite = hoje - timedelta(days=90)
-        chamados = Chamados.objects.filter(data__gte=data_limite).order_by('-data', '-id')
-        print(f"📅 Filtro 90 DIAS: de {data_limite} até {hoje} - {chamados.count()} chamados")
-    
     return render(request, "dashboards.html", {
-        "chamados": chamados,
-        "data_hoje": hoje  # Enviar data atual para o template
+        "chamados": chamados
     })
 
 def nomes_analistas(request):
