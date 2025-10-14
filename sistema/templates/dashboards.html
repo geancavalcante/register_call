@@ -665,6 +665,11 @@
                 <div class="stat-value" id="chamadosFinalizados">0</div>
                 <div class="stat-desc">Status: Finalizados</div>
             </div>
+            <div class="stat-card clickable" id="chamadosNaoPlanejadosCard" style="cursor: pointer;" title="Clique para ver tabela dinâmica com chamados não planejados">
+                <div class="stat-label">NÃO PLANEJADAS</div>
+                <div class="stat-value" id="chamadosNaoPlanejados">0</div>
+                <div class="stat-desc">Chamados manuais</div>
+            </div>
         </div>
 
         <!-- CHARTS -->
@@ -1440,6 +1445,44 @@
             }, 800);
         }
 
+        // ========== FUNÇÃO PARA CHAMADOS NÃO PLANEJADOS ==========
+        function irParaChamadosNaoPlanejados() {
+            const params = new URLSearchParams();
+            
+            // Aplicar filtro de origem_planilha = false
+            params.set('origem_planilha', 'false');
+            
+            // Manter outros filtros ativos do dashboard
+            if (currentFilters.period !== '30') {
+                const periodoMapping = {
+                    '0': 'today',
+                    '7': '7',
+                    '30': '30'
+                };
+                if (periodoMapping[currentFilters.period]) {
+                    params.set('period', periodoMapping[currentFilters.period]);
+                }
+            }
+            
+            if (currentFilters.analyst && currentFilters.analyst !== 'all') {
+                params.set('analyst', currentFilters.analyst);
+            }
+            
+            if (currentFilters.activityType && currentFilters.activityType !== 'all') {
+                params.set('activityType', currentFilters.activityType);
+            }
+            
+            const url = `/tabela_chamados/?${params.toString()}`;
+            console.log('🔗 Redirecionando para chamados não planejados:', url);
+            
+            // Efeito visual de clique
+            document.getElementById('chamadosNaoPlanejadosCard').style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                document.getElementById('chamadosNaoPlanejadosCard').style.transform = 'scale(1)';
+                window.location.href = url;
+            }, 800);
+        }
+
         // ========== FUNÇÃO PARA CHAMADOS FINALIZADOS ==========
         function irParaChamadosFinalizados() {
             const params = new URLSearchParams();
@@ -1527,6 +1570,7 @@
             const chamadosPlanejados = dataToUse.filter(c => c.status === 'planejado').length;
             const chamadosAndamento = dataToUse.filter(c => c.status === 'em_andamento').length;
             const chamadosFinalizados = dataToUse.filter(c => c.status === 'finalizado').length;
+            const chamadosNaoPlanejados = dataToUse.filter(c => c.origem_planilha === false).length;
             const chamadosProdutivosStatus = dataToUse.filter(c => c.status === 'produtiva').length;
             const chamadosImprodutivosStatus = dataToUse.filter(c => c.status === 'improdutiva').length;
 
@@ -1538,6 +1582,7 @@
                 chamadosPlanejados,
                 chamadosAndamento,
                 chamadosFinalizados,
+                chamadosNaoPlanejados,
                 chamadosProdutivosStatus,
                 chamadosImprodutivosStatus,
                 dadosFiltrados: filteredChamados.length,
@@ -1551,6 +1596,7 @@
             document.getElementById('chamadosPlanejados').textContent = chamadosPlanejados;
             document.getElementById('chamadosAndamento').textContent = chamadosAndamento;
             document.getElementById('chamadosFinalizados').textContent = chamadosFinalizados;
+            document.getElementById('chamadosNaoPlanejados').textContent = chamadosNaoPlanejados;
         }
 
         // GRÁFICO 1: Distribuição por Tipo de Atividade (Doughnut)
@@ -2095,6 +2141,9 @@
             
             // Card de Chamados Finalizados (clique para ir para chamados finalizados)
             document.getElementById('chamadosFinalizadosCard').addEventListener('click', irParaChamadosFinalizados);
+            
+            // Card de Chamados Não Planejados (clique para ir para chamados não planejados)
+            document.getElementById('chamadosNaoPlanejadosCard').addEventListener('click', irParaChamadosNaoPlanejados);
         }
 
         // INICIALIZAR TUDO

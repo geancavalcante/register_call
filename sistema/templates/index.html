@@ -689,36 +689,100 @@
             }, 5000);
         }
 
-        // Função para carregar chamado em andamento
-        function carregarChamadoEmAndamento() {
-            // Preencher os campos com os dados do chamado em andamento
-            document.getElementById('ID_chamado').value = '{{ chamado_em_andamento.ID_chamado }}';
-            document.getElementById('nome_analista').value = '{{ chamado_em_andamento.nome_analista.username }}';
-            document.getElementById('tipo_atividade').value = '{{ chamado_em_andamento.tipo_atividade }}';
-            document.getElementById('tecnico').value = '{{ chamado_em_andamento.nome_tecnico }}';
-            document.getElementById('data').value = '{{ chamado_em_andamento.data|date:"Y-m-d" }}';
-            document.getElementById('inicio').value = '{{ chamado_em_andamento.inicio }}';
+        // Variável para controlar envio
+        let salvando = false;
+
+        // Função para salvar chamado inicial (sem ir para finalização)
+        function salvarChamadoInicial() {
+            console.log('🎯 Função salvarChamadoInicial chamada');
             
-            // Ir direto para a aba de finalização
-            document.getElementById('formInicioChamado').style.display = 'none';
-            document.getElementById('formFinalizacaoChamado').style.display = 'block';
+            // Evitar múltiplos envios
+            if (salvando) {
+                console.log('⚠️ Já está salvando, ignorando novo envio');
+                return;
+            }
             
-            // Mostrar mensagem informativa
-            showToast('Chamado em andamento encontrado! Complete as informações para finalizar.', 'info');
+            salvando = true;
+            const formData = {
+                ID_chamado: document.getElementById('ID_chamado').value,
+                nome_analista: document.getElementById('nome_analista').value,
+                tipo_atividade: document.getElementById('tipo_atividade').value,
+                tecnico: document.getElementById('tecnico').value,
+                data: document.getElementById('data').value,
+                inicio: document.getElementById('inicio').value
+            };
+            
+            // Validar campos obrigatórios
+            const camposObrigatorios = ['ID_chamado', 'nome_analista', 'tipo_atividade', 'tecnico', 'data', 'inicio'];
+            for (let campo of camposObrigatorios) {
+                if (!formData[campo] || formData[campo].trim() === '') {
+                    console.log(`❌ Campo ${campo} está vazio:`, formData[campo]);
+                    showToast(`Campo ${campo} é obrigatório`, 'error');
+                    salvando = false;
+                    return;
+                }
+            }
+            
+            console.log('✅ Todos os campos validados:', formData);
+            
+            console.log('📤 Enviando dados iniciais:', formData);
+            
+            // Mostrar toast de carregamento
+            showToast('⏳ Salvando chamado...', 'info');
+            
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            
+            fetch('/salvar_dados_iniciais/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                console.log('📥 Status da resposta:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('📥 Dados recebidos:', data);
+                if (data.success) {
+                    showToast('CHAMADO REGISTRADO', 'success');
+                    
+                    // Resetar variável de controle
+                    salvando = false;
+                    
+                    // Reload da tela após 2 segundos
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                } else {
+                    showToast(data.message, 'error');
+                    salvando = false;
+                }
+            })
+            .catch(error => {
+                console.error('❌ Erro:', error);
+                showToast('Erro ao conectar com o servidor', 'error');
+                salvando = false;
+            });
         }
 
         // EVENT LISTENERS
         document.addEventListener('DOMContentLoaded', function() {
-            // Verificar se há chamado em andamento
-            {% if chamado_em_andamento %}
-            carregarChamadoEmAndamento();
-            {% endif %}
-            
-            // Formulário de início
-            document.getElementById('formInicioChamado').addEventListener('submit', function(e) {
-                e.preventDefault();
-                irParaFinalizacao();
-            });
+            // Formulário de início - agora apenas salva e não vai para finalização
+            const formInicio = document.getElementById('formInicioChamado');
+            if (formInicio) {
+                formInicio.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('🚀 Formulário submetido, chamando salvarChamadoInicial()');
+                    salvarChamadoInicial();
+                });
+                console.log('✅ Event listener adicionado ao formulário');
+            } else {
+                console.error('❌ Formulário formInicioChamado não encontrado');
+            }
 
             // Botão voltar
             document.getElementById('voltarInicio').addEventListener('click', function() {

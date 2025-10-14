@@ -294,10 +294,10 @@
             top: 100%;
             left: 0;
             right: 0;
-            background: #ffffff;
-            border: 1px solid #d1d5db;
+            background: #1a1a1a;
+            border: 1px solid #444;
             border-radius: 4px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
             z-index: 1000;
             max-height: 200px;
             overflow-y: auto;
@@ -310,15 +310,16 @@
 
         .dropdown-item {
             padding: 8px 12px;
-            color: #374151;
+            color: #e0e0e0;
             font-size: 12px;
             cursor: pointer;
-            border-bottom: 1px solid #f3f4f6;
+            border-bottom: 1px solid #333;
             transition: background-color 0.2s ease;
         }
 
         .dropdown-item:hover {
-            background: #f3f4f6;
+            background: #333;
+            color: #f8c24a;
         }
 
         .dropdown-item:last-child {
@@ -330,14 +331,89 @@
             width: 100%;
             padding: 6px 8px;
             border: none;
-            border-bottom: 1px solid #d1d5db;
+            border-bottom: 1px solid #444;
             font-size: 11px;
-            background: #f9fafb;
+            background: #2a2a2a;
+            color: #e0e0e0;
+        }
+
+        .dropdown-search::placeholder {
+            color: #888;
         }
 
         .dropdown-search:focus {
             outline: none;
-            background: #ffffff;
+            background: #2a2a2a;
+            color: #e0e0e0;
+        }
+
+        /* Date picker no dropdown */
+        .dropdown-date-picker {
+            width: 100%;
+            padding: 8px 12px;
+            border: none;
+            border-bottom: 1px solid #444;
+            font-size: 12px;
+            background: #2a2a2a;
+            color: #e0e0e0;
+            outline: none;
+        }
+
+        .dropdown-date-picker::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+        }
+
+        /* ========== ESTILOS DOS SELECTS NOS MODAIS ========== */
+        .modal-content select {
+            width: 100%;
+            padding: 10px 12px;
+            background: #1a1a1a;
+            border: 1px solid #444;
+            border-radius: 4px;
+            color: #e0e0e0;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .modal-content select:focus {
+            border-color: #f8c24a;
+            box-shadow: 0 0 0 2px rgba(248, 194, 74, 0.2);
+        }
+
+        .modal-content select option {
+            background: #1a1a1a;
+            color: #e0e0e0;
+            padding: 8px;
+        }
+
+        .modal-content select option:hover {
+            background: #333;
+            color: #f8c24a;
+        }
+
+        /* Estilos adicionais para melhorar a aparência dos selects */
+        .modal-content select::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-content select::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        .modal-content select::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 4px;
+        }
+
+        .modal-content select::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Para navegadores que suportam */
+        .modal-content select::-ms-expand {
+            display: none;
         }
 
         /* Cabeçalho ativo (com borda dourada) */
@@ -400,6 +476,12 @@
             border: 1px solid #ef4444;
         }
 
+        .status-badge.nao-planejadas {
+            background: rgba(168, 85, 247, 0.2);
+            color: #a855f7;
+            border: 1px solid #a855f7;
+        }
+
         .status-badge.planejadas {
             background: rgba(59, 130, 246, 0.2);
             color: #3b82f6;
@@ -407,9 +489,9 @@
         }
 
         .status-badge.andamento {
-            background: rgba(245, 158, 11, 0.2);
-            color: #f59e0b;
-            border: 1px solid #f59e0b;
+            background: rgba(184, 115, 51, 0.2);
+            color: #B87333;
+            border: 1px solid #B87333;
         }
 
         .status-badge.finalizado {
@@ -524,6 +606,199 @@
             .data-table {
                 min-width: 800px;
             }
+        }
+
+        /* ========== MODAL DE FINALIZAÇÃO ========== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            border: 1px solid rgba(248, 194, 74, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(248, 194, 74, 0.2);
+        }
+
+        .modal-header h2 {
+            color: #f8c24a;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 2rem;
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.3s;
+        }
+
+        .modal-close:hover {
+            color: #f8c24a;
+        }
+
+        .modal-form-group {
+            margin-bottom: 20px;
+        }
+
+        .modal-form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #f8c24a;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .modal-form-group input,
+        .modal-form-group select,
+        .modal-form-group textarea {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(248, 194, 74, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+
+        .modal-form-group input:focus,
+        .modal-form-group select:focus,
+        .modal-form-group textarea:focus {
+            outline: none;
+            border-color: #f8c24a;
+            background: rgba(248, 194, 74, 0.1);
+        }
+
+        .modal-form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-btn-primary {
+            background: linear-gradient(135deg, #f8c24a 0%, #d4a029 100%);
+            color: #1a1a1a;
+        }
+
+        .modal-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(248, 194, 74, 0.4);
+        }
+
+        .modal-btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(248, 194, 74, 0.3);
+        }
+
+        .modal-btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .status-em-andamento {
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .status-em-andamento:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(184, 115, 51, 0.5);
+        }
+
+        .status-assumir {
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .status-assumir:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+        }
+
+        /* ========== BOTÕES DE STATUS NO MODAL ========== */
+        .status-options {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .status-button {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(248, 194, 74, 0.3);
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            flex: 1;
+            text-align: center;
+        }
+
+        .status-button:hover {
+            background: rgba(248, 194, 74, 0.2);
+            border-color: #f8c24a;
+            color: #f8c24a;
+        }
+
+        .status-button.active {
+            background: linear-gradient(135deg, #f8c24a 0%, #d4a029 100%);
+            color: #1a1a1a;
+            border-color: #f8c24a;
+            box-shadow: 0 0 15px rgba(248, 194, 74, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .status-button.active:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(248, 194, 74, 0.5);
         }
     </style>
 </head>
@@ -654,7 +929,7 @@
                                     <button class="dropdown-btn" onclick="toggleDropdown('data')">▼</button>
                                 </div>
                                 <div class="dropdown-menu" id="dropdown-data">
-                                    <input type="text" class="dropdown-search" placeholder="Buscar data..." onkeyup="filterDropdown('data', this.value)">
+                                    <input type="date" class="dropdown-date-picker" id="dateFilterInput" onchange="filterByDate(this.value)">
                                     <div class="dropdown-item" onclick="selectFilter('data', '')">Todos</div>
                                     <!-- Datas serão preenchidas dinamicamente -->
                                 </div>
@@ -692,6 +967,19 @@
                                     <!-- Tempos serão preenchidos dinamicamente -->
                                 </div>
                             </th>
+                            <th data-column="situacao">
+                                <div class="header-container">
+                                    <span class="header-title">Situação</span>
+                                    <button class="dropdown-btn" onclick="toggleDropdown('situacao')">▼</button>
+                                </div>
+                                <div class="dropdown-menu" id="dropdown-situacao">
+                                    <input type="text" class="dropdown-search" placeholder="Buscar situação..." onkeyup="filterDropdown('situacao', this.value)">
+                                    <div class="dropdown-item" onclick="selectFilter('situacao', '')">Todos</div>
+                                    <div class="dropdown-item" onclick="selectFilter('situacao', 'Finalizado')">Finalizado</div>
+                                    <div class="dropdown-item" onclick="selectFilter('situacao', 'Assumir')">Assumir</div>
+                                    <div class="dropdown-item" onclick="selectFilter('situacao', 'Em Andamento')">Em Andamento</div>
+                                </div>
+                            </th>
                             <th data-column="status">
                                 <div class="header-container">
                                     <span class="header-title">Status</span>
@@ -702,9 +990,18 @@
                                     <div class="dropdown-item" onclick="selectFilter('status', '')">Todos</div>
                                     <div class="dropdown-item" onclick="selectFilter('status', 'Produtiva')">Produtiva</div>
                                     <div class="dropdown-item" onclick="selectFilter('status', 'Improdutiva')">Improdutiva</div>
-                                    <div class="dropdown-item" onclick="selectFilter('status', 'Planejado')">Planejado</div>
-                                    <div class="dropdown-item" onclick="selectFilter('status', 'Em Andamento')">Em Andamento</div>
-                                    <div class="dropdown-item" onclick="selectFilter('status', 'Finalizado')">Finalizado</div>
+                                </div>
+                            </th>
+                            <th data-column="origem">
+                                <div class="header-container">
+                                    <span class="header-title">Origem</span>
+                                    <button class="dropdown-btn" onclick="toggleDropdown('origem')">▼</button>
+                                </div>
+                                <div class="dropdown-menu" id="dropdown-origem">
+                                    <input type="text" class="dropdown-search" placeholder="Buscar origem..." onkeyup="filterDropdown('origem', this.value)">
+                                    <div class="dropdown-item" onclick="selectFilter('origem', '')">Todos</div>
+                                    <div class="dropdown-item" onclick="selectFilter('origem', 'Planejada')">Planejada</div>
+                                    <div class="dropdown-item" onclick="selectFilter('origem', 'Não Planejada')">Não Planejada</div>
                                 </div>
                             </th>
                             <th data-column="senha">
@@ -743,7 +1040,9 @@
                             data-inicio="{{ chamado.inicio }}"
                             data-conclusao="{{ chamado.conclusao }}"
                             data-tempo="{{ chamado.total_horas }}"
-                            data-status="{% if chamado.origem_planilha %}{% if chamado.status == 'planejado' %}Planejado{% elif chamado.status == 'em_andamento' %}Em Andamento{% elif chamado.status == 'finalizado' %}Finalizado{% endif %}{% else %}{% if chamado.produtiva %}Produtiva{% else %}Improdutiva{% endif %}{% endif %}"
+                            data-situacao="{% if chamado.origem_planilha %}{% if chamado.status == 'planejado' %}Assumir{% elif chamado.status == 'em_andamento' %}Em Andamento{% elif chamado.status == 'finalizado' %}Finalizado{% endif %}{% else %}{% if chamado.status == 'em_andamento' %}Em Andamento{% elif chamado.status == 'finalizado' or chamado.produtiva is not None %}Finalizado{% endif %}{% endif %}"
+                            data-status="{% if chamado.produtiva %}Produtiva{% else %}Improdutiva{% endif %}"
+                            data-origem="{% if chamado.origem_planilha %}Planejada{% else %}Não Planejada{% endif %}"
                             data-senha="{{ chamado.senha }}"
                             data-observacao="{{ chamado.observacao|default:'Sem observações' }}"
                         >
@@ -758,30 +1057,43 @@
                             <td>
                                 <span class="status-badge 
                                     {% if chamado.origem_planilha %}
-                                        {% if chamado.status == 'planejado' %}planejadas
-                                        {% elif chamado.status == 'em_andamento' %}andamento
+                                        {% if chamado.status == 'planejado' %}planejadas status-assumir
+                                        {% elif chamado.status == 'em_andamento' %}andamento status-em-andamento
                                         {% elif chamado.status == 'finalizado' %}finalizado{% endif %}
                                     {% else %}
-                                        {% if chamado.produtiva %}produtiva
-                                        {% else %}improdutiva{% endif %}
-                                    {% endif %}">
+                                        {% if chamado.status == 'em_andamento' %}andamento status-em-andamento
+                                        {% elif chamado.status == 'finalizado' or chamado.produtiva is not None %}finalizado{% endif %}{% endif %}"
+                                    {% if chamado.status == 'em_andamento' %}
+                                    onclick="abrirModalFinalizacao({{ chamado.ID_chamado }})"
+                                    {% elif chamado.status == 'planejado' %}
+                                    onclick="abrirModalAssumir({{ chamado.ID_chamado }})"
+                                    {% endif %}>
                                     {% if chamado.origem_planilha %}
-                                        {% if chamado.status == 'planejado' %}Planejado
+                                        {% if chamado.status == 'planejado' %}Assumir
                                         {% elif chamado.status == 'em_andamento' %}Em Andamento
                                         {% elif chamado.status == 'finalizado' %}Finalizado{% endif %}
                                     {% else %}
-                                        {% if chamado.produtiva %}Produtiva
-                                        {% else %}Improdutiva{% endif %}
-                                    {% endif %}
+                                        {% if chamado.status == 'em_andamento' %}Em Andamento
+                                        {% elif chamado.status == 'finalizado' or chamado.produtiva is not None %}Finalizado{% endif %}{% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="status-badge {% if chamado.produtiva %}produtiva{% else %}improdutiva{% endif %}">
+                                    {% if chamado.produtiva %}Produtiva{% else %}Improdutiva{% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="status-badge {% if chamado.origem_planilha %}planejadas{% else %}nao-planejadas{% endif %}">
+                                    {% if chamado.origem_planilha %}Planejada{% else %}Não Planejada{% endif %}
                                 </span>
                             </td>
                             <td>{{ chamado.senha }}</td>
-                            <td>{{ chamado.observacao|default:"Sem observações"|truncatewords:10 }}</td>
+                            <td>{% if chamado.observacao %}{{ chamado.observacao|truncatewords:10 }}{% else %}-{% endif %}</td>
                         </tr>
                         {% empty %}
                         <!-- Mensagem quando não há chamados -->
                         <tr>
-                            <td colspan="11">
+                            <td colspan="13">
                                 <div class="empty-state">
                                     <h3>📋 Nenhum chamado encontrado</h3>
                                     <p>Não há dados para exibir no momento.</p>
@@ -979,7 +1291,9 @@
                 conclusao: new Set(),
                 tempo: new Set(),
                 senha: new Set(),
-                observacao: new Set()
+                observacao: new Set(),
+                situacao: new Set(),
+                origem: new Set()
             };
 
             // Extrair valores únicos das linhas
@@ -1044,10 +1358,7 @@
                 const statusItems = statusDropdown.querySelectorAll('.dropdown-item');
                 const hasFixedValues = Array.from(statusItems).some(item => 
                     item.textContent === 'Produtiva' || 
-                    item.textContent === 'Improdutiva' || 
-                    item.textContent === 'Planejado' || 
-                    item.textContent === 'Em Andamento' ||
-                    item.textContent === 'Finalizado'
+                    item.textContent === 'Improdutiva'
                 );
                 
                 // Se não tem os valores fixos, restaurar
@@ -1057,9 +1368,50 @@
                         <div class="dropdown-item" onclick="selectFilter('status', '')">Todos</div>
                         <div class="dropdown-item" onclick="selectFilter('status', 'Produtiva')">Produtiva</div>
                         <div class="dropdown-item" onclick="selectFilter('status', 'Improdutiva')">Improdutiva</div>
-                        <div class="dropdown-item" onclick="selectFilter('status', 'Planejado')">Planejado</div>
-                        <div class="dropdown-item" onclick="selectFilter('status', 'Em Andamento')">Em Andamento</div>
-                        <div class="dropdown-item" onclick="selectFilter('status', 'Finalizado')">Finalizado</div>
+                    `;
+                }
+            }
+
+            // Garantir que o dropdown de situação mantenha seus valores fixos
+            const situacaoDropdown = document.getElementById('dropdown-situacao');
+            if (situacaoDropdown) {
+                // Verificar se o dropdown de situação foi sobrescrito
+                const situacaoItems = situacaoDropdown.querySelectorAll('.dropdown-item');
+                const hasFixedValues = Array.from(situacaoItems).some(item => 
+                    item.textContent === 'Finalizado' || 
+                    item.textContent === 'Assumir' ||
+                    item.textContent === 'Em Andamento'
+                );
+                
+                // Se não tem os valores fixos, restaurar
+                if (!hasFixedValues) {
+                    situacaoDropdown.innerHTML = `
+                        <input type="text" class="dropdown-search" placeholder="Buscar situação..." onkeyup="filterDropdown('situacao', this.value)">
+                        <div class="dropdown-item" onclick="selectFilter('situacao', '')">Todos</div>
+                        <div class="dropdown-item" onclick="selectFilter('situacao', 'Finalizado')">Finalizado</div>
+                        <div class="dropdown-item" onclick="selectFilter('situacao', 'Assumir')">Assumir</div>
+                        <div class="dropdown-item" onclick="selectFilter('situacao', 'Em Andamento')">Em Andamento</div>
+                    `;
+                }
+            }
+
+            // Garantir que o dropdown de origem mantenha seus valores fixos
+            const origemDropdown = document.getElementById('dropdown-origem');
+            if (origemDropdown) {
+                // Verificar se o dropdown de origem foi sobrescrito
+                const origemItems = origemDropdown.querySelectorAll('.dropdown-item');
+                const hasFixedValues = Array.from(origemItems).some(item => 
+                    item.textContent === 'Planejada' || 
+                    item.textContent === 'Não Planejada'
+                );
+                
+                // Se não tem os valores fixos, restaurar
+                if (!hasFixedValues) {
+                    origemDropdown.innerHTML = `
+                        <input type="text" class="dropdown-search" placeholder="Buscar origem..." onkeyup="filterDropdown('origem', this.value)">
+                        <div class="dropdown-item" onclick="selectFilter('origem', '')">Todos</div>
+                        <div class="dropdown-item" onclick="selectFilter('origem', 'Planejada')">Planejada</div>
+                        <div class="dropdown-item" onclick="selectFilter('origem', 'Não Planejada')">Não Planejada</div>
                     `;
                 }
             }
@@ -1504,6 +1856,305 @@
                 console.error('❌ Erro ao exportar Excel formatado:', error);
                 showToast('error', '❌ Erro na Exportação', 'Erro ao gerar arquivo Excel formatado');
             }
+        }
+    </script>
+
+    <!-- ========== MODAL DE FINALIZAÇÃO ========== -->
+    <div class="modal-overlay" id="modalFinalizacao">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Finalizar Chamado</h2>
+                <button class="modal-close" onclick="fecharModal()">&times;</button>
+            </div>
+            <form id="formFinalizacao" onsubmit="finalizarChamado(event)">
+                <input type="hidden" id="modal_id_chamado" name="id_chamado">
+                
+                <div class="modal-form-group">
+                    <label>ID do Chamado</label>
+                    <input type="text" id="modal_id_display" readonly>
+                </div>
+
+                <div class="modal-form-group">
+                    <label>Conclusão <span style="color: #ff4444;">*</span></label>
+                    <input type="time" id="modal_conclusao" name="conclusao" required>
+                </div>
+
+                <div class="modal-form-group">
+                    <label>Produtividade <span style="color: #ff4444;">*</span></label>
+                    <div class="status-options">
+                        <button type="button" class="status-button" id="btnProdutiva" onclick="setProdutivaStatus(true)">Produtiva</button>
+                        <button type="button" class="status-button" id="btnImprodutiva" onclick="setProdutivaStatus(false)">Improdutiva</button>
+                        <input type="hidden" id="modal_produtiva" name="produtiva" required>
+                    </div>
+                </div>
+
+                <div class="modal-form-group">
+                    <label>Senha <span style="color: #ff4444;">*</span></label>
+                    <input type="text" id="modal_senha" name="senha" required>
+                </div>
+
+                <div class="modal-form-group">
+                    <label>Observação</label>
+                    <textarea id="modal_observacao" name="observacao" placeholder="Detalhes adicionais sobre o chamado..."></textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="modal-btn modal-btn-secondary" onclick="fecharModal()">Cancelar</button>
+                    <button type="submit" class="modal-btn modal-btn-primary">Finalizar Chamado</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========== MODAL DE ASSUMIR CHAMADO ========== -->
+    <div class="modal-overlay" id="modalAssumir">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Assumir Chamado</h2>
+                <button class="modal-close" onclick="fecharModalAssumir()">&times;</button>
+            </div>
+            <form id="formAssumir" onsubmit="assumirChamado(event)">
+                <input type="hidden" id="modal_assumir_id_chamado" name="id_chamado">
+                
+                <div class="modal-form-group">
+                    <label>ID do Chamado</label>
+                    <input type="text" id="modal_assumir_id_display" readonly>
+                </div>
+
+                <div class="modal-form-group">
+                    <label>Analista <span style="color: #ff4444;">*</span></label>
+                    <select id="modal_assumir_analista" name="analista" required>
+                        <option value="">Selecione o analista...</option>
+                        {% for user in analistas %}
+                        <option value="{{ user.username }}">{{ user.username }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="modal-form-group">
+                    <label>Tipo de Atividade <span style="color: #ff4444;">*</span></label>
+                    <select id="modal_assumir_tipo_atividade" name="tipo_atividade" required>
+                        <option value="">Selecione o tipo...</option>
+                        <option value="Manutenção">Manutenção</option>
+                        <option value="Migração">Migração</option>
+                        <option value="Mudança de Endereço">Mudança de Endereço</option>
+                        <option value="Remanejamento">Remanejamento</option>
+                    </select>
+                </div>
+
+                <div class="modal-form-group">
+                    <label>Nome do Técnico <span style="color: #ff4444;">*</span></label>
+                    <input type="text" id="modal_assumir_tecnico" name="tecnico" required>
+                </div>
+
+                <div class="modal-form-group">
+                    <label>Data <span style="color: #ff4444;">*</span></label>
+                    <input type="date" id="modal_assumir_data" name="data" required>
+                </div>
+
+                <div class="modal-form-group">
+                    <label>Hora de Início <span style="color: #ff4444;">*</span></label>
+                    <input type="time" id="modal_assumir_inicio" name="inicio" required>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="modal-btn modal-btn-secondary" onclick="fecharModalAssumir()">Cancelar</button>
+                    <button type="submit" class="modal-btn modal-btn-primary">Assumir Chamado</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ========== FUNÇÕES DO MODAL ==========
+        function abrirModalFinalizacao(idChamado) {
+            console.log('🔓 Abrindo modal para chamado:', idChamado);
+            
+            // Preencher dados do modal
+            document.getElementById('modal_id_chamado').value = idChamado;
+            document.getElementById('modal_id_display').value = idChamado;
+            
+            // Resetar botões de status
+            document.getElementById('modal_produtiva').value = '';
+            document.getElementById('btnProdutiva').classList.remove('active');
+            document.getElementById('btnImprodutiva').classList.remove('active');
+            
+            // Limpar outros campos
+            document.getElementById('modal_conclusao').value = '';
+            document.getElementById('modal_senha').value = '';
+            document.getElementById('modal_observacao').value = '';
+            
+            // Mostrar modal
+            document.getElementById('modalFinalizacao').classList.add('active');
+        }
+
+        function abrirModalAssumir(idChamado) {
+            console.log('🔓 Abrindo modal para assumir chamado:', idChamado);
+            
+            // Preencher dados do modal
+            document.getElementById('modal_assumir_id_chamado').value = idChamado;
+            document.getElementById('modal_assumir_id_display').value = idChamado;
+            
+            // Limpar campos
+            document.getElementById('modal_assumir_analista').value = '';
+            document.getElementById('modal_assumir_tipo_atividade').value = '';
+            document.getElementById('modal_assumir_tecnico').value = '';
+            document.getElementById('modal_assumir_data').value = '';
+            document.getElementById('modal_assumir_inicio').value = '';
+            
+            // Mostrar modal
+            document.getElementById('modalAssumir').classList.add('active');
+        }
+
+        function fecharModalAssumir() {
+            document.getElementById('modalAssumir').classList.remove('active');
+            document.getElementById('formAssumir').reset();
+        }
+
+        function assumirChamado(event) {
+            event.preventDefault();
+            console.log('📝 Assumindo chamado...');
+            
+            const formData = new FormData(document.getElementById('formAssumir'));
+            const data = Object.fromEntries(formData);
+            
+            console.log('📤 Dados enviados:', data);
+            
+            fetch('/salvar_dados_iniciais/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                console.log('📥 Resposta recebida:', result);
+                
+                if (result.success) {
+                    showToast(result.message, 'success');
+                    fecharModalAssumir();
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    showToast(result.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('❌ Erro:', error);
+                showToast('Erro ao assumir chamado. Tente novamente.', 'error');
+            });
+        }
+
+        function setProdutivaStatus(isProdutiva) {
+            console.log('🎯 Definindo produtividade:', isProdutiva ? 'Produtiva' : 'Improdutiva');
+            
+            // Atualizar campo hidden
+            document.getElementById('modal_produtiva').value = isProdutiva;
+            
+            // Atualizar visual dos botões
+            const btnProdutiva = document.getElementById('btnProdutiva');
+            const btnImprodutiva = document.getElementById('btnImprodutiva');
+            
+            if (isProdutiva) {
+                btnProdutiva.classList.add('active');
+                btnImprodutiva.classList.remove('active');
+            } else {
+                btnImprodutiva.classList.add('active');
+                btnProdutiva.classList.remove('active');
+            }
+        }
+
+        function fecharModal() {
+            document.getElementById('modalFinalizacao').classList.remove('active');
+            document.getElementById('formFinalizacao').reset();
+        }
+
+        function finalizarChamado(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(event.target);
+            const data = {
+                ID_chamado: formData.get('id_chamado'),
+                conclusao: formData.get('conclusao'),
+                produtiva: formData.get('produtiva'),
+                senha: formData.get('senha'),
+                observacao: formData.get('observacao') || ''
+            };
+            
+            console.log('📤 Finalizando chamado:', data);
+            
+            // Enviar dados para o backend
+            fetch('/finalizar_chamado/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    showToast('success', '✅ Sucesso', result.message);
+                    fecharModal();
+                    // Recarregar página após 1 segundo
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    showToast('error', '❌ Erro', result.message);
+                }
+            })
+            .catch(error => {
+                console.error('❌ Erro:', error);
+                showToast('error', '❌ Erro', 'Erro ao finalizar chamado');
+            });
+        }
+
+        // Função para obter CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Fechar modal ao clicar fora
+        document.getElementById('modalFinalizacao').addEventListener('click', function(e) {
+            if (e.target === this) {
+                fecharModal();
+            }
+        });
+
+        document.getElementById('modalAssumir').addEventListener('click', function(e) {
+            if (e.target === this) {
+                fecharModalAssumir();
+            }
+        });
+
+        /**
+         * Filtra por data selecionada
+         */
+        function filterByDate(selectedDate) {
+            if (!selectedDate) {
+                selectFilter('data', '');
+                return;
+            }
+            
+            // Converter data para formato YYYY-MM-DD
+            const dateStr = selectedDate;
+            selectFilter('data', dateStr);
         }
     </script>
 </body>
