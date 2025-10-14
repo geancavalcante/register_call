@@ -1,0 +1,501 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload de Planilha - Attend Services</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, rgba(10, 10, 10, 0.8) 0%, rgba(26, 26, 26, 0.8) 100%), url('{% static "img/back 01.jpeg" %}');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: linear-gradient(180deg, #1a1a1a 0%, #0f0f0f 100%);
+            border-right: 2px solid rgba(248, 194, 74, 0.2);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo {
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(248, 194, 74, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid #F8C24A;
+        }
+
+        .logo h1 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #F8C24A;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .logo p {
+            font-size: 12px;
+            color: #999;
+            font-weight: 400;
+        }
+
+        nav {
+            flex: 1;
+            padding: 20px 0;
+        }
+
+        nav a {
+            display: block;
+            padding: 15px 25px;
+            color: #ccc;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        nav a:hover {
+            background: rgba(248, 194, 74, 0.1);
+            color: #F8C24A;
+            border-left-color: #F8C24A;
+        }
+
+        nav a.active {
+            background: rgba(248, 194, 74, 0.15);
+            color: #F8C24A;
+            border-left-color: #F8C24A;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            margin-left: 260px;
+            padding: 40px;
+            min-height: 100vh;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #F8C24A;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .page-header .subtitle {
+            font-size: 1.1rem;
+            color: #ccc;
+            font-weight: 400;
+        }
+
+        /* UPLOAD CONTAINER */
+        .upload-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #1f1f1f 0%, #141414 100%);
+            border-radius: 20px;
+            padding: 40px;
+            border: 2px solid rgba(248, 194, 74, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .upload-area {
+            border: 3px dashed rgba(248, 194, 74, 0.3);
+            border-radius: 15px;
+            padding: 60px 40px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: rgba(248, 194, 74, 0.05);
+        }
+
+        .upload-area:hover {
+            border-color: #F8C24A;
+            background: rgba(248, 194, 74, 0.1);
+        }
+
+        .upload-area.dragover {
+            border-color: #F8C24A;
+            background: rgba(248, 194, 74, 0.15);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            color: #F8C24A;
+            margin-bottom: 20px;
+        }
+
+        .upload-text {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #F8C24A;
+            margin-bottom: 10px;
+        }
+
+        .upload-subtext {
+            color: #999;
+            font-size: 1rem;
+            margin-bottom: 30px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-btn {
+            background: linear-gradient(135deg, #F8C24A 0%, #E6B800 100%);
+            color: #1f1f1f;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(248, 194, 74, 0.3);
+        }
+
+        /* INSTRUCTIONS */
+        .instructions {
+            margin-top: 40px;
+            background: rgba(248, 194, 74, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid rgba(248, 194, 74, 0.2);
+        }
+
+        .instructions h3 {
+            color: #F8C24A;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .instructions ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .instructions li {
+            color: #ccc;
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .instructions li:before {
+            content: "✓";
+            color: #F8C24A;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .required-columns {
+            margin-top: 20px;
+            background: rgba(248, 194, 74, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .required-columns h4 {
+            color: #F8C24A;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+
+        .columns-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .column-item {
+            background: rgba(248, 194, 74, 0.1);
+            padding: 10px 15px;
+            border-radius: 8px;
+            color: #F8C24A;
+            font-weight: 600;
+            text-align: center;
+            border: 1px solid rgba(248, 194, 74, 0.2);
+        }
+
+        /* LOADING */
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .loading-spinner {
+            border: 3px solid rgba(248, 194, 74, 0.3);
+            border-top: 3px solid #F8C24A;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #F8C24A;
+            font-weight: 600;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .upload-container {
+                padding: 20px;
+            }
+
+            .upload-area {
+                padding: 40px 20px;
+            }
+
+            .page-header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="logo">
+            <img src="{% static 'img/logo.png' %}" alt="Logo">
+            <h1>Attend</h1>
+            <p>Services</p>
+        </div>
+        <nav>
+            <a href="{% url 'dashboards' %}">Dashboards</a>
+            <a href="{% url 'nomes_analistas' %}">Analistas</a>
+            <a href="{% url 'cadastrar_chamado' %}">Registrar Chamado</a>
+            <a href="{% url 'todos_chamados' %}">Todos os Chamados</a>
+            <a href="{% url 'tabela_chamados' %}">Tabela Dinâmica</a>
+            <a href="{% url 'upload_planilha' %}" class="active">Upload Planilha</a>
+        </nav>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <div class="page-header">
+            <h1>📊 Upload de Planilha</h1>
+            <p class="subtitle">Carregue chamados planejados para o sistema</p>
+        </div>
+
+        <div class="upload-container">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📁</div>
+                <div class="upload-text">Arraste e solte sua planilha aqui</div>
+                <div class="upload-subtext">ou clique para selecionar um arquivo</div>
+                <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                    Selecionar Arquivo
+                </button>
+                <input type="file" id="fileInput" class="file-input" accept=".xlsx,.xls,.csv" onchange="handleFileSelect(event)">
+            </div>
+
+            <div class="loading" id="loading">
+                <div class="loading-spinner"></div>
+                <div class="loading-text">Processando planilha...</div>
+            </div>
+
+            <div class="instructions">
+                <h3>📋 Instruções para Upload</h3>
+                <ul>
+                    <li>Formatos suportados: Excel (.xlsx, .xls) e CSV (.csv)</li>
+                    <li>Use exatamente o formato do arquivo "Rotas 01"</li>
+                    <li>Os chamados serão criados com status "Planejado"</li>
+                    <li>Chamados duplicados (mesmo ID) serão ignorados</li>
+                    <li>Data deve estar no formato AAAA-MM-DD (como no arquivo "Rotas 01")</li>
+                    <li>O sistema extrai automaticamente o ID do campo ICKET</li>
+                    <li>O nome do cliente é extraído do campo Ponto</li>
+                    <li><strong>TODOS os campos são obrigatórios - não podem estar vazios!</strong></li>
+                </ul>
+
+                <div class="required-columns">
+                    <h4>🔧 Colunas Obrigatórias (formato "Rotas 01"):</h4>
+                    <div class="columns-grid">
+                        <div class="column-item">ICKET</div>
+                        <div class="column-item">Ponto</div>
+                        <div class="column-item">Cidade</div>
+                        <div class="column-item">UF</div>
+                        <div class="column-item">TÉCNICO</div>
+                        <div class="column-item">NÚMERO</div>
+                        <div class="column-item">DATA</div>
+                        <div class="column-item">SERVIÇO</div>
+                    </div>
+                    <p style="color: #F8C24A; margin-top: 15px; font-size: 0.9rem;">
+                        <strong>Exemplo:</strong> ICKET "125978/1" → ID será "125978"<br>
+                        Ponto "18-007264-1 - AGENCIA LOTERICA" → Cliente será "AGENCIA LOTERICA"<br>
+                        <strong>Use exatamente o formato do arquivo "Rotas 01"!</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Drag and drop functionality
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const loading = document.getElementById('loading');
+
+        // Drag and drop events
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        // File input change
+        function handleFileSelect(event) {
+            console.log('handleFileSelect called');
+            const file = event.target.files[0];
+            console.log('File selected:', file);
+            if (file) {
+                handleFile(file);
+            } else {
+                console.log('No file selected');
+            }
+        }
+
+        // Handle file upload
+        function handleFile(file) {
+            console.log('handleFile called with:', file);
+            
+            // Validate file type
+            const allowedTypes = ['.xlsx', '.xls', '.csv'];
+            const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+            
+            if (!allowedTypes.includes(fileExtension)) {
+                alert('Formato de arquivo não suportado. Use .xlsx, .xls ou .csv');
+                return;
+            }
+
+            // Show loading
+            loading.style.display = 'block';
+            uploadArea.style.display = 'none';
+
+            // Create FormData
+            const formData = new FormData();
+            formData.append('arquivo', file);
+            console.log('FormData created with file:', file.name);
+
+            // Upload file
+            fetch('{% url "upload_planilha" %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                loading.style.display = 'none';
+                uploadArea.style.display = 'block';
+                
+                if (data.success) {
+                    alert(`✅ ${data.message}`);
+                    // Reset file input
+                    fileInput.value = '';
+                } else {
+                    alert(`❌ Erro: ${data.error}`);
+                }
+            })
+            .catch(error => {
+                loading.style.display = 'none';
+                uploadArea.style.display = 'block';
+                console.error('Erro:', error);
+                alert('❌ Erro ao fazer upload da planilha');
+            });
+        }
+
+        // Get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+</body>
+</html>
