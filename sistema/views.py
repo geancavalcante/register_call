@@ -251,14 +251,51 @@ def salvar_dados_iniciais(request):
                 'message': 'Formato de horário inválido'
             }, status=400)
         
-        # Se chegou até aqui, os dados são válidos
-        # Por enquanto, apenas retornamos sucesso
-        # Os dados serão salvos quando o usuário finalizar o chamado
-        
-        return JsonResponse({
-            'success': True,
-            'message': 'Dados iniciais validados com sucesso'
-        })
+        # Salvar chamado com status "em_andamento"
+        try:
+            # Se o chamado já existe, atualizar
+            if chamado_existente:
+                chamado_existente.nome_analista = analista
+                chamado_existente.tipo_atividade = data['tipo_atividade']
+                chamado_existente.nome_tecnico = data['tecnico']
+                chamado_existente.data = data['data']
+                chamado_existente.inicio = data['inicio']
+                chamado_existente.status = 'em_andamento'
+                chamado_existente.origem_planilha = False
+                chamado_existente.save()
+                
+                print(f"✅ Chamado {data['ID_chamado']} atualizado para 'em_andamento'")
+                
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Chamado atualizado e iniciado com sucesso!'
+                })
+            else:
+                # Criar novo chamado
+                novo_chamado = Chamados.objects.create(
+                    nome_analista=analista,
+                    ID_chamado=data['ID_chamado'],
+                    tipo_atividade=data['tipo_atividade'],
+                    nome_tecnico=data['tecnico'],
+                    data=data['data'],
+                    inicio=data['inicio'],
+                    status='em_andamento',
+                    origem_planilha=False
+                )
+                
+                print(f"✅ Novo chamado {data['ID_chamado']} criado com status 'em_andamento'")
+                
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Chamado iniciado com sucesso! Agora ele aparece na tabela.'
+                })
+                
+        except Exception as e:
+            print(f"❌ Erro ao salvar chamado: {str(e)}")
+            return JsonResponse({
+                'success': False,
+                'message': f'Erro ao salvar chamado: {str(e)}'
+            }, status=500)
         
     except json.JSONDecodeError:
         return JsonResponse({
@@ -413,22 +450,22 @@ class RegistrarChamado(View):
                 # Chamado não existe - criar novo
                 print(f"Criando novo chamado {self.ID_chamado}")
 
-            Chamados.objects.create(
-                nome_analista = User.objects.get(username=self.nome_analista),
-                ID_chamado = self.ID_chamado,
-                tipo_atividade = self.tipo_atividade,
-                nome_tecnico = self.nome_tecnico,
-                data = self.data,
+                Chamados.objects.create(
+                    nome_analista = User.objects.get(username=self.nome_analista),
+                    ID_chamado = self.ID_chamado,
+                    tipo_atividade = self.tipo_atividade,
+                    nome_tecnico = self.nome_tecnico,
+                    data = self.data,
                     inicio = self.inicio,
-                conclusao = self.conclusao,
-                total_horas = self.total_horas,
-                produtiva = self.situacao,
-                senha = self.senha,
-                observacao = self.observacao,
+                    conclusao = self.conclusao,
+                    total_horas = self.total_horas,
+                    produtiva = self.situacao,
+                    senha = self.senha,
+                    observacao = self.observacao,
                     status = 'em_andamento',  # Novo chamado começa como "em andamento"
                     origem_planilha = False
                 )
-        print("Novo chamado criado com sucesso!")
+                print("Novo chamado criado com sucesso!")
                 
         except Exception as e:
             print(f"Erro ao salvar chamado: {str(e)}")
@@ -696,5 +733,83 @@ def upload_planilha(request):
             print(f"❌ Erro no upload: {str(e)}")
             return JsonResponse({'error': f'Erro ao processar planilha: {str(e)}'}, status=500)
 
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def finalizar_chamado(request):
+    """
+    View para finalizar um chamado.
+    Atualiza os dados de conclusão, produtividade, senha e observação.
+    """
+    try:
+        data = json.loads(request.body)
+        
+        ID_chamado = data.get('ID_chamado')
+        conclusao = data.get('conclusao')
+        produtiva = data.get('produtiva')
+        senha = data.get('senha')
+        observacao = data.get('observacao', '')
+        
+        # Validações
+        if not ID_chamado:
+            return JsonResponse({'success': False, 'message': 'ID do chamado não informado'}, status=400)
+        
+        if not conclusao:
+            return JsonResponse({'success': False, 'message': 'Horário de conclusão não informado'}, status=400)
+        
+        # Converter produtividade para boolean
+        if produtiva in ['true', 'True', '1', 'sim', 'Sim']:
+            produtiva = True
+        elif produtiva in ['false', 'False', '0', 'não', 'nao', 'Não', 'Nao']:
+            produtiva = False
+        else:
+            return JsonResponse({'success': False, 'message': 'Produtividade inválida'}, status=400)
+        
+        # Buscar chamado
+        try:
+            chamado = Chamados.objects.get(ID_chamado=ID_chamado)
+        except Chamados.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Chamado não encontrado'}, status=404)
+        
+        # Atualizar chamado
+        chamado.conclusao = conclusao
+        chamado.produtiva = produtiva
+        chamado.senha = senha
+        chamado.observacao = observacao
+        chamado.status = 'finalizado'
+        
+        # Calcular total de horas se possível
+        if chamado.inicio and conclusao:
+            try:
+                inicio_time = datetime.strptime(chamado.inicio, '%H:%M').time()
+                conclusao_time = datetime.strptime(conclusao, '%H:%M').time()
+                
+                inicio_datetime = datetime.combine(date.today(), inicio_time)
+                conclusao_datetime = datetime.combine(date.today(), conclusao_time)
+                
+                # Se conclusão for menor que início, assumir que passou para o dia seguinte
+                if conclusao_datetime < inicio_datetime:
+                    conclusao_datetime += timedelta(days=1)
+                
+                diferenca = conclusao_datetime - inicio_datetime
+                horas = diferenca.total_seconds() / 3600
+                chamado.total_horas = round(horas, 2)
+            except:
+                pass  # Se houver erro no cálculo, manter o valor existente
+        
+        chamado.save()
+        
+        print(f"✅ Chamado {ID_chamado} finalizado com sucesso!")
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Chamado finalizado com sucesso!'
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'message': 'Dados JSON inválidos'}, status=400)
+    except Exception as e:
+        print(f"❌ Erro ao finalizar chamado: {str(e)}")
+        return JsonResponse({'success': False, 'message': f'Erro ao finalizar chamado: {str(e)}'}, status=500)
 
 

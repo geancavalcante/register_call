@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload de Planilha - Attend Services</title>
+    <title>Importar Excel - Attend Services</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
@@ -197,6 +197,84 @@
             box-shadow: 0 10px 20px rgba(248, 194, 74, 0.3);
         }
 
+        /* TEMPLATE SECTION */
+        .template-section {
+            margin-top: 40px;
+            background: rgba(34, 197, 94, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .template-section h3 {
+            color: #22c55e;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .template-section p {
+            color: #ccc;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .template-table {
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        .template-table table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #1a1a1a;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .template-table th {
+            background: #22c55e;
+            color: #0a0a0a;
+            padding: 12px 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .template-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #333;
+            color: #ccc;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .template-table tr:hover {
+            background: rgba(34, 197, 94, 0.1);
+        }
+
+        .template-download {
+            text-align: center;
+        }
+
+        .download-template-btn {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: #0a0a0a;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .download-template-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
+        }
+
         /* INSTRUCTIONS */
         .instructions {
             margin-top: 40px;
@@ -329,15 +407,15 @@
             <a href="{% url 'nomes_analistas' %}">Analistas</a>
             <a href="{% url 'cadastrar_chamado' %}">Registrar Chamado</a>
             <a href="{% url 'todos_chamados' %}">Todos os Chamados</a>
-            <a href="{% url 'tabela_chamados' %}">Tabela Dinâmica</a>
-            <a href="{% url 'upload_planilha' %}" class="active">Upload Planilha</a>
+            <a href="{% url 'tabela_chamados' %}">Relatórios de Chamados</a>
+            <a href="{% url 'upload_planilha' %}" class="active">Importar Excel</a>
         </nav>
     </div>
 
     <!-- MAIN CONTENT -->
     <div class="main-content">
         <div class="page-header">
-            <h1>📊 Upload de Planilha</h1>
+            <h1>📊 Importar Excel</h1>
             <p class="subtitle">Carregue chamados planejados para o sistema</p>
         </div>
 
@@ -355,6 +433,67 @@
             <div class="loading" id="loading">
                 <div class="loading-spinner"></div>
                 <div class="loading-text">Processando planilha...</div>
+            </div>
+
+            <!-- Template de Exemplo -->
+            <div class="template-section">
+                <h3>📄 Template de Exemplo</h3>
+                <p>Use este formato como base para sua planilha:</p>
+                
+                <div class="template-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ICKET</th>
+                                <th>Ponto</th>
+                                <th>Cidade</th>
+                                <th>UF</th>
+                                <th>TÉCNICO</th>
+                                <th>NÚMERO</th>
+                                <th>DATA</th>
+                                <th>SERVIÇO</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>125978/1</td>
+                                <td>18-007264-1 - AGENCIA LOTERICA</td>
+                                <td>São Paulo</td>
+                                <td>SP</td>
+                                <td>João Silva</td>
+                                <td>11999999999</td>
+                                <td>2025-10-15</td>
+                                <td>Manutenção</td>
+                            </tr>
+                            <tr>
+                                <td>125979/1</td>
+                                <td>18-007265-2 - LOJA CONVENIENCIA</td>
+                                <td>Rio de Janeiro</td>
+                                <td>RJ</td>
+                                <td>Maria Santos</td>
+                                <td>21988888888</td>
+                                <td>2025-10-16</td>
+                                <td>Migração</td>
+                            </tr>
+                            <tr>
+                                <td>125980/1</td>
+                                <td>18-007266-3 - FARMACIA CENTRAL</td>
+                                <td>Belo Horizonte</td>
+                                <td>MG</td>
+                                <td>Pedro Costa</td>
+                                <td>31977777777</td>
+                                <td>2025-10-17</td>
+                                <td>Mudança de Endereço</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="template-download">
+                    <button class="download-template-btn" onclick="downloadTemplate()">
+                        📥 Baixar Template Excel
+                    </button>
+                </div>
             </div>
 
             <div class="instructions">
@@ -495,6 +634,33 @@
                 }
             }
             return cookieValue;
+        }
+
+        // Função para baixar template
+        function downloadTemplate() {
+            // Dados do template
+            const templateData = [
+                ['ICKET', 'Ponto', 'Cidade', 'UF', 'TÉCNICO', 'NÚMERO', 'DATA', 'SERVIÇO'],
+                ['125978/1', '18-007264-1 - AGENCIA LOTERICA', 'São Paulo', 'SP', 'João Silva', '11999999999', '2025-10-15', 'Manutenção'],
+                ['125979/1', '18-007265-2 - LOJA CONVENIENCIA', 'Rio de Janeiro', 'RJ', 'Maria Santos', '21988888888', '2025-10-16', 'Migração'],
+                ['125980/1', '18-007266-3 - FARMACIA CENTRAL', 'Belo Horizonte', 'MG', 'Pedro Costa', '31977777777', '2025-10-17', 'Mudança de Endereço']
+            ];
+
+            // Converter para CSV
+            const csvContent = templateData.map(row => 
+                row.map(cell => `"${cell}"`).join(',')
+            ).join('\n');
+
+            // Criar e baixar arquivo
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'template_chamados.csv');
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
     </script>
 </body>

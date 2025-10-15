@@ -546,8 +546,8 @@
             <a href="{% url 'nomes_analistas' %}">Analistas</a>
             <a href="{% url 'cadastrar_chamado' %}">Registrar Chamado</a>
             <a href="{% url 'todos_chamados' %}">Todos os Chamados</a>
-            <a href="{% url 'tabela_chamados' %}">Tabela Dinâmica</a>
-            <a href="{% url 'upload_planilha' %}">Upload Planilha</a>
+            <a href="{% url 'tabela_chamados' %}">Relatórios de Chamados</a>
+            <a href="{% url 'upload_planilha' %}">Importar Excel</a>
         </nav>
     </div>
 
@@ -568,9 +568,9 @@
                 <div class="filter-group">
                     <label class="filter-label">📅 Período</label>
                     <select id="periodFilter" class="filter-select">
-                        <option value="0">Hoje</option>
+                        <option value="0" selected>Hoje</option>
                         <option value="7">Últimos 7 dias</option>
-                        <option value="30" selected>Últimos 30 dias</option>
+                        <option value="30">Últimos 30 dias</option>
                         <option value="90">Últimos 3 meses</option>
                         <option value="custom">Período personalizado</option>
                     </select>
@@ -791,7 +791,7 @@
         // Variáveis globais para filtros
         let filteredChamados = [];
         let currentFilters = {
-            period: 30,
+            period: 0,
             startDate: null,
             endDate: null,
             analysts: 'all',
@@ -1001,7 +1001,7 @@
             };
 
             // Resetar interface
-            document.getElementById('periodFilter').value = '30';
+            document.getElementById('periodFilter').value = '0';
             document.getElementById('analystFilter').selectedIndex = 0;
             document.getElementById('activityFilter').value = 'all';
             document.getElementById('productivityFilter').value = 'all';
@@ -1156,7 +1156,7 @@
             if (currentFilters.period === 'custom' && currentFilters.startDate && currentFilters.endDate) {
                 params.set('startDate', currentFilters.startDate);
                 params.set('endDate', currentFilters.endDate);
-            } else if (currentFilters.period !== '30') { // 30 é o padrão
+            } else if (currentFilters.period !== '0') { // 0 (Hoje) é o padrão
                 // Mapear valores do dashboard para valores esperados pela tabela dinâmica
                 const periodoMapping = {
                     '0': 'today',    // Dashboard usa '0' para hoje
@@ -1194,7 +1194,7 @@
             const filtrosFrontend = [];
             
             // Filtros que serão aplicados pelo backend (via URL)
-            if (currentFilters.period !== '30') {
+            if (currentFilters.period !== '0') {
                 const periodos = {
                     '0': 'Hoje',
                     '7': 'Últimos 7 dias',
@@ -1226,7 +1226,7 @@
                 mensagem = 'Mostrando todos os chamados';
             }
                 
-            showToast('info', '📊 Tabela Dinâmica', mensagem);
+            showToast('info', '📊 Relatórios de Chamados', mensagem);
             
             // Redirecionar após um pequeno delay para mostrar o toast
             setTimeout(() => {
@@ -1242,7 +1242,7 @@
             params.set('productivity', 'true');
             
             // Manter outros filtros ativos do dashboard
-            if (currentFilters.period !== '30') {
+            if (currentFilters.period !== '0') {
                 const periodoMapping = {
                     '0': 'today',
                     '7': '7',
@@ -1269,7 +1269,7 @@
             // Toast informativo
             const filtrosAtivos = ['Produtividade: Produtivos'];
             
-            if (currentFilters.period !== '30') {
+            if (currentFilters.period !== '0') {
                 const periodos = {
                     '0': 'Hoje',
                     '7': 'Últimos 7 dias',
@@ -1291,7 +1291,7 @@
                 ? `Filtros aplicados: ${filtrosAtivos.join(', ')}`
                 : 'Mostrando apenas chamados produtivos';
                 
-            showToast('success', '📊 Tabela Dinâmica', mensagem);
+            showToast('success', '📊 Relatórios de Chamados', mensagem);
             
             // Redirecionar após um pequeno delay para mostrar o toast
             setTimeout(() => {
@@ -1307,7 +1307,7 @@
             params.set('status', 'planejadas');
             
             // Manter outros filtros ativos do dashboard
-            if (currentFilters.period !== '30') {
+            if (currentFilters.period !== '0') {
                 const periodoMapping = {
                     '0': 'today',
                     '7': '7',
@@ -1338,7 +1338,7 @@
             // Toast informativo
             const filtrosAtivos = ['Status: Planejadas'];
             
-            if (currentFilters.period !== '30') {
+            if (currentFilters.period !== '0') {
                 const periodos = {
                     '0': 'Hoje',
                     '7': 'Últimos 7 dias',
@@ -1364,7 +1364,7 @@
                 ? `Filtros aplicados: ${filtrosAtivos.join(', ')}`
                 : 'Mostrando apenas chamados planejados';
                 
-            showToast('success', '📊 Tabela Dinâmica', mensagem);
+            showToast('success', '📊 Relatórios de Chamados', mensagem);
             
             // Redirecionar após um pequeno delay para mostrar o toast
             setTimeout(() => {
@@ -1380,7 +1380,7 @@
             params.set('status', 'andamento');
             
             // Manter outros filtros ativos do dashboard
-            if (currentFilters.period !== '30') {
+            if (currentFilters.period !== '0') {
                 const periodoMapping = {
                     '0': 'today',
                     '7': '7',
@@ -1411,7 +1411,7 @@
             // Toast informativo
             const filtrosAtivos = ['Status: Em andamento'];
             
-            if (currentFilters.period !== '30') {
+            if (currentFilters.period !== '0') {
                 const periodos = {
                     '0': 'Hoje',
                     '7': 'Últimos 7 dias',
@@ -1437,7 +1437,7 @@
                 ? `Filtros aplicados: ${filtrosAtivos.join(', ')}`
                 : 'Mostrando apenas chamados em andamento';
                 
-            showToast('success', '📊 Tabela Dinâmica', mensagem);
+            showToast('success', '📊 Relatórios de Chamados', mensagem);
             
             // Redirecionar após um pequeno delay para mostrar o toast
             setTimeout(() => {
@@ -1453,7 +1453,7 @@
             params.set('origem_planilha', 'false');
             
             // Manter outros filtros ativos do dashboard
-            if (currentFilters.period !== '30') {
+            if (currentFilters.period !== '0') {
                 const periodoMapping = {
                     '0': 'today',
                     '7': '7',
@@ -1491,7 +1491,7 @@
             params.set('status', 'finalizado');
             
             // Manter outros filtros ativos do dashboard
-            if (currentFilters.period !== '30') {
+            if (currentFilters.period !== '0') {
                 const periodoMapping = {
                     '0': 'today',
                     '7': '7',
@@ -1522,7 +1522,7 @@
             // Toast informativo
             const filtrosAtivos = ['Status: Finalizados'];
             
-            if (currentFilters.period !== '30') {
+            if (currentFilters.period !== '0') {
                 const periodos = {
                     '0': 'Hoje',
                     '7': 'Últimos 7 dias',
@@ -1548,7 +1548,7 @@
                 ? `Filtros aplicados: ${filtrosAtivos.join(', ')}`
                 : 'Mostrando apenas chamados finalizados';
                 
-            showToast('success', '📊 Tabela Dinâmica', mensagem);
+            showToast('success', '📊 Relatórios de Chamados', mensagem);
             
             // Redirecionar após um pequeno delay para mostrar o toast
             setTimeout(() => {
@@ -2173,8 +2173,8 @@
             // Configurar event listeners
             setupEventListeners();
 
-            // Inicializar dados filtrados
-            filteredChamados = chamados;
+            // Aplicar filtros iniciais (Hoje por padrão)
+            applyFilters();
 
             // Criar gráficos
             try {

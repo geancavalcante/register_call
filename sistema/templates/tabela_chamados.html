@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tabela de Chamados - Attend Services</title>
+    <title>Relatórios de Chamados - Attend Services</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         /* ========== ESTILOS GLOBAIS ========== */
@@ -362,6 +362,229 @@
         .dropdown-date-picker::-webkit-calendar-picker-indicator {
             filter: invert(1);
             cursor: pointer;
+        }
+
+        /* Botão do calendário */
+        .calendar-btn {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid rgba(248, 194, 74, 0.3);
+            border-radius: 6px;
+            background: linear-gradient(135deg, rgba(248, 194, 74, 0.1) 0%, rgba(248, 194, 74, 0.05) 100%);
+            color: #F8C24A;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 8px;
+        }
+
+        .calendar-btn:hover {
+            background: linear-gradient(135deg, rgba(248, 194, 74, 0.2) 0%, rgba(248, 194, 74, 0.1) 100%);
+            border-color: #F8C24A;
+            transform: translateY(-1px);
+        }
+
+        /* ========== MODAL DO CALENDÁRIO ========== */
+        .calendar-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .calendar-modal.show {
+            display: flex !important;
+        }
+
+        .calendar-container {
+            background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+            border: 2px solid #F8C24A;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(248, 194, 74, 0.3);
+            animation: scaleIn 0.4s ease-out;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(248, 194, 74, 0.2);
+        }
+
+        .calendar-title {
+            color: #F8C24A;
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .calendar-close {
+            background: none;
+            border: none;
+            color: #F8C24A;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .calendar-close:hover {
+            background: rgba(248, 194, 74, 0.1);
+            transform: scale(1.1);
+        }
+
+        .calendar-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .calendar-nav-btn {
+            background: rgba(248, 194, 74, 0.1);
+            border: 1px solid rgba(248, 194, 74, 0.3);
+            border-radius: 8px;
+            color: #F8C24A;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .calendar-nav-btn:hover {
+            background: rgba(248, 194, 74, 0.2);
+            border-color: #F8C24A;
+        }
+
+        .calendar-month-year {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            padding: 10px 5px;
+            color: #F8C24A;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 8px;
+            color: #ccc;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .calendar-day:hover {
+            background: rgba(248, 194, 74, 0.2);
+            border-color: #F8C24A;
+            color: #F8C24A;
+        }
+
+        .calendar-day.selected {
+            background: #F8C24A;
+            border-color: #F8C24A;
+            color: #0a0a0a;
+            font-weight: 700;
+        }
+
+        .calendar-day.other-month {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .calendar-day.other-month:hover {
+            background: #2a2a2a;
+            border-color: #444;
+            color: #ccc;
+        }
+
+        .calendar-day.today {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: #22c55e;
+            color: #22c55e;
+        }
+
+        .calendar-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+        }
+
+        .calendar-btn-action {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .calendar-btn-cancel {
+            background: #444;
+            color: #ccc;
+        }
+
+        .calendar-btn-cancel:hover {
+            background: #555;
+            color: #fff;
+        }
+
+        .calendar-btn-apply {
+            background: linear-gradient(135deg, #F8C24A 0%, #FFD666 100%);
+            color: #0a0a0a;
+        }
+
+        .calendar-btn-apply:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(248, 194, 74, 0.4);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         /* ========== ESTILOS DOS SELECTS NOS MODAIS ========== */
@@ -813,8 +1036,8 @@
             <a href="{% url 'nomes_analistas' %}">Analistas</a>
             <a href="{% url 'cadastrar_chamado' %}">Registrar Chamado</a>
             <a href="{% url 'todos_chamados' %}">Todos os Chamados</a>
-            <a href="{% url 'tabela_chamados' %}" class="active">Tabela Dinâmica</a>
-            <a href="{% url 'upload_planilha' %}">Upload Planilha</a>
+            <a href="{% url 'tabela_chamados' %}" class="active">Relatórios de Chamados</a>
+            <a href="{% url 'upload_planilha' %}">Importar Excel</a>
         </nav>
     </div>
 
@@ -822,7 +1045,7 @@
     <div class="main-content">
         <!-- Cabeçalho da página - estética do site -->
         <div class="page-header">
-            <h1>📊 Tabela Dinâmica de Chamados</h1>
+            <h1>📊 Relatórios de Chamados</h1>
             <p class="subtitle">Visualize, ordene, filtre e exporte dados em formato de tabela</p>
         </div>
 
@@ -857,6 +1080,9 @@
             </button>
             <button class="export-btn" id="clearFiltersBtn" style="background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);">
                 🔄 Limpar Filtros
+            </button>
+            <button class="export-btn" onclick="abrirCalendario();" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);">
+                📅 Data
             </button>
         </div>
         </div>
@@ -929,7 +1155,9 @@
                                     <button class="dropdown-btn" onclick="toggleDropdown('data')">▼</button>
                                 </div>
                                 <div class="dropdown-menu" id="dropdown-data">
-                                    <input type="date" class="dropdown-date-picker" id="dateFilterInput" onchange="filterByDate(this.value)">
+                                    <button class="calendar-btn" onclick="abrirCalendario();">
+                                        📅 Selecionar Data
+                                    </button>
                                     <div class="dropdown-item" onclick="selectFilter('data', '')">Todos</div>
                                     <!-- Datas serão preenchidas dinamicamente -->
                                 </div>
@@ -1122,6 +1350,39 @@
         </div>
     </div>
 
+    <!-- Modal do Calendário -->
+    <div id="calendarModal" class="calendar-modal" style="display: none;">
+        <div class="calendar-container">
+            <div class="calendar-header">
+                <h3 class="calendar-title">📅 Selecionar Data</h3>
+                <button class="calendar-close" onclick="fecharCalendario()">&times;</button>
+            </div>
+            
+            <div class="calendar-nav">
+                <button class="calendar-nav-btn" onclick="mudarMes(-1)">◀</button>
+                <span class="calendar-month-year" id="calendarMonthYear"></span>
+                <button class="calendar-nav-btn" onclick="mudarMes(1)">▶</button>
+            </div>
+            
+            <div class="calendar-grid" id="calendarGrid">
+                <!-- Cabeçalho dos dias da semana -->
+                <div class="calendar-day-header">Dom</div>
+                <div class="calendar-day-header">Seg</div>
+                <div class="calendar-day-header">Ter</div>
+                <div class="calendar-day-header">Qua</div>
+                <div class="calendar-day-header">Qui</div>
+                <div class="calendar-day-header">Sex</div>
+                <div class="calendar-day-header">Sáb</div>
+                <!-- Os dias serão preenchidos via JavaScript -->
+            </div>
+            
+            <div class="calendar-actions">
+                <button class="calendar-btn-action calendar-btn-cancel" onclick="fecharCalendario()">Cancelar</button>
+                <button class="calendar-btn-action calendar-btn-apply" onclick="aplicarDataSelecionada()">Aplicar</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ========== VARIÁVEIS GLOBAIS ==========
         // Armazena todas as linhas da tabela para manipulação
@@ -1157,6 +1418,10 @@
 
         // Dropdown atualmente aberto
         let openDropdown = null;
+
+        // ========== VARIÁVEIS DO CALENDÁRIO ==========
+        let currentCalendarDate = new Date();
+        let selectedCalendarDate = null;
 
         // ========== INICIALIZAÇÃO ==========
         /**
@@ -2156,6 +2421,163 @@
             const dateStr = selectedDate;
             selectFilter('data', dateStr);
         }
+
+        // ========== FUNÇÕES DO CALENDÁRIO ==========
+        
+        /**
+         * Abre o modal do calendário
+         */
+        function abrirCalendario() {
+            currentCalendarDate = new Date();
+            selectedCalendarDate = null;
+            
+            const modal = document.getElementById('calendarModal');
+            modal.style.display = 'flex';
+            modal.classList.add('show');
+            
+            // Fechar dropdown se estiver aberto
+            if (openDropdown) {
+                closeDropdown(openDropdown);
+            }
+            
+            renderizarCalendario();
+        }
+
+        /**
+         * Fecha o modal do calendário
+         */
+        function fecharCalendario() {
+            const modal = document.getElementById('calendarModal');
+            modal.style.display = 'none';
+            modal.classList.remove('show');
+        }
+
+        /**
+         * Renderiza o calendário com o mês atual
+         */
+        function renderizarCalendario() {
+            const grid = document.getElementById('calendarGrid');
+            const monthYear = document.getElementById('calendarMonthYear');
+            
+            if (!grid || !monthYear) {
+                return;
+            }
+            
+            // Limpar dias anteriores (exceto cabeçalhos)
+            const existingDays = grid.querySelectorAll('.calendar-day');
+            existingDays.forEach(day => day.remove());
+            
+            // Atualizar título do mês/ano
+            const months = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+                          'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+            monthYear.textContent = `${months[currentCalendarDate.getMonth()]} ${currentCalendarDate.getFullYear()}`;
+            
+            // Primeiro dia do mês
+            const firstDay = new Date(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth(), 1);
+            const lastDay = new Date(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth() + 1, 0);
+            const startDate = new Date(firstDay);
+            startDate.setDate(startDate.getDate() - firstDay.getDay()); // Começar no domingo
+            
+            // Criar dias do calendário
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            for (let i = 0; i < 42; i++) { // 6 semanas x 7 dias
+                const date = new Date(startDate);
+                date.setDate(startDate.getDate() + i);
+                
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                dayElement.textContent = date.getDate();
+                dayElement.dataset.date = date.toISOString().split('T')[0];
+                
+                // Marcar se é do mês atual
+                if (date.getMonth() !== currentCalendarDate.getMonth()) {
+                    dayElement.classList.add('other-month');
+                }
+                
+                // Marcar se é hoje
+                if (date.getTime() === today.getTime()) {
+                    dayElement.classList.add('today');
+                }
+                
+                // Marcar se está selecionado
+                if (selectedCalendarDate && date.getTime() === selectedCalendarDate.getTime()) {
+                    dayElement.classList.add('selected');
+                }
+                
+                // Adicionar evento de clique
+                if (date.getMonth() === currentCalendarDate.getMonth()) {
+                    dayElement.addEventListener('click', () => selecionarData(date));
+                }
+                
+                grid.appendChild(dayElement);
+            }
+        }
+
+        /**
+         * Seleciona uma data no calendário
+         */
+        function selecionarData(date) {
+            // Remover seleção anterior
+            const previousSelected = document.querySelector('.calendar-day.selected');
+            if (previousSelected) {
+                previousSelected.classList.remove('selected');
+            }
+            
+            // Marcar nova seleção
+            selectedCalendarDate = new Date(date);
+            const dayElement = document.querySelector(`[data-date="${date.toISOString().split('T')[0]}"]`);
+            if (dayElement) {
+                dayElement.classList.add('selected');
+            }
+        }
+
+        /**
+         * Muda o mês do calendário
+         */
+        function mudarMes(direction) {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + direction);
+            renderizarCalendario();
+        }
+
+        /**
+         * Aplica a data selecionada como filtro
+         */
+        function aplicarDataSelecionada() {
+            if (!selectedCalendarDate) {
+                return;
+            }
+            
+            const dateStr = selectedCalendarDate.toISOString().split('T')[0];
+            
+            // Aplicar filtro
+            selectFilter('data', dateStr);
+            
+            // Fechar calendário
+            fecharCalendario();
+            
+            // Fechar dropdown de data
+            closeDropdown('data');
+        }
+
+        // Fechar calendário ao clicar fora
+        document.addEventListener('click', function(event) {
+            const modal = document.getElementById('calendarModal');
+            if (event.target === modal) {
+                fecharCalendario();
+            }
+        });
+
+        // Fechar calendário com ESC
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const modal = document.getElementById('calendarModal');
+                if (modal.style.display === 'flex') {
+                    fecharCalendario();
+                }
+            }
+        });
     </script>
 </body>
 </html>

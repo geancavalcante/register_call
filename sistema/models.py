@@ -20,7 +20,7 @@ class Chamados(models.Model):
     ]
 
     nome_analista = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    ID_chamado = models.IntegerField(unique=True)
+    ID_chamado = models.CharField(max_length=50, unique=True)
     tipo_atividade = models.CharField(max_length=30, blank=True)
     nome_tecnico = models.CharField(max_length=30, blank=True)
     nome_cliente = models.CharField(max_length=100, blank=True)  # Novo campo para cliente
