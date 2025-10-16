@@ -1,0 +1,90 @@
+================================================================================
+                    GUIA DE UPLOAD DE PLANILHA
+================================================================================
+
+📋 FORMATO DA PLANILHA
+================================================================================
+
+✅ O SISTEMA ACEITA AUTOMATICAMENTE O FORMATO "ROTAS 01"!
+
+Colunas Obrigatórias (aceita vários nomes):
+  • ID_chamado      → ICKET, TICKET, ID, Chamado
+  • nome_cliente    → Ponto, Cliente, Nome Cliente
+  • nome_tecnico    → TÉCNICO, Técnico, Nome Técnico
+  • data_planejada  → DATA, Data, Data Planejada
+
+Colunas Opcionais:
+  • tipo_atividade  → SERVIÇO, Serviço, Tipo, Atividade
+  • observacao      → Observação, Obs, OBS
+
+================================================================================
+📝 EXEMPLO DE PLANILHA
+================================================================================
+
+ID_chamado | nome_cliente    | nome_tecnico | data_planejada | tipo_atividade | observacao
+-----------|-----------------|--------------|----------------|----------------|------------------
+123456     | Cliente Teste 1 | João Silva   | 2025-01-20     | Instalação     | Teste upload
+789012     | Cliente Teste 2 | Maria Santos | 2025-01-21     | Manutenção     | Segundo teste
+456789     | Cliente Teste 3 | Pedro Costa  | 2025-01-22     | Suporte        | Terceiro teste
+
+================================================================================
+✅ COMO PREPARAR SEU ARQUIVO
+================================================================================
+
+OPÇÃO 1 - EXCEL (RECOMENDADO):
+  1. Abra o Excel
+  2. Crie uma planilha com as colunas acima
+  3. Preencha os dados
+  4. Salve como "Arquivo Excel (*.xlsx)"
+  5. Faça upload no sistema
+
+OPÇÃO 2 - CSV:
+  1. Abra o Excel
+  2. Crie uma planilha com as colunas acima
+  3. Preencha os dados
+  4. Salve como "CSV UTF-8 (delimitado por vírgulas) (*.csv)"
+  5. Faça upload no sistema
+
+================================================================================
+⚠️  PROBLEMAS COMUNS E SOLUÇÕES
+================================================================================
+
+❌ Erro: "Nenhum arquivo foi enviado"
+   ✅ Solução: Selecione um arquivo antes de fazer upload
+
+❌ Erro: "Formato de arquivo não suportado"
+   ✅ Solução: Use apenas .xlsx, .xls ou .csv
+
+❌ Erro: "Colunas obrigatórias não encontradas"
+   ✅ Solução: Verifique se os nomes das colunas estão exatamente como acima
+   ✅ Certifique-se de que a primeira linha tem os nomes das colunas
+
+❌ Erro: "Não foi possível ler o arquivo"
+   ✅ Solução 1: Salve o arquivo como Excel (.xlsx) ao invés de CSV
+   ✅ Solução 2: Abra o arquivo no Excel e salve novamente
+   ✅ Solução 3: Verifique se o arquivo não está corrompido
+
+❌ Erro: "Chamado já existe"
+   ✅ Solução: O sistema ignora chamados duplicados automaticamente
+   ✅ Isso não é um erro - apenas informa que o chamado já está cadastrado
+
+================================================================================
+📊 ARQUIVO DE EXEMPLO
+================================================================================
+
+Um arquivo de exemplo está disponível em:
+  /home/gean-cavalcante/Documentos/sistema_de_formulario/source/exemplo_planilha.xlsx
+
+Use este arquivo como referência para criar sua planilha!
+
+================================================================================
+🚀 COMO FAZER UPLOAD
+================================================================================
+
+1. Acesse: http://localhost:8000/upload_planilha/
+2. Clique em "Selecionar Arquivo" ou arraste o arquivo
+3. Aguarde o processamento
+4. Você verá uma mensagem de sucesso com o número de chamados criados
+
+================================================================================
+

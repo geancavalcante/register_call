@@ -708,6 +708,7 @@
         </div>
     </div>
 
+    {{ chamados|json_script:"chamados_data" }}
     <script>
         console.log('🚀 DASHBOARD INICIANDO...');
         
@@ -791,7 +792,8 @@
         // Variáveis globais para filtros
         let filteredChamados = [];
         let currentFilters = {
-            period: 0,
+            // Keep period as string to match select option values (e.g. '0', '7', '30')
+            period: '0',
             startDate: null,
             endDate: null,
             analysts: 'all',
@@ -812,29 +814,8 @@
             }, 300); // 300ms de delay
         }
 
-        // Dados do Django
-        const chamados = [
-            {% for chamado in chamados %}
-            {
-                ID_chamado: {% if chamado.ID_chamado %}{{ chamado.ID_chamado }}{% else %}0{% endif %},
-                nome_analista: "{% if chamado.nome_analista %}{{ chamado.nome_analista.username }}{% else %}N/A{% endif %}",
-                nome_tecnico: "{% if chamado.nome_tecnico %}{{ chamado.nome_tecnico }}{% else %}N/A{% endif %}",
-                nome_cliente: "{% if chamado.nome_cliente %}{{ chamado.nome_cliente }}{% else %}N/A{% endif %}",
-                tipo_atividade: "{% if chamado.tipo_atividade %}{{ chamado.tipo_atividade }}{% else %}N/A{% endif %}",
-                inicio: "{% if chamado.inicio %}{{ chamado.inicio }}{% else %}00:00{% endif %}",
-                conclusao: "{% if chamado.conclusao %}{{ chamado.conclusao }}{% else %}00:00{% endif %}",
-                total_horas: "{% if chamado.total_horas %}{{ chamado.total_horas }}{% else %}00:00{% endif %}",
-                produtiva: {% if chamado.produtiva is not None %}{% if chamado.produtiva %}true{% else %}false{% endif %}{% else %}true{% endif %},
-                data: "{% if chamado.data %}{{ chamado.data|date:'Y-m-d' }}{% else %}{{ 'now'|date:'Y-m-d' }}{% endif %}",
-                data_planejada: "{% if chamado.data_planejada %}{{ chamado.data_planejada|date:'Y-m-d' }}{% else %}N/A{% endif %}",
-                status: "{% if chamado.status %}{{ chamado.status }}{% else %}planejado{% endif %}",
-                senha: "{% if chamado.senha %}{{ chamado.senha }}{% else %}N/A{% endif %}",
-                observacao: "{% if chamado.observacao %}{{ chamado.observacao }}{% else %}N/A{% endif %}",
-                origem_planilha: {% if chamado.origem_planilha is not None %}{% if chamado.origem_planilha %}true{% else %}false{% endif %}{% else %}false{% endif %},
-                data_upload: "{% if chamado.data_upload %}{{ chamado.data_upload|date:'Y-m-d H:i' }}{% else %}N/A{% endif %}"
-            }{% if not forloop.last %},{% endif %}
-            {% endfor %}
-        ];
+        // Dados do Django (seguro): os dados são injetados via tag json_script e lidos aqui
+        const chamados = JSON.parse(document.getElementById('chamados_data').textContent || '[]');
 
         // Função para obter mapeamento dos analistas via AJAX
         let analistasMapping = {};
@@ -1161,6 +1142,7 @@
                 const periodoMapping = {
                     '0': 'today',    // Dashboard usa '0' para hoje
                     '7': '7',        // Mesmo valor
+                    '30': '30',     // 30 dias
                     '90': '90'       // Mesmo valor
                 };
                 const periodoValue = periodoMapping[currentFilters.period] || currentFilters.period;

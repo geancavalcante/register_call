@@ -1270,6 +1270,7 @@
                             data-tempo="{{ chamado.total_horas }}"
                             data-situacao="{% if chamado.origem_planilha %}{% if chamado.status == 'planejado' %}Assumir{% elif chamado.status == 'em_andamento' %}Em Andamento{% elif chamado.status == 'finalizado' %}Finalizado{% endif %}{% else %}{% if chamado.status == 'em_andamento' %}Em Andamento{% elif chamado.status == 'finalizado' or chamado.produtiva is not None %}Finalizado{% endif %}{% endif %}"
                             data-status="{% if chamado.produtiva %}Produtiva{% else %}Improdutiva{% endif %}"
+                            data-status-chamado="{{ chamado.status }}"
                             data-origem="{% if chamado.origem_planilha %}Planejada{% else %}Não Planejada{% endif %}"
                             data-senha="{{ chamado.senha }}"
                             data-observacao="{{ chamado.observacao|default:'Sem observações' }}"
@@ -1281,7 +1282,7 @@
                             <td>{{ chamado.data|date:"d/m/Y" }}</td>
                             <td>{{ chamado.inicio }}</td>
                             <td>{{ chamado.conclusao }}</td>
-                            <td>{{ chamado.total_horas }}</td>
+                            <td>{% if chamado.total_horas %}{{ chamado.total_horas|floatformat:2 }}h{% else %}-{% endif %}</td>
                             <td>
                                 <span class="status-badge 
                                     {% if chamado.origem_planilha %}
@@ -1292,9 +1293,9 @@
                                         {% if chamado.status == 'em_andamento' %}andamento status-em-andamento
                                         {% elif chamado.status == 'finalizado' or chamado.produtiva is not None %}finalizado{% endif %}{% endif %}"
                                     {% if chamado.status == 'em_andamento' %}
-                                    onclick="abrirModalFinalizacao({{ chamado.ID_chamado }})"
+                                    onclick="abrirModalFinalizacao('{{ chamado.ID_chamado }}')"
                                     {% elif chamado.status == 'planejado' %}
-                                    onclick="abrirModalAssumir({{ chamado.ID_chamado }})"
+                                    onclick="abrirModalAssumir('{{ chamado.ID_chamado }}')"
                                     {% endif %}>
                                     {% if chamado.origem_planilha %}
                                         {% if chamado.status == 'planejado' %}Assumir
@@ -1519,13 +1520,13 @@
             if (status) {
                 console.log('🔗 Filtro de status detectado:', status);
                 if (status === 'planejadas') {
-                    activeFilters.status = 'Planejado';
+                    activeFilters['status-chamado'] = 'planejado';
                     filtrosAplicados.push('Status: Planejado');
                 } else if (status === 'andamento') {
-                    activeFilters.status = 'Em Andamento';
+                    activeFilters['status-chamado'] = 'em_andamento';
                     filtrosAplicados.push('Status: Em Andamento');
                 } else if (status === 'finalizado') {
-                    activeFilters.status = 'Finalizado';
+                    activeFilters['status-chamado'] = 'finalizado';
                     filtrosAplicados.push('Status: Finalizado');
                 }
             }
@@ -1934,6 +1935,11 @@
          */
         function applyFilters() {
             const globalSearch = document.getElementById('globalSearch').value.toLowerCase().trim();
+            
+            console.log('🔍 DEBUG: applyFilters iniciado');
+            console.log('🔍 DEBUG: allRows.length =', allRows.length);
+            console.log('🔍 DEBUG: activeFilters =', activeFilters);
+            console.log('🔍 DEBUG: globalSearch =', globalSearch);
 
             // Filtrar linhas
             filteredRows = allRows.filter(row => {
@@ -1968,7 +1974,8 @@
             displayCurrentPage();
             
             // Log para debug
-            console.log(`Filtros aplicados: ${filteredRows.length} registros encontrados`);
+            console.log('🔍 DEBUG: Filtros aplicados:', filteredRows.length, 'registros encontrados');
+            console.log('🔍 DEBUG: filteredRows =', filteredRows);
         }
 
         // ========== ORDENAÇÃO ==========
@@ -2179,37 +2186,31 @@
                 <button class="modal-close" onclick="fecharModalAssumir()">&times;</button>
             </div>
             <form id="formAssumir" onsubmit="assumirChamado(event)">
-                <input type="hidden" id="modal_assumir_id_chamado" name="id_chamado">
+                <input type="hidden" id="modal_assumir_id_chamado" name="ID_chamado">
+                <input type="hidden" id="modal_assumir_tipo_atividade" name="tipo_atividade">
+                <input type="hidden" id="modal_assumir_tecnico" name="tecnico">
                 
-                <div class="modal-form-group">
-                    <label>ID do Chamado</label>
-                    <input type="text" id="modal_assumir_id_display" readonly>
+                <!-- Informações do chamado (somente leitura) -->
+                <div class="modal-form-group" style="background: rgba(248, 194, 74, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <div style="margin-bottom: 10px;">
+                        <strong>ID do Chamado:</strong> <span id="modal_assumir_id_display"></span>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong>Tipo de Atividade:</strong> <span id="modal_assumir_tipo_display"></span>
+                    </div>
+                    <div>
+                        <strong>Técnico:</strong> <span id="modal_assumir_tecnico_display"></span>
+                    </div>
                 </div>
 
                 <div class="modal-form-group">
                     <label>Analista <span style="color: #ff4444;">*</span></label>
-                    <select id="modal_assumir_analista" name="analista" required>
+                    <select id="modal_assumir_analista" name="nome_analista" required>
                         <option value="">Selecione o analista...</option>
                         {% for user in analistas %}
                         <option value="{{ user.username }}">{{ user.username }}</option>
                         {% endfor %}
                     </select>
-                </div>
-
-                <div class="modal-form-group">
-                    <label>Tipo de Atividade <span style="color: #ff4444;">*</span></label>
-                    <select id="modal_assumir_tipo_atividade" name="tipo_atividade" required>
-                        <option value="">Selecione o tipo...</option>
-                        <option value="Manutenção">Manutenção</option>
-                        <option value="Migração">Migração</option>
-                        <option value="Mudança de Endereço">Mudança de Endereço</option>
-                        <option value="Remanejamento">Remanejamento</option>
-                    </select>
-                </div>
-
-                <div class="modal-form-group">
-                    <label>Nome do Técnico <span style="color: #ff4444;">*</span></label>
-                    <input type="text" id="modal_assumir_tecnico" name="tecnico" required>
                 </div>
 
                 <div class="modal-form-group">
@@ -2255,15 +2256,80 @@
 
         function abrirModalAssumir(idChamado) {
             console.log('🔓 Abrindo modal para assumir chamado:', idChamado);
+            console.log('🔍 Tipo do ID:', typeof idChamado);
             
-            // Preencher dados do modal
+            // Primeiro, vamos ver todas as linhas da tabela
+            const allRows = document.querySelectorAll('tbody tr');
+            console.log('🔍 Total de linhas na tabela:', allRows.length);
+            
+            // Vamos ver todos os IDs disponíveis
+            console.log('🔍 IDs disponíveis na tabela:');
+            allRows.forEach((row, index) => {
+                const dataId = row.getAttribute('data-id');
+                const idCell = row.querySelector('td:nth-child(2)');
+                const idText = idCell ? idCell.textContent.trim() : 'Sem célula';
+                console.log(`  Linha ${index}: data-id="${dataId}", texto="${idText}"`);
+            });
+            
+            // Buscar dados do chamado na tabela - tentar diferentes seletores
+            let row = document.querySelector(`tr[data-id="${idChamado}"]`);
+            
+            console.log('🔍 Tentativa 1 - Buscando por data-id:', `tr[data-id="${idChamado}"]`);
+            console.log('🔍 Resultado:', row);
+            
+            // Se não encontrar, tentar buscar por todas as linhas e verificar o conteúdo
+            if (!row) {
+                console.log('🔍 Tentativa 2 - Procurando linha da tabela por conteúdo...');
+                
+                for (let i = 0; i < allRows.length; i++) {
+                    const currentRow = allRows[i];
+                    const idCell = currentRow.querySelector('td:nth-child(2)'); // ID está na segunda coluna
+                    const cellText = idCell ? idCell.textContent.trim() : '';
+                    
+                    console.log(`🔍 Linha ${i}: comparando "${cellText}" com "${idChamado}"`);
+                    
+                    if (idCell && cellText === idChamado) {
+                        row = currentRow;
+                        console.log('✅ Linha encontrada por conteúdo!', row);
+                        break;
+                    }
+                }
+            }
+            
+            if (!row) {
+                console.log('❌ Linha não encontrada para ID:', idChamado);
+                showToast('error', '❌ Erro', 'Chamado não encontrado na tabela');
+                return;
+            }
+            
+            // Extrair dados da linha - primeiro tentar pelos atributos data-*
+            let tipoAtividade = row.getAttribute('data-tipo') || '';
+            let tecnico = row.getAttribute('data-tecnico') || '';
+            
+            console.log('📊 Dados dos atributos data-*:', { tipoAtividade, tecnico });
+            
+            // Se não tiver nos atributos, buscar nas células
+            if (!tipoAtividade || !tecnico) {
+                const cells = row.querySelectorAll('td');
+                tipoAtividade = cells[2] ? cells[2].textContent.trim() : ''; // 3ª coluna
+                tecnico = cells[3] ? cells[3].textContent.trim() : ''; // 4ª coluna
+                console.log('📊 Dados das células:', { tipoAtividade, tecnico });
+            }
+            
+            console.log('📊 Dados finais extraídos:', { idChamado, tipoAtividade, tecnico });
+            
+            // Preencher campos ocultos (para envio)
             document.getElementById('modal_assumir_id_chamado').value = idChamado;
-            document.getElementById('modal_assumir_id_display').value = idChamado;
+            document.getElementById('modal_assumir_tipo_atividade').value = tipoAtividade;
+            document.getElementById('modal_assumir_tecnico').value = tecnico;
             
-            // Limpar campos
+            // Preencher campos de exibição (somente leitura)
+            document.getElementById('modal_assumir_id_display').textContent = idChamado;
+            document.getElementById('modal_assumir_tipo_display').textContent = tipoAtividade;
+            document.getElementById('modal_assumir_tecnico_display').textContent = tecnico;
+            
+            // Limpar campos editáveis
             document.getElementById('modal_assumir_analista').value = '';
-            document.getElementById('modal_assumir_tipo_atividade').value = '';
-            document.getElementById('modal_assumir_tecnico').value = '';
             document.getElementById('modal_assumir_data').value = '';
             document.getElementById('modal_assumir_inicio').value = '';
             
@@ -2298,18 +2364,18 @@
                 console.log('📥 Resposta recebida:', result);
                 
                 if (result.success) {
-                    showToast(result.message, 'success');
+                    showToast('success', '✅ Sucesso', result.message);
                     fecharModalAssumir();
                     setTimeout(() => {
                         window.location.reload();
                     }, 1500);
                 } else {
-                    showToast(result.message, 'error');
+                    showToast('error', '❌ Erro', result.message);
                 }
             })
             .catch(error => {
                 console.error('❌ Erro:', error);
-                showToast('Erro ao assumir chamado. Tente novamente.', 'error');
+                showToast('error', '❌ Erro', 'Erro ao assumir chamado. Tente novamente.');
             });
         }
 
