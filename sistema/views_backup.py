@@ -104,79 +104,14 @@ def tabela_chamados(request):
     Retorna todos os chamados ordenados por data decrescente para permitir
     manipulação completa no frontend (ordenação, filtros, busca, etc).
     """
-    # Aplicar filtros da URL
-    periodo = request.GET.get('periodo', '')
-    analista = request.GET.get('analista', '')
-    tipo_atividade = request.GET.get('tipo_atividade', '')
-    produtividade = request.GET.get('produtividade', '')
-    status = request.GET.get('status', '')
-    origem_planilha = request.GET.get('origem_planilha', '')
-    
-    # Construir query base - chamados "em_andamento" sempre no topo
-    from django.db.models import Case, When, Value, IntegerField
-    chamados = Chamados.objects.all().order_by(
-        Case(
-            When(status='em_andamento', then=Value(0)),
-            default=Value(1),
-            output_field=IntegerField()
-        ),
-        '-data', 
-        '-inicio'
-    )
-    
-    # Aplicar filtros
-    if periodo == 'hoje':
-        hoje = timezone.now().date()
-        chamados = chamados.filter(data=hoje)
-    elif periodo == 'semana':
-        semana_passada = timezone.now().date() - timedelta(days=7)
-        chamados = chamados.filter(data__gte=semana_passada)
-    elif periodo == 'mes':
-        mes_passado = timezone.now().date() - timedelta(days=30)
-        chamados = chamados.filter(data__gte=mes_passado)
-    
-    if analista:
-        chamados = chamados.filter(nome_analista__username=analista)
-    
-    if tipo_atividade:
-        chamados = chamados.filter(tipo_atividade=tipo_atividade)
-    
-    if produtividade == 'true':
-        chamados = chamados.filter(produtiva=True)
-    elif produtividade == 'false':
-        chamados = chamados.filter(produtiva=False)
-    
-    if status:
-        if status == 'produtiva':
-            chamados = chamados.filter(produtiva=True)
-        elif status == 'improdutiva':
-            chamados = chamados.filter(produtiva=False)
-        elif status == 'planejadas':
-            chamados = chamados.filter(status='planejado')
-        elif status == 'em_andamento':
-            chamados = chamados.filter(status='em_andamento')
-    
-    if origem_planilha == 'false':
-        chamados = chamados.filter(origem_planilha=False)
-    elif origem_planilha == 'true':
-        chamados = chamados.filter(origem_planilha=True)
-    
-    analistas = User.objects.all()
+    # Buscar todos os chamados ordenados por data (mais recentes primeiro)
+    chamados = Chamados.objects.all().order_by('-data', '-id')
     quantidade = chamados.count()
     
     # Retornar template com todos os dados
     return render(request, "tabela_chamados.html", {
         "chamados": chamados,
-        "quantidade": quantidade,
-        "analistas": analistas,
-        "filtros": {
-            "periodo": periodo,
-            "analista": analista,
-            "tipo_atividade": tipo_atividade,
-            "produtividade": produtividade,
-            "status": status,
-            "origem_planilha": origem_planilha
-        }
+        "quantidade": quantidade
     })
 
 
@@ -251,51 +186,14 @@ def salvar_dados_iniciais(request):
                 'message': 'Formato de horário inválido'
             }, status=400)
         
-        # Salvar chamado com status "em_andamento"
-        try:
-            # Se o chamado já existe, atualizar
-            if chamado_existente:
-                chamado_existente.nome_analista = analista
-                chamado_existente.tipo_atividade = data['tipo_atividade']
-                chamado_existente.nome_tecnico = data['tecnico']
-                chamado_existente.data = data['data']
-                chamado_existente.inicio = data['inicio']
-                chamado_existente.status = 'em_andamento'
-                chamado_existente.origem_planilha = False
-                chamado_existente.save()
-                
-                print(f"✅ Chamado {data['ID_chamado']} atualizado para 'em_andamento'")
-                
-                return JsonResponse({
-                    'success': True,
-                    'message': 'Chamado atualizado e iniciado com sucesso!'
-                })
-            else:
-                # Criar novo chamado
-                novo_chamado = Chamados.objects.create(
-                    nome_analista=analista,
-                    ID_chamado=data['ID_chamado'],
-                    tipo_atividade=data['tipo_atividade'],
-                    nome_tecnico=data['tecnico'],
-                    data=data['data'],
-                    inicio=data['inicio'],
-                    status='em_andamento',
-                    origem_planilha=False
-                )
-                
-                print(f"✅ Novo chamado {data['ID_chamado']} criado com status 'em_andamento'")
-                
-                return JsonResponse({
-                    'success': True,
-                    'message': 'Chamado iniciado com sucesso! Agora ele aparece na tabela.'
-                })
-                
-        except Exception as e:
-            print(f"❌ Erro ao salvar chamado: {str(e)}")
-            return JsonResponse({
-                'success': False,
-                'message': f'Erro ao salvar chamado: {str(e)}'
-            }, status=500)
+        # Se chegou até aqui, os dados são válidos
+        # Por enquanto, apenas retornamos sucesso
+        # Os dados serão salvos quando o usuário finalizar o chamado
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Dados iniciais validados com sucesso'
+        })
         
     except json.JSONDecodeError:
         return JsonResponse({
@@ -355,29 +253,29 @@ class RegistrarChamado(View):
     def post(self, request):
         try:
             # Coletar dados do formulário
-            self.nome_analista = request.POST.get("nome_analista")
-            self.ID_chamado = request.POST.get("ID_chamado")
-            self.tipo_atividade = request.POST.get("tipo_atividade")
-            self.nome_tecnico = request.POST.get("tecnico")
-            self.data = request.POST.get("data")
+        self.nome_analista = request.POST.get("nome_analista")
+        self.ID_chamado = request.POST.get("ID_chamado")
+        self.tipo_atividade = request.POST.get("tipo_atividade")
+        self.nome_tecnico = request.POST.get("tecnico")
+        self.data = request.POST.get("data")
             self.inicio = request.POST.get("inicio")
-            self.conclusao = request.POST.get("conclusao")
-            self.situacao = request.POST.get("produtiva")
-            self.senha = request.POST.get("senha")
-            self.observacao = request.POST.get("observacao")
+        self.conclusao = request.POST.get("conclusao")
+        self.situacao = request.POST.get("produtiva")
+        self.senha = request.POST.get("senha")
+        self.observacao = request.POST.get("observacao")
 
             # Validar dados obrigatórios
             if not all([self.nome_analista, self.ID_chamado, self.tipo_atividade, 
-            self.nome_tecnico, self.data, self.inicio, self.conclusao, 
-            self.senha]):
+                       self.nome_tecnico, self.data, self.inicio, self.conclusao, 
+                       self.senha]):
                 return render(request, "index.html", {
                     'error': 'Todos os campos obrigatórios devem ser preenchidos.'
                 })
 
             # Processar dados
-            RegistrarChamado._validar_situacao(self)
-            RegistrarChamado._cauculo_de_tempo_de_atendimento(self)
-            RegistrarChamado._salvador_chamado(self)
+        RegistrarChamado._validar_situacao(self)
+        RegistrarChamado._cauculo_de_tempo_de_atendimento(self)
+        RegistrarChamado._salvador_chamado(self)
             
             # Sucesso - redirecionar com mensagem
             return render(request, "index.html", {
@@ -450,18 +348,18 @@ class RegistrarChamado(View):
                 # Chamado não existe - criar novo
                 print(f"Criando novo chamado {self.ID_chamado}")
 
-                Chamados.objects.create(
-                    nome_analista = User.objects.get(username=self.nome_analista),
-                    ID_chamado = self.ID_chamado,
-                    tipo_atividade = self.tipo_atividade,
-                    nome_tecnico = self.nome_tecnico,
-                    data = self.data,
+            Chamados.objects.create(
+                nome_analista = User.objects.get(username=self.nome_analista),
+                ID_chamado = self.ID_chamado,
+                tipo_atividade = self.tipo_atividade,
+                nome_tecnico = self.nome_tecnico,
+                data = self.data,
                     inicio = self.inicio,
-                    conclusao = self.conclusao,
-                    total_horas = self.total_horas,
-                    produtiva = self.situacao,
-                    senha = self.senha,
-                    observacao = self.observacao,
+                conclusao = self.conclusao,
+                total_horas = self.total_horas,
+                produtiva = self.situacao,
+                senha = self.senha,
+                observacao = self.observacao,
                     status = 'em_andamento',  # Novo chamado começa como "em andamento"
                     origem_planilha = False
                 )
@@ -733,83 +631,5 @@ def upload_planilha(request):
             print(f"❌ Erro no upload: {str(e)}")
             return JsonResponse({'error': f'Erro ao processar planilha: {str(e)}'}, status=500)
 
-
-@csrf_exempt
-@require_http_methods(["POST"])
-def finalizar_chamado(request):
-    """
-    View para finalizar um chamado.
-    Atualiza os dados de conclusão, produtividade, senha e observação.
-    """
-    try:
-        data = json.loads(request.body)
-        
-        ID_chamado = data.get('ID_chamado')
-        conclusao = data.get('conclusao')
-        produtiva = data.get('produtiva')
-        senha = data.get('senha')
-        observacao = data.get('observacao', '')
-        
-        # Validações
-        if not ID_chamado:
-            return JsonResponse({'success': False, 'message': 'ID do chamado não informado'}, status=400)
-        
-        if not conclusao:
-            return JsonResponse({'success': False, 'message': 'Horário de conclusão não informado'}, status=400)
-        
-        # Converter produtividade para boolean
-        if produtiva in ['true', 'True', '1', 'sim', 'Sim']:
-            produtiva = True
-        elif produtiva in ['false', 'False', '0', 'não', 'nao', 'Não', 'Nao']:
-            produtiva = False
-        else:
-            return JsonResponse({'success': False, 'message': 'Produtividade inválida'}, status=400)
-        
-        # Buscar chamado
-        try:
-            chamado = Chamados.objects.get(ID_chamado=ID_chamado)
-        except Chamados.DoesNotExist:
-            return JsonResponse({'success': False, 'message': 'Chamado não encontrado'}, status=404)
-        
-        # Atualizar chamado
-        chamado.conclusao = conclusao
-        chamado.produtiva = produtiva
-        chamado.senha = senha
-        chamado.observacao = observacao
-        chamado.status = 'finalizado'
-        
-        # Calcular total de horas se possível
-        if chamado.inicio and conclusao:
-            try:
-                inicio_time = datetime.strptime(chamado.inicio, '%H:%M').time()
-                conclusao_time = datetime.strptime(conclusao, '%H:%M').time()
-                
-                inicio_datetime = datetime.combine(date.today(), inicio_time)
-                conclusao_datetime = datetime.combine(date.today(), conclusao_time)
-                
-                # Se conclusão for menor que início, assumir que passou para o dia seguinte
-                if conclusao_datetime < inicio_datetime:
-                    conclusao_datetime += timedelta(days=1)
-                
-                diferenca = conclusao_datetime - inicio_datetime
-                horas = diferenca.total_seconds() / 3600
-                chamado.total_horas = round(horas, 2)
-            except:
-                pass  # Se houver erro no cálculo, manter o valor existente
-        
-        chamado.save()
-        
-        print(f"✅ Chamado {ID_chamado} finalizado com sucesso!")
-        
-        return JsonResponse({
-            'success': True,
-            'message': 'Chamado finalizado com sucesso!'
-        })
-        
-    except json.JSONDecodeError:
-        return JsonResponse({'success': False, 'message': 'Dados JSON inválidos'}, status=400)
-    except Exception as e:
-        print(f"❌ Erro ao finalizar chamado: {str(e)}")
-        return JsonResponse({'success': False, 'message': f'Erro ao finalizar chamado: {str(e)}'}, status=500)
 
 

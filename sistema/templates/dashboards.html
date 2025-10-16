@@ -546,6 +546,8 @@
             <a href="{% url 'nomes_analistas' %}">Analistas</a>
             <a href="{% url 'cadastrar_chamado' %}">Registrar Chamado</a>
             <a href="{% url 'todos_chamados' %}">Todos os Chamados</a>
+            <a href="{% url 'tabela_chamados' %}">Relatórios de Chamados</a>
+            <a href="{% url 'upload_planilha' %}">Importar Excel</a>
         </nav>
     </div>
 
@@ -566,9 +568,9 @@
                 <div class="filter-group">
                     <label class="filter-label">📅 Período</label>
                     <select id="periodFilter" class="filter-select">
-                        <option value="0">Hoje</option>
+                        <option value="0" selected>Hoje</option>
                         <option value="7">Últimos 7 dias</option>
-                        <option value="30" selected>Últimos 30 dias</option>
+                        <option value="30">Últimos 30 dias</option>
                         <option value="90">Últimos 3 meses</option>
                         <option value="custom">Período personalizado</option>
                     </select>
@@ -633,7 +635,7 @@
 
         <!-- STATS CARDS -->
         <div class="stats-grid">
-            <div class="stat-card clickable" id="totalChamadosCard" style="cursor: pointer;" title="Clique para ver todos os chamados com os filtros aplicados">
+            <div class="stat-card clickable" id="totalChamadosCard" style="cursor: pointer;" title="Clique para ver tabela dinâmica com os filtros aplicados">
                 <div class="stat-label">Total de Chamados</div>
                 <div class="stat-value" id="totalChamados">0</div>
                 <div class="stat-desc">Registrados no sistema</div>
@@ -643,10 +645,30 @@
                 <div class="stat-value" id="tempoMedio">0h 0m</div>
                 <div class="stat-desc">Por chamado</div>
             </div>
-            <div class="stat-card clickable" id="taxaProdutividadeCard" style="cursor: pointer;" title="Clique para ver todos os chamados produtivos">
+            <div class="stat-card clickable" id="taxaProdutividadeCard" style="cursor: pointer;" title="Clique para ver tabela dinâmica com chamados produtivos">
                 <div class="stat-label">Taxa de Produtividade</div>
                 <div class="stat-value" id="taxaProdutividade">0%</div>
                 <div class="stat-desc">Chamados produtivos</div>
+            </div>
+            <div class="stat-card clickable" id="chamadosPlanejadosCard" style="cursor: pointer;" title="Clique para ver tabela dinâmica com chamados planejados">
+                <div class="stat-label">Chamados Planejados</div>
+                <div class="stat-value" id="chamadosPlanejados">0</div>
+                <div class="stat-desc">Status: Planejadas</div>
+            </div>
+            <div class="stat-card clickable" id="chamadosAndamentoCard" style="cursor: pointer;" title="Clique para ver tabela dinâmica com chamados em andamento">
+                <div class="stat-label">Em Andamento</div>
+                <div class="stat-value" id="chamadosAndamento">0</div>
+                <div class="stat-desc">Status: Em andamento</div>
+            </div>
+            <div class="stat-card clickable" id="chamadosFinalizadosCard" style="cursor: pointer;" title="Clique para ver tabela dinâmica com chamados finalizados">
+                <div class="stat-label">Finalizados</div>
+                <div class="stat-value" id="chamadosFinalizados">0</div>
+                <div class="stat-desc">Status: Finalizados</div>
+            </div>
+            <div class="stat-card clickable" id="chamadosNaoPlanejadosCard" style="cursor: pointer;" title="Clique para ver tabela dinâmica com chamados não planejados">
+                <div class="stat-label">NÃO PLANEJADAS</div>
+                <div class="stat-value" id="chamadosNaoPlanejados">0</div>
+                <div class="stat-desc">Chamados manuais</div>
             </div>
         </div>
 
@@ -769,7 +791,7 @@
         // Variáveis globais para filtros
         let filteredChamados = [];
         let currentFilters = {
-            period: 30,
+            period: 0,
             startDate: null,
             endDate: null,
             analysts: 'all',
@@ -794,11 +816,22 @@
         const chamados = [
             {% for chamado in chamados %}
             {
-                nome_analista: "{{ chamado.nome_analista }}",
-                tipo_atividade: "{{ chamado.tipo_atividade }}",
-                total_horas: "{{ chamado.total_horas }}",
-                produtiva: {% if chamado.produtiva %}true{% else %}false{% endif %},
-                data: "{{ chamado.data|date:'Y-m-d' }}"
+                ID_chamado: {% if chamado.ID_chamado %}{{ chamado.ID_chamado }}{% else %}0{% endif %},
+                nome_analista: "{% if chamado.nome_analista %}{{ chamado.nome_analista.username }}{% else %}N/A{% endif %}",
+                nome_tecnico: "{% if chamado.nome_tecnico %}{{ chamado.nome_tecnico }}{% else %}N/A{% endif %}",
+                nome_cliente: "{% if chamado.nome_cliente %}{{ chamado.nome_cliente }}{% else %}N/A{% endif %}",
+                tipo_atividade: "{% if chamado.tipo_atividade %}{{ chamado.tipo_atividade }}{% else %}N/A{% endif %}",
+                inicio: "{% if chamado.inicio %}{{ chamado.inicio }}{% else %}00:00{% endif %}",
+                conclusao: "{% if chamado.conclusao %}{{ chamado.conclusao }}{% else %}00:00{% endif %}",
+                total_horas: "{% if chamado.total_horas %}{{ chamado.total_horas }}{% else %}00:00{% endif %}",
+                produtiva: {% if chamado.produtiva is not None %}{% if chamado.produtiva %}true{% else %}false{% endif %}{% else %}true{% endif %},
+                data: "{% if chamado.data %}{{ chamado.data|date:'Y-m-d' }}{% else %}{{ 'now'|date:'Y-m-d' }}{% endif %}",
+                data_planejada: "{% if chamado.data_planejada %}{{ chamado.data_planejada|date:'Y-m-d' }}{% else %}N/A{% endif %}",
+                status: "{% if chamado.status %}{{ chamado.status }}{% else %}planejado{% endif %}",
+                senha: "{% if chamado.senha %}{{ chamado.senha }}{% else %}N/A{% endif %}",
+                observacao: "{% if chamado.observacao %}{{ chamado.observacao }}{% else %}N/A{% endif %}",
+                origem_planilha: {% if chamado.origem_planilha is not None %}{% if chamado.origem_planilha %}true{% else %}false{% endif %}{% else %}false{% endif %},
+                data_upload: "{% if chamado.data_upload %}{{ chamado.data_upload|date:'Y-m-d H:i' }}{% else %}N/A{% endif %}"
             }{% if not forloop.last %},{% endif %}
             {% endfor %}
         ];
@@ -947,10 +980,10 @@
             
             // Toast de sucesso ao aplicar filtros (apenas quando solicitado)
             if (showToast) {
-                const mensagemToast = currentFilters.analysts !== 'all' 
-                    ? `${filteredChamados.length} chamado(s) encontrado(s) para ${getNomeAnalista(currentFilters.analysts)}`
-                    : `${filteredChamados.length} chamado(s) encontrado(s)`;
-                showToast('success', '🔍 Filtros Aplicados', mensagemToast);
+            const mensagemToast = currentFilters.analysts !== 'all' 
+                ? `${filteredChamados.length} chamado(s) encontrado(s) para ${getNomeAnalista(currentFilters.analysts)}`
+                : `${filteredChamados.length} chamado(s) encontrado(s)`;
+            showToast('success', '🔍 Filtros Aplicados', mensagemToast);
             }
         }
 
@@ -968,7 +1001,7 @@
             };
 
             // Resetar interface
-            document.getElementById('periodFilter').value = '30';
+            document.getElementById('periodFilter').value = '0';
             document.getElementById('analystFilter').selectedIndex = 0;
             document.getElementById('activityFilter').value = 'all';
             document.getElementById('productivityFilter').value = 'all';
@@ -1115,18 +1148,18 @@
             }
         }
 
-        // Função para criar URL com filtros aplicados
+        // Função para criar URL com filtros aplicados para a tabela dinâmica
         function criarUrlComFiltros() {
             const params = new URLSearchParams();
             
-            // Filtro de período - Mapear valores do dashboard para valores da página todos_chamados
+            // Filtro de período - Mapear valores do dashboard para valores da tabela dinâmica
             if (currentFilters.period === 'custom' && currentFilters.startDate && currentFilters.endDate) {
                 params.set('startDate', currentFilters.startDate);
                 params.set('endDate', currentFilters.endDate);
-            } else if (currentFilters.period !== '30') { // 30 é o padrão
-                // Mapear valores do dashboard para valores esperados pela página todos_chamados
+            } else if (currentFilters.period !== '0') { // 0 (Hoje) é o padrão
+                // Mapear valores do dashboard para valores esperados pela tabela dinâmica
                 const periodoMapping = {
-                    '0': 'today',    // Dashboard usa '0' para hoje, todos_chamados espera 'today'
+                    '0': 'today',    // Dashboard usa '0' para hoje
                     '7': '7',        // Mesmo valor
                     '90': '90'       // Mesmo valor
                 };
@@ -1134,12 +1167,19 @@
                 params.set('period', periodoValue);
             }
             
-            // Nota: Os filtros de analista, tipo de atividade e produtividade são aplicados via JavaScript
-            // na página todos_chamados, não via parâmetros URL do backend
-            // Por isso não os incluímos nos parâmetros da URL
+            // Filtros de analista, tipo de atividade e produtividade
+            if (currentFilters.analysts !== 'all') {
+                params.set('analyst', currentFilters.analysts);
+            }
+            if (currentFilters.activityType !== 'all') {
+                params.set('activityType', currentFilters.activityType);
+            }
+            if (currentFilters.productivity !== 'all') {
+                params.set('productivity', currentFilters.productivity);
+            }
             
             const queryString = params.toString();
-            const baseUrl = "{% url 'todos_chamados' %}";
+            const baseUrl = "{% url 'tabela_chamados' %}";
             
             return queryString ? `${baseUrl}?${queryString}` : baseUrl;
         }
@@ -1147,14 +1187,14 @@
         // Função para redirecionar para todos os chamados com filtros
         function irParaTodosChamados() {
             const url = criarUrlComFiltros();
-            console.log('🔗 Redirecionando para todos os chamados com filtros:', url);
+            console.log('🔗 Redirecionando para tabela dinâmica com filtros:', url);
             
             // Toast informativo
             const filtrosBackend = [];
             const filtrosFrontend = [];
             
             // Filtros que serão aplicados pelo backend (via URL)
-            if (currentFilters.period !== '30') {
+            if (currentFilters.period !== '0') {
                 const periodos = {
                     '0': 'Hoje',
                     '7': 'Últimos 7 dias',
@@ -1186,7 +1226,7 @@
                 mensagem = 'Mostrando todos os chamados';
             }
                 
-            showToast('info', '📋 Redirecionando', mensagem);
+            showToast('info', '📊 Relatórios de Chamados', mensagem);
             
             // Redirecionar após um pequeno delay para mostrar o toast
             setTimeout(() => {
@@ -1202,7 +1242,7 @@
             params.set('productivity', 'true');
             
             // Manter outros filtros ativos do dashboard
-            if (currentFilters.period !== '30') {
+            if (currentFilters.period !== '0') {
                 const periodoMapping = {
                     '0': 'today',
                     '7': '7',
@@ -1221,7 +1261,7 @@
             }
             
             const queryString = params.toString();
-            const baseUrl = "{% url 'todos_chamados' %}";
+            const baseUrl = "{% url 'tabela_chamados' %}";
             const url = queryString ? `${baseUrl}?${queryString}` : baseUrl;
             
             console.log('🔗 Redirecionando para chamados produtivos:', url);
@@ -1229,7 +1269,7 @@
             // Toast informativo
             const filtrosAtivos = ['Produtividade: Produtivos'];
             
-            if (currentFilters.period !== '30') {
+            if (currentFilters.period !== '0') {
                 const periodos = {
                     '0': 'Hoje',
                     '7': 'Últimos 7 dias',
@@ -1251,7 +1291,264 @@
                 ? `Filtros aplicados: ${filtrosAtivos.join(', ')}`
                 : 'Mostrando apenas chamados produtivos';
                 
-            showToast('success', '✅ Chamados Produtivos', mensagem);
+            showToast('success', '📊 Relatórios de Chamados', mensagem);
+            
+            // Redirecionar após um pequeno delay para mostrar o toast
+            setTimeout(() => {
+                window.location.href = url;
+            }, 800);
+        }
+
+        // ========== FUNÇÃO PARA CHAMADOS PLANEJADOS ==========
+        function irParaChamadosPlanejados() {
+            const params = new URLSearchParams();
+            
+            // Aplicar filtro de status = planejadas
+            params.set('status', 'planejadas');
+            
+            // Manter outros filtros ativos do dashboard
+            if (currentFilters.period !== '0') {
+                const periodoMapping = {
+                    '0': 'today',
+                    '7': '7',
+                    '90': '90'
+                };
+                const periodoValue = periodoMapping[currentFilters.period] || currentFilters.period;
+                params.set('period', periodoValue);
+            }
+            
+            if (currentFilters.analysts !== 'all') {
+                params.set('analyst', currentFilters.analysts);
+            }
+            
+            if (currentFilters.activityType !== 'all') {
+                params.set('activityType', currentFilters.activityType);
+            }
+            
+            if (currentFilters.productivity !== 'all') {
+                params.set('productivity', currentFilters.productivity);
+            }
+            
+            const queryString = params.toString();
+            const baseUrl = "{% url 'tabela_chamados' %}";
+            const url = queryString ? `${baseUrl}?${queryString}` : baseUrl;
+            
+            console.log('🔗 Redirecionando para chamados planejados:', url);
+            
+            // Toast informativo
+            const filtrosAtivos = ['Status: Planejadas'];
+            
+            if (currentFilters.period !== '0') {
+                const periodos = {
+                    '0': 'Hoje',
+                    '7': 'Últimos 7 dias',
+                    '90': 'Últimos 3 meses',
+                    'custom': 'Período personalizado'
+                };
+                filtrosAtivos.push(`Período: ${periodos[currentFilters.period] || 'Personalizado'}`);
+            }
+            
+            if (currentFilters.analysts !== 'all') {
+                filtrosAtivos.push(`Analista: ${getNomeAnalista(currentFilters.analysts)}`);
+            }
+            
+            if (currentFilters.activityType !== 'all') {
+                filtrosAtivos.push(`Tipo: ${currentFilters.activityType}`);
+            }
+            
+            if (currentFilters.productivity !== 'all') {
+                filtrosAtivos.push(`Produtividade: ${currentFilters.productivity === 'true' ? 'Produtivos' : 'Não-produtivos'}`);
+            }
+            
+            const mensagem = filtrosAtivos.length > 1 
+                ? `Filtros aplicados: ${filtrosAtivos.join(', ')}`
+                : 'Mostrando apenas chamados planejados';
+                
+            showToast('success', '📊 Relatórios de Chamados', mensagem);
+            
+            // Redirecionar após um pequeno delay para mostrar o toast
+            setTimeout(() => {
+                window.location.href = url;
+            }, 800);
+        }
+
+        // ========== FUNÇÃO PARA CHAMADOS EM ANDAMENTO ==========
+        function irParaChamadosAndamento() {
+            const params = new URLSearchParams();
+            
+            // Aplicar filtro de status = em andamento
+            params.set('status', 'andamento');
+            
+            // Manter outros filtros ativos do dashboard
+            if (currentFilters.period !== '0') {
+                const periodoMapping = {
+                    '0': 'today',
+                    '7': '7',
+                    '90': '90'
+                };
+                const periodoValue = periodoMapping[currentFilters.period] || currentFilters.period;
+                params.set('period', periodoValue);
+            }
+            
+            if (currentFilters.analysts !== 'all') {
+                params.set('analyst', currentFilters.analysts);
+            }
+            
+            if (currentFilters.activityType !== 'all') {
+                params.set('activityType', currentFilters.activityType);
+            }
+            
+            if (currentFilters.productivity !== 'all') {
+                params.set('productivity', currentFilters.productivity);
+            }
+            
+            const queryString = params.toString();
+            const baseUrl = "{% url 'tabela_chamados' %}";
+            const url = queryString ? `${baseUrl}?${queryString}` : baseUrl;
+            
+            console.log('🔗 Redirecionando para chamados em andamento:', url);
+            
+            // Toast informativo
+            const filtrosAtivos = ['Status: Em andamento'];
+            
+            if (currentFilters.period !== '0') {
+                const periodos = {
+                    '0': 'Hoje',
+                    '7': 'Últimos 7 dias',
+                    '90': 'Últimos 3 meses',
+                    'custom': 'Período personalizado'
+                };
+                filtrosAtivos.push(`Período: ${periodos[currentFilters.period] || 'Personalizado'}`);
+            }
+            
+            if (currentFilters.analysts !== 'all') {
+                filtrosAtivos.push(`Analista: ${getNomeAnalista(currentFilters.analysts)}`);
+            }
+            
+            if (currentFilters.activityType !== 'all') {
+                filtrosAtivos.push(`Tipo: ${currentFilters.activityType}`);
+            }
+            
+            if (currentFilters.productivity !== 'all') {
+                filtrosAtivos.push(`Produtividade: ${currentFilters.productivity === 'true' ? 'Produtivos' : 'Não-produtivos'}`);
+            }
+            
+            const mensagem = filtrosAtivos.length > 1 
+                ? `Filtros aplicados: ${filtrosAtivos.join(', ')}`
+                : 'Mostrando apenas chamados em andamento';
+                
+            showToast('success', '📊 Relatórios de Chamados', mensagem);
+            
+            // Redirecionar após um pequeno delay para mostrar o toast
+            setTimeout(() => {
+                window.location.href = url;
+            }, 800);
+        }
+
+        // ========== FUNÇÃO PARA CHAMADOS NÃO PLANEJADOS ==========
+        function irParaChamadosNaoPlanejados() {
+            const params = new URLSearchParams();
+            
+            // Aplicar filtro de origem_planilha = false
+            params.set('origem_planilha', 'false');
+            
+            // Manter outros filtros ativos do dashboard
+            if (currentFilters.period !== '0') {
+                const periodoMapping = {
+                    '0': 'today',
+                    '7': '7',
+                    '30': '30'
+                };
+                if (periodoMapping[currentFilters.period]) {
+                    params.set('period', periodoMapping[currentFilters.period]);
+                }
+            }
+            
+            if (currentFilters.analyst && currentFilters.analyst !== 'all') {
+                params.set('analyst', currentFilters.analyst);
+            }
+            
+            if (currentFilters.activityType && currentFilters.activityType !== 'all') {
+                params.set('activityType', currentFilters.activityType);
+            }
+            
+            const url = `/tabela_chamados/?${params.toString()}`;
+            console.log('🔗 Redirecionando para chamados não planejados:', url);
+            
+            // Efeito visual de clique
+            document.getElementById('chamadosNaoPlanejadosCard').style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                document.getElementById('chamadosNaoPlanejadosCard').style.transform = 'scale(1)';
+                window.location.href = url;
+            }, 800);
+        }
+
+        // ========== FUNÇÃO PARA CHAMADOS FINALIZADOS ==========
+        function irParaChamadosFinalizados() {
+            const params = new URLSearchParams();
+            
+            // Aplicar filtro de status = finalizado
+            params.set('status', 'finalizado');
+            
+            // Manter outros filtros ativos do dashboard
+            if (currentFilters.period !== '0') {
+                const periodoMapping = {
+                    '0': 'today',
+                    '7': '7',
+                    '90': '90'
+                };
+                const periodoValue = periodoMapping[currentFilters.period] || currentFilters.period;
+                params.set('period', periodoValue);
+            }
+            
+            if (currentFilters.analysts !== 'all') {
+                params.set('analyst', currentFilters.analysts);
+            }
+            
+            if (currentFilters.activityType !== 'all') {
+                params.set('activityType', currentFilters.activityType);
+            }
+            
+            if (currentFilters.productivity !== 'all') {
+                params.set('productivity', currentFilters.productivity);
+            }
+            
+            const queryString = params.toString();
+            const baseUrl = "{% url 'tabela_chamados' %}";
+            const url = queryString ? `${baseUrl}?${queryString}` : baseUrl;
+            
+            console.log('🔗 Redirecionando para chamados finalizados:', url);
+            
+            // Toast informativo
+            const filtrosAtivos = ['Status: Finalizados'];
+            
+            if (currentFilters.period !== '0') {
+                const periodos = {
+                    '0': 'Hoje',
+                    '7': 'Últimos 7 dias',
+                    '90': 'Últimos 3 meses',
+                    'custom': 'Período personalizado'
+                };
+                filtrosAtivos.push(`Período: ${periodos[currentFilters.period] || 'Personalizado'}`);
+            }
+            
+            if (currentFilters.analysts !== 'all') {
+                filtrosAtivos.push(`Analista: ${getNomeAnalista(currentFilters.analysts)}`);
+            }
+            
+            if (currentFilters.activityType !== 'all') {
+                filtrosAtivos.push(`Tipo: ${currentFilters.activityType}`);
+            }
+            
+            if (currentFilters.productivity !== 'all') {
+                filtrosAtivos.push(`Produtividade: ${currentFilters.productivity === 'true' ? 'Produtivos' : 'Não-produtivos'}`);
+            }
+            
+            const mensagem = filtrosAtivos.length > 1 
+                ? `Filtros aplicados: ${filtrosAtivos.join(', ')}`
+                : 'Mostrando apenas chamados finalizados';
+                
+            showToast('success', '📊 Relatórios de Chamados', mensagem);
             
             // Redirecionar após um pequeno delay para mostrar o toast
             setTimeout(() => {
@@ -1268,12 +1565,26 @@
             const taxaProdutividade = totalChamados > 0 ? ((chamadosProdutivos / totalChamados) * 100).toFixed(1) : 0;
             const tempoTotal = dataToUse.reduce((acc, c) => acc + timeToMinutes(c.total_horas), 0);
             const tempoMedio = totalChamados > 0 ? tempoTotal / totalChamados : 0;
+            
+            // Novos cards: Status de chamados
+            const chamadosPlanejados = dataToUse.filter(c => c.status === 'planejado').length;
+            const chamadosAndamento = dataToUse.filter(c => c.status === 'em_andamento').length;
+            const chamadosFinalizados = dataToUse.filter(c => c.status === 'finalizado').length;
+            const chamadosNaoPlanejados = dataToUse.filter(c => c.origem_planilha === false).length;
+            const chamadosProdutivosStatus = dataToUse.filter(c => c.status === 'produtiva').length;
+            const chamadosImprodutivosStatus = dataToUse.filter(c => c.status === 'improdutiva').length;
 
             console.log('📊 Estatísticas calculadas:', {
                 totalChamados,
                 chamadosProdutivos,
                 taxaProdutividade,
                 tempoMedio: formatTime(tempoMedio),
+                chamadosPlanejados,
+                chamadosAndamento,
+                chamadosFinalizados,
+                chamadosNaoPlanejados,
+                chamadosProdutivosStatus,
+                chamadosImprodutivosStatus,
                 dadosFiltrados: filteredChamados.length,
                 dadosTotais: chamados.length
             });
@@ -1282,6 +1593,10 @@
             document.getElementById('totalChamados').textContent = totalChamados;
             document.getElementById('tempoMedio').textContent = formatTime(tempoMedio);
             document.getElementById('taxaProdutividade').textContent = taxaProdutividade + '%';
+            document.getElementById('chamadosPlanejados').textContent = chamadosPlanejados;
+            document.getElementById('chamadosAndamento').textContent = chamadosAndamento;
+            document.getElementById('chamadosFinalizados').textContent = chamadosFinalizados;
+            document.getElementById('chamadosNaoPlanejados').textContent = chamadosNaoPlanejados;
         }
 
         // GRÁFICO 1: Distribuição por Tipo de Atividade (Doughnut)
@@ -1817,6 +2132,18 @@
             
             // Card de Taxa de Produtividade (clique para ir para chamados produtivos)
             document.getElementById('taxaProdutividadeCard').addEventListener('click', irParaChamadosProdutivos);
+            
+            // Card de Chamados Planejados (clique para ir para chamados planejados)
+            document.getElementById('chamadosPlanejadosCard').addEventListener('click', irParaChamadosPlanejados);
+            
+            // Card de Chamados em Andamento (clique para ir para chamados em andamento)
+            document.getElementById('chamadosAndamentoCard').addEventListener('click', irParaChamadosAndamento);
+            
+            // Card de Chamados Finalizados (clique para ir para chamados finalizados)
+            document.getElementById('chamadosFinalizadosCard').addEventListener('click', irParaChamadosFinalizados);
+            
+            // Card de Chamados Não Planejados (clique para ir para chamados não planejados)
+            document.getElementById('chamadosNaoPlanejadosCard').addEventListener('click', irParaChamadosNaoPlanejados);
         }
 
         // INICIALIZAR TUDO
@@ -1846,8 +2173,8 @@
             // Configurar event listeners
             setupEventListeners();
 
-            // Inicializar dados filtrados
-            filteredChamados = chamados;
+            // Aplicar filtros iniciais (Hoje por padrão)
+            applyFilters();
 
             // Criar gráficos
             try {

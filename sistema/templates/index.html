@@ -349,6 +349,8 @@
             <a href="{% url 'nomes_analistas' %}">Analistas</a>
             <a href="{% url 'cadastrar_chamado' %}" class="active">Registrar Chamado</a>
             <a href="{% url 'todos_chamados' %}">Todos os Chamados</a>
+            <a href="{% url 'tabela_chamados' %}">Relatórios de Chamados</a>
+            <a href="{% url 'upload_planilha' %}">Importar Excel</a>
         </nav>
     </div>
 
@@ -360,12 +362,13 @@
             <p class="form-subtitle">Preencha os dados iniciais do chamado</p>
             
             <form id="formInicioChamado">
+                {% csrf_token %}
                 <label for="nome_analista">Nome do Analista:</label>
                 <select id="nome_analista" name="nome_analista" required>
                     <option value="">Selecione...</option>
-                    <option value="Gean_Cavalcante">Gean Cavalcante</option>
+                    <option value="gean">Gean Cavalcante</option>
                     <option value="Paulo_Henrique">Paulo Henrique</option>
-                    <option value="Joao_Cezar">João Cezar</option>
+                    <option value="João_Cezar">João Cezar</option>
                     <option value="Ramon_Farias">Ramon Farias</option>
                     <option value="Pedro_Alexandre">Pedro Alexandre</option>
                     <option value="Adryson_Costa">Adryson Costa</option>
@@ -375,7 +378,7 @@
                 </select>
 
                 <label for="ID_chamado">ID do Chamado:</label>
-                <input type="number" id="ID_chamado" name="ID_chamado" required>
+                <input type="text" id="ID_chamado" name="ID_chamado" maxlength="50" required>
 
                 <label for="tipo_atividade">Tipo da Atividade:</label>
                 <select id="tipo_atividade" name="tipo_atividade" required>
@@ -395,7 +398,7 @@
                 <label for="inicio">Início:</label>
                 <input type="time" id="inicio" name="inicio" required>
 
-                <button type="submit" class="submit-button">📋 Continuar para Finalização</button>
+                <button type="submit" class="submit-button">🚀 Iniciar Chamado</button>
             </form>
         </div>
 
@@ -480,7 +483,7 @@
         let dadosInicio = {};
 
         // FUNÇÃO PARA IR PARA O SEGUNDO FORMULÁRIO
-        function irParaFinalizacao() {
+        async function irParaFinalizacao() {
             // Coletar dados do primeiro formulário
             dadosInicio = {
                 nome_analista: document.getElementById('nome_analista').value,
@@ -499,28 +502,73 @@
                 }
             }
 
-            // Preencher o resumo
-            document.getElementById('resumoAnalista').textContent = dadosInicio.nome_analista.replace('_', ' ');
-            document.getElementById('resumoId').textContent = dadosInicio.ID_chamado;
-            document.getElementById('resumoTipo').textContent = dadosInicio.tipo_atividade;
-            document.getElementById('resumoTecnico').textContent = dadosInicio.tecnico;
-            document.getElementById('resumoData').textContent = formatarData(dadosInicio.data);
-            document.getElementById('resumoInicio').textContent = dadosInicio.inicio;
+            // Mostrar loading
+            mostrarLoading('Enviando dados iniciais...');
 
-            // Preencher campos hidden
-            document.getElementById('hidden_nome_analista').value = dadosInicio.nome_analista;
-            document.getElementById('hidden_ID_chamado').value = dadosInicio.ID_chamado;
-            document.getElementById('hidden_tipo_atividade').value = dadosInicio.tipo_atividade;
-            document.getElementById('hidden_tecnico').value = dadosInicio.tecnico;
-            document.getElementById('hidden_data').value = dadosInicio.data;
-            document.getElementById('hidden_inicio').value = dadosInicio.inicio;
+            try {
+                console.log('Enviando dados:', dadosInicio);
+                console.log('CSRF Token:', document.querySelector('[name=csrfmiddlewaretoken]').value);
+                
+                // Enviar requisição AJAX para o backend
+                const response = await fetch('/salvar_dados_iniciais/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: JSON.stringify(dadosInicio)
+                });
+                
+                console.log('Response status:', response.status);
 
-            // Esconder primeiro formulário e mostrar segundo
-            document.getElementById('formInicio').style.display = 'none';
-            document.getElementById('formFinalizacao').style.display = 'block';
+                if (!response.ok) {
+                    throw new Error(`Erro HTTP: ${response.status}`);
+                }
 
-            // Scroll para o topo
-            window.scrollTo(0, 0);
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Sucesso - mostrar segundo formulário
+                    ocultarLoading();
+                    
+                    // Preencher o resumo
+                    document.getElementById('resumoAnalista').textContent = dadosInicio.nome_analista.replace('_', ' ');
+                    document.getElementById('resumoId').textContent = dadosInicio.ID_chamado;
+                    document.getElementById('resumoTipo').textContent = dadosInicio.tipo_atividade;
+                    document.getElementById('resumoTecnico').textContent = dadosInicio.tecnico;
+                    document.getElementById('resumoData').textContent = formatarData(dadosInicio.data);
+                    document.getElementById('resumoInicio').textContent = dadosInicio.inicio;
+
+                    // Preencher campos hidden
+                    document.getElementById('hidden_nome_analista').value = dadosInicio.nome_analista;
+                    document.getElementById('hidden_ID_chamado').value = dadosInicio.ID_chamado;
+                    document.getElementById('hidden_tipo_atividade').value = dadosInicio.tipo_atividade;
+                    document.getElementById('hidden_tecnico').value = dadosInicio.tecnico;
+                    document.getElementById('hidden_data').value = dadosInicio.data;
+                    document.getElementById('hidden_inicio').value = dadosInicio.inicio;
+
+                    // Esconder primeiro formulário e mostrar segundo
+                    document.getElementById('formInicio').style.display = 'none';
+                    document.getElementById('formFinalizacao').style.display = 'block';
+
+                    // Scroll para o topo
+                    window.scrollTo(0, 0);
+
+                    // Mostrar toast de sucesso
+                    mostrarToast('success', '✅ Dados Salvos', 'Dados iniciais salvos com sucesso!');
+
+                } else {
+                    // Erro do backend
+                    ocultarLoading();
+                    mostrarToast('error', '❌ Erro', result.message || 'Erro ao salvar dados iniciais');
+                }
+
+            } catch (error) {
+                // Erro de conexão ou outro erro
+                ocultarLoading();
+                console.error('Erro na requisição:', error);
+                mostrarToast('error', '❌ Erro de Conexão', 'Não foi possível conectar ao servidor');
+            }
         }
 
         // FUNÇÃO PARA VOLTAR AO PRIMEIRO FORMULÁRIO
@@ -557,13 +605,330 @@
             return `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}:00`;
         }
 
+        // FUNÇÃO PARA MOSTRAR LOADING
+        function mostrarLoading(mensagem = 'Carregando...') {
+            // Criar overlay de loading
+            const loadingOverlay = document.createElement('div');
+            loadingOverlay.id = 'loadingOverlay';
+            loadingOverlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 10000;
+                color: #F8C24A;
+                font-size: 18px;
+                font-weight: 600;
+            `;
+            
+            loadingOverlay.innerHTML = `
+                <div style="text-align: center;">
+                    <div style="border: 4px solid #F8C24A; border-top: 4px solid transparent; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
+                    <div>${mensagem}</div>
+                </div>
+                <style>
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                </style>
+            `;
+            
+            document.body.appendChild(loadingOverlay);
+        }
+
+        // FUNÇÃO PARA OCULTAR LOADING
+        function ocultarLoading() {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            if (loadingOverlay) {
+                loadingOverlay.remove();
+            }
+        }
+
+        // FUNÇÃO PARA MOSTRAR TOAST
+        function mostrarToast(tipo, titulo, mensagem) {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${tipo}`;
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${tipo === 'success' ? '#4CAF50' : tipo === 'error' ? '#f44336' : '#2196F3'};
+                color: white;
+                padding: 16px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                z-index: 10001;
+                max-width: 400px;
+                animation: slideIn 0.3s ease-out;
+            `;
+            
+            toast.innerHTML = `
+                <div style="font-weight: 600; margin-bottom: 4px;">${titulo}</div>
+                <div style="font-size: 14px; opacity: 0.9;">${mensagem}</div>
+                <button onclick="this.parentElement.remove()" style="position: absolute; top: 8px; right: 8px; background: none; border: none; color: white; font-size: 18px; cursor: pointer; opacity: 0.7;">&times;</button>
+                <style>
+                    @keyframes slideIn {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                </style>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            // Auto-remover após 5 segundos
+            setTimeout(() => {
+                if (toast.parentElement) {
+                    toast.remove();
+                }
+            }, 5000);
+        }
+
+        // FUNÇÃO PARA MOSTRAR MODAL DE SUCESSO
+        function mostrarModalSucesso(idChamado) {
+            // Criar overlay do modal
+            const modalOverlay = document.createElement('div');
+            modalOverlay.id = 'modalSucessoOverlay';
+            modalOverlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.9);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 10000;
+                animation: fadeIn 0.3s ease-out;
+            `;
+            
+            modalOverlay.innerHTML = `
+                <div style="
+                    background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+                    border: 2px solid #F8C24A;
+                    border-radius: 20px;
+                    padding: 50px;
+                    text-align: center;
+                    max-width: 500px;
+                    width: 90%;
+                    box-shadow: 0 20px 60px rgba(248, 194, 74, 0.3);
+                    animation: scaleIn 0.4s ease-out;
+                ">
+                    <div style="
+                        width: 80px;
+                        height: 80px;
+                        background: #4CAF50;
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        margin: 0 auto 30px;
+                        font-size: 50px;
+                        animation: checkmark 0.6s ease-out;
+                    ">
+                        ✓
+                    </div>
+                    
+                    <h2 style="
+                        color: #F8C24A;
+                        font-size: 32px;
+                        font-weight: 700;
+                        margin-bottom: 15px;
+                        text-transform: uppercase;
+                        letter-spacing: 1px;
+                    ">
+                        Chamado Iniciado!
+                    </h2>
+                    
+                    <p style="
+                        color: #fff;
+                        font-size: 18px;
+                        margin-bottom: 10px;
+                        font-weight: 500;
+                    ">
+                        ID do Chamado: <span style="color: #F8C24A; font-weight: 700;">${idChamado}</span>
+                    </p>
+                    
+                    <p style="
+                        color: #ccc;
+                        font-size: 16px;
+                        margin-bottom: 30px;
+                    ">
+                        O chamado foi registrado com sucesso e está<br>
+                        agora em <span style="color: #4CAF50; font-weight: 600;">andamento</span>!
+                    </p>
+                    
+                    <div style="
+                        background: rgba(248, 194, 74, 0.1);
+                        border: 1px solid rgba(248, 194, 74, 0.3);
+                        border-radius: 10px;
+                        padding: 15px;
+                        margin-bottom: 30px;
+                    ">
+                        <p style="
+                            color: #F8C24A;
+                            font-size: 14px;
+                            margin: 0;
+                        ">
+                            🔄 Redirecionando para a tabela de chamados...
+                        </p>
+                    </div>
+                    
+                    <div style="
+                        width: 40px;
+                        height: 40px;
+                        border: 3px solid #F8C24A;
+                        border-top: 3px solid transparent;
+                        border-radius: 50%;
+                        margin: 0 auto;
+                        animation: spin 1s linear infinite;
+                    "></div>
+                </div>
+                
+                <style>
+                    @keyframes fadeIn {
+                        from { opacity: 0; }
+                        to { opacity: 1; }
+                    }
+                    
+                    @keyframes scaleIn {
+                        from {
+                            transform: scale(0.8);
+                            opacity: 0;
+                        }
+                        to {
+                            transform: scale(1);
+                            opacity: 1;
+                        }
+                    }
+                    
+                    @keyframes checkmark {
+                        0% {
+                            transform: scale(0);
+                            opacity: 0;
+                        }
+                        50% {
+                            transform: scale(1.2);
+                        }
+                        100% {
+                            transform: scale(1);
+                            opacity: 1;
+                        }
+                    }
+                    
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                </style>
+            `;
+            
+            document.body.appendChild(modalOverlay);
+        }
+
+        // Variável para controlar envio
+        let salvando = false;
+
+        // Função para salvar chamado inicial (sem ir para finalização)
+        function salvarChamadoInicial() {
+            console.log('🎯 Função salvarChamadoInicial chamada');
+            
+            // Evitar múltiplos envios
+            if (salvando) {
+                console.log('⚠️ Já está salvando, ignorando novo envio');
+                return;
+            }
+            
+            salvando = true;
+            const formData = {
+                ID_chamado: document.getElementById('ID_chamado').value,
+                nome_analista: document.getElementById('nome_analista').value,
+                tipo_atividade: document.getElementById('tipo_atividade').value,
+                tecnico: document.getElementById('tecnico').value,
+                data: document.getElementById('data').value,
+                inicio: document.getElementById('inicio').value
+            };
+            
+            // Validar campos obrigatórios
+            const camposObrigatorios = ['ID_chamado', 'nome_analista', 'tipo_atividade', 'tecnico', 'data', 'inicio'];
+            for (let campo of camposObrigatorios) {
+                const valor = formData[campo];
+                if (!valor || (typeof valor === 'string' && valor.trim() === '')) {
+                    console.log(`❌ Campo ${campo} está vazio:`, valor);
+                    mostrarToast('error', '❌ Erro', `Campo ${campo} é obrigatório`);
+                    salvando = false;
+                    return;
+                }
+            }
+            
+            console.log('✅ Todos os campos validados:', formData);
+            
+            console.log('📤 Enviando dados iniciais:', formData);
+            
+            // Mostrar toast de carregamento
+            mostrarToast('info', '⏳ Salvando', 'Salvando chamado...');
+            
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            
+            fetch('/salvar_dados_iniciais/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                console.log('📥 Status da resposta:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('📥 Dados recebidos:', data);
+                if (data.success) {
+                    // Mostrar modal de sucesso grande
+                    mostrarModalSucesso(formData.ID_chamado);
+                    
+                    // Resetar variável de controle
+                    salvando = false;
+                    
+                    // Redirecionar para a tabela após 2.5 segundos
+                    setTimeout(() => {
+                        window.location.href = '/tabela_chamados/';
+                    }, 2500);
+                } else {
+                    mostrarToast('error', '❌ Erro', data.message);
+                    salvando = false;
+                }
+            })
+            .catch(error => {
+                console.error('❌ Erro:', error);
+                mostrarToast('error', '❌ Erro de Conexão', 'Não foi possível conectar ao servidor');
+                salvando = false;
+            });
+        }
+
         // EVENT LISTENERS
         document.addEventListener('DOMContentLoaded', function() {
-            // Formulário de início
-            document.getElementById('formInicioChamado').addEventListener('submit', function(e) {
-                e.preventDefault();
-                irParaFinalizacao();
-            });
+            // Formulário de início - agora apenas salva e não vai para finalização
+            const formInicio = document.getElementById('formInicioChamado');
+            if (formInicio) {
+                formInicio.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('🚀 Formulário submetido, chamando salvarChamadoInicial()');
+                    salvarChamadoInicial();
+                });
+                console.log('✅ Event listener adicionado ao formulário');
+            } else {
+                console.error('❌ Formulário formInicioChamado não encontrado');
+            }
 
             // Botão voltar
             document.getElementById('voltarInicio').addEventListener('click', function() {
@@ -572,7 +937,7 @@
 
             // Formulário de finalização
             document.getElementById('formFinalizarChamado').addEventListener('submit', function(e) {
-                e.preventDefault();
+            e.preventDefault();
                 
                 // Confirmação final
                 const confirmacao = confirm("Deseja finalizar e registrar este chamado?");

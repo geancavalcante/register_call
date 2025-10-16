@@ -125,3 +125,7 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Configurações de codificação para garantir UTF-8
+FILE_CHARSET = 'utf-8'
+DEFAULT_CHARSET = 'utf-8'
