@@ -28,7 +28,7 @@ class Chamados(models.Model):
     data_planejada = models.DateField(null=True, blank=True)  # Data planejada da planilha
     inicio = models.TimeField(null=True, blank=True)
     conclusao = models.TimeField(null=True, blank=True)
-    total_horas = models.TimeField(null=True, blank=True)
+    total_horas = models.FloatField(null=True, blank=True, help_text="Total de horas em decimal (ex: 2.5 para 2h30min)")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='planejado')
     produtiva = models.BooleanField(default=True)
     senha = models.CharField(max_length=12, blank=True)

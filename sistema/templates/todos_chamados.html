@@ -450,7 +450,7 @@
                     <strong>Horário:</strong> <span>{{ chamado.inicio }} - {{ chamado.conclusao }}</span>
                 </div>
                 <div class="field">
-                    <strong>Tempo Total:</strong> <span>{{ chamado.total_horas }}</span>
+                    <strong>Tempo Total:</strong> <span>{% if chamado.total_horas %}{{ chamado.total_horas|floatformat:2 }}h{% else %}-{% endif %}</span>
                 </div>
                 <div class="field {% if chamado.produtiva %}produtiva{% else %}improdutiva{% endif %}">
                     <strong>Status:</strong> 

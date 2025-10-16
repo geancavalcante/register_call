@@ -26,10 +26,32 @@ def dashboards(request):
     View de dashboards - todos os filtros são aplicados no frontend.
     """
     # Buscar todos os chamados ordenados por data (mais recentes primeiro)
-    chamados = Chamados.objects.all().order_by('-data', '-id')
-    
+    chamados_qs = Chamados.objects.all().order_by('-data', '-id')
+
+    # Converter queryset para lista serializável pelo json_script
+    chamados_serializaveis = []
+    for c in chamados_qs:
+        chamados_serializaveis.append({
+            'ID_chamado': c.ID_chamado or 0,
+            'nome_analista': c.nome_analista.username if getattr(c, 'nome_analista', None) else 'N/A',
+            'nome_tecnico': c.nome_tecnico if getattr(c, 'nome_tecnico', None) else 'N/A',
+            'nome_cliente': c.nome_cliente if getattr(c, 'nome_cliente', None) else 'N/A',
+            'tipo_atividade': c.tipo_atividade if getattr(c, 'tipo_atividade', None) else 'N/A',
+            'inicio': c.inicio.strftime('%H:%M:%S') if getattr(c, 'inicio', None) else '00:00:00',
+            'conclusao': c.conclusao.strftime('%H:%M:%S') if getattr(c, 'conclusao', None) else '00:00:00',
+            'total_horas': str(c.total_horas) if getattr(c, 'total_horas', None) else '00:00:00',
+            'produtiva': bool(c.produtiva) if getattr(c, 'produtiva', None) is not None else True,
+            'data': c.data.strftime('%Y-%m-%d') if getattr(c, 'data', None) else '',
+            'data_planejada': c.data_planejada.strftime('%Y-%m-%d') if getattr(c, 'data_planejada', None) else '',
+            'status': c.status if getattr(c, 'status', None) else 'planejado',
+            'senha': c.senha if getattr(c, 'senha', None) else 'N/A',
+            'observacao': c.observacao if getattr(c, 'observacao', None) else 'N/A',
+            'origem_planilha': bool(c.origem_planilha) if getattr(c, 'origem_planilha', None) is not None else False,
+            'data_upload': c.data_upload.strftime('%Y-%m-%d %H:%M') if getattr(c, 'data_upload', None) else ''
+        })
+
     return render(request, "dashboards.html", {
-        "chamados": chamados
+        "chamados": chamados_serializaveis
     })
 
 def nomes_analistas(request):
