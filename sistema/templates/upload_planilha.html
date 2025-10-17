@@ -174,6 +174,55 @@
             margin-bottom: 30px;
         }
 
+        /* HORÁRIO RESTRITO */
+        .horario-restrito-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+            padding: 20px;
+        }
+
+        .horario-restrito-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(248, 194, 74, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            backdrop-filter: blur(10px);
+        }
+
+        .horario-restrito-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .horario-restrito-card h2 {
+            color: #F8C24A;
+            font-size: 24px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .horario-restrito-text {
+            color: #fff;
+            font-size: 16px;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .horario-restrito-text strong {
+            color: #F8C24A;
+        }
+
+        .horario-restrito-subtext {
+            color: #999;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+
         .file-input {
             display: none;
         }
@@ -419,6 +468,31 @@
             <p class="subtitle">Carregue chamados planejados para o sistema</p>
         </div>
 
+        {% if horario_restrito %}
+        <div class="horario-restrito-container">
+            <div class="horario-restrito-card">
+                {% if ja_upload_hoje %}
+                    <div class="horario-restrito-icon">✅</div>
+                    <h2>Upload Já Realizado Hoje</h2>
+                    <p class="horario-restrito-text">
+                        O upload de planilhas já foi realizado hoje. Faça novos uploads apenas no horário permitido.
+                    </p>
+                    <p class="horario-restrito-subtext">
+                        Volte das <strong>{{ hora_inicio }}</strong> às <strong>{{ hora_fim }}</strong> para fazer um novo upload hoje, ou amanhã no mesmo horário.
+                    </p>
+                {% else %}
+                    <div class="horario-restrito-icon">⏰</div>
+                    <h2>Horário de Upload Restrito</h2>
+                    <p class="horario-restrito-text">
+                        O upload de planilhas está disponível apenas das <strong>{{ hora_inicio }}</strong> às <strong>{{ hora_fim }}</strong>.
+                    </p>
+                    <p class="horario-restrito-subtext">
+                        Volte no horário permitido para fazer o upload dos chamados planejados.
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
         <div class="upload-container">
             <div class="upload-area" id="uploadArea">
                 <div class="upload-icon">📁</div>
@@ -662,6 +736,8 @@
             link.click();
             document.body.removeChild(link);
         }
+
     </script>
+    {% endif %}
 </body>
 </html>
