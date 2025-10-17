@@ -1285,19 +1285,11 @@
         function irParaChamadosPlanejados() {
             const params = new URLSearchParams();
             
-            // Aplicar filtro de status = planejadas
-            params.set('status', 'planejadas');
+            // Aplicar filtro de origem_planilha = true (chamados que foram planejados)
+            params.set('origem_planilha', 'true');
             
-            // Manter outros filtros ativos do dashboard
-            if (currentFilters.period !== '0') {
-                const periodoMapping = {
-                    '0': 'today',
-                    '7': '7',
-                    '90': '90'
-                };
-                const periodoValue = periodoMapping[currentFilters.period] || currentFilters.period;
-                params.set('period', periodoValue);
-            }
+            // SEMPRE filtrar por hoje quando clicar no card
+            params.set('period', 'today');
             
             if (currentFilters.analysts !== 'all') {
                 params.set('analyst', currentFilters.analysts);
@@ -1344,7 +1336,7 @@
             
             const mensagem = filtrosAtivos.length > 1 
                 ? `Filtros aplicados: ${filtrosAtivos.join(', ')}`
-                : 'Mostrando apenas chamados planejados';
+                : 'Mostrando chamados que foram planejados (independente do status atual)';
                 
             showToast('success', '📊 Relatórios de Chamados', mensagem);
             
@@ -1361,16 +1353,8 @@
             // Aplicar filtro de status = em andamento
             params.set('status', 'andamento');
             
-            // Manter outros filtros ativos do dashboard
-            if (currentFilters.period !== '0') {
-                const periodoMapping = {
-                    '0': 'today',
-                    '7': '7',
-                    '90': '90'
-                };
-                const periodoValue = periodoMapping[currentFilters.period] || currentFilters.period;
-                params.set('period', periodoValue);
-            }
+            // SEMPRE filtrar por hoje quando clicar no card
+            params.set('period', 'today');
             
             if (currentFilters.analysts !== 'all') {
                 params.set('analyst', currentFilters.analysts);
@@ -1434,17 +1418,8 @@
             // Aplicar filtro de origem_planilha = false
             params.set('origem_planilha', 'false');
             
-            // Manter outros filtros ativos do dashboard
-            if (currentFilters.period !== '0') {
-                const periodoMapping = {
-                    '0': 'today',
-                    '7': '7',
-                    '30': '30'
-                };
-                if (periodoMapping[currentFilters.period]) {
-                    params.set('period', periodoMapping[currentFilters.period]);
-                }
-            }
+            // SEMPRE filtrar por hoje quando clicar no card
+            params.set('period', 'today');
             
             if (currentFilters.analyst && currentFilters.analyst !== 'all') {
                 params.set('analyst', currentFilters.analyst);
@@ -1472,16 +1447,8 @@
             // Aplicar filtro de status = finalizado
             params.set('status', 'finalizado');
             
-            // Manter outros filtros ativos do dashboard
-            if (currentFilters.period !== '0') {
-                const periodoMapping = {
-                    '0': 'today',
-                    '7': '7',
-                    '90': '90'
-                };
-                const periodoValue = periodoMapping[currentFilters.period] || currentFilters.period;
-                params.set('period', periodoValue);
-            }
+            // SEMPRE filtrar por hoje quando clicar no card
+            params.set('period', 'today');
             
             if (currentFilters.analysts !== 'all') {
                 params.set('analyst', currentFilters.analysts);
@@ -1549,7 +1516,8 @@
             const tempoMedio = totalChamados > 0 ? tempoTotal / totalChamados : 0;
             
             // Novos cards: Status de chamados
-            const chamadosPlanejados = dataToUse.filter(c => c.status === 'planejado').length;
+            // Chamados planejados = todos que foram planejados (origem_planilha = true), independente do status atual
+            const chamadosPlanejados = dataToUse.filter(c => c.origem_planilha === true).length;
             const chamadosAndamento = dataToUse.filter(c => c.status === 'em_andamento').length;
             const chamadosFinalizados = dataToUse.filter(c => c.status === 'finalizado').length;
             const chamadosNaoPlanejados = dataToUse.filter(c => c.origem_planilha === false).length;

@@ -126,8 +126,8 @@ def tabela_chamados(request):
     Retorna todos os chamados ordenados por data decrescente para permitir
     manipulação completa no frontend (ordenação, filtros, busca, etc).
     """
-    # Aplicar filtros da URL
-    periodo = request.GET.get('periodo', '')
+    # Aplicar filtros da URL - suporte para 'period' (do dashboard) e 'periodo' (legado)
+    periodo = request.GET.get('period', request.GET.get('periodo', ''))
     analista = request.GET.get('analista', '')
     tipo_atividade = request.GET.get('tipo_atividade', '')
     produtividade = request.GET.get('produtividade', '')
@@ -175,8 +175,10 @@ def tabela_chamados(request):
             chamados = chamados.filter(produtiva=False)
         elif status == 'planejadas':
             chamados = chamados.filter(status='planejado')
-        elif status == 'em_andamento':
+        elif status == 'andamento':
             chamados = chamados.filter(status='em_andamento')
+        elif status == 'finalizado':
+            chamados = chamados.filter(status='finalizado')
     
     if origem_planilha == 'false':
         chamados = chamados.filter(origem_planilha=False)
@@ -234,13 +236,22 @@ def salvar_dados_iniciais(request):
         # Verificar se o ID do chamado já existe
         chamado_existente = Chamados.objects.filter(ID_chamado=data['ID_chamado']).first()
         if chamado_existente:
-            # Se o chamado existe e está planejado, permitir continuar
+            # Se o chamado existe e está planejado, atualizar para em_andamento
             if chamado_existente.status == 'planejado':
+                # Atualizar o chamado planejado com os novos dados
+                chamado_existente.nome_analista = analista
+                chamado_existente.tipo_atividade = data['tipo_atividade']
+                chamado_existente.nome_tecnico = data['tecnico']
+                chamado_existente.data = datetime.strptime(data['data'], '%Y-%m-%d').date()
+                chamado_existente.inicio = datetime.strptime(data['inicio'], '%H:%M').time()
+                chamado_existente.status = 'em_andamento'
+                chamado_existente.save()
+                
                 return JsonResponse({
                     'success': True,
-                    'message': 'Chamado planejado encontrado. Pode continuar com o preenchimento.',
+                    'message': 'Chamado assumido com sucesso! Status alterado para "Em Andamento".',
                     'chamado_existente': True,
-                    'status_atual': 'planejado'
+                    'status_atual': 'em_andamento'
                 })
             elif chamado_existente.status == 'em_andamento':
                 return JsonResponse({
@@ -429,7 +440,14 @@ class RegistrarChamado(View):
 
         inicio = datetime.strptime(self.inicio, formato)
         conclusao = datetime.strptime(self.conclusao, formato)
-        self.total_horas = str(conclusao - inicio)
+        
+        # Calcular diferença em horas (float)
+        diferenca = conclusao - inicio
+        self.total_horas = diferenca.total_seconds() / 3600.0
+        
+        # Se o tempo for 0 ou negativo, considerar 1 minuto mínimo
+        if self.total_horas <= 0:
+            self.total_horas = 1/60.0  # 1 minuto = 1/60 de hora
     
 
     def _salvador_chamado(self):
@@ -688,13 +706,29 @@ def upload_planilha(request):
             else:
                 df = pd.read_excel(arquivo)
             
+            # Mapeamento de colunas alternativas
+            mapeamento_colunas = {
+                'TICKET': 'ID_chamado',
+                'Ponto': 'nome_cliente', 
+                'TÉCNICO': 'nome_tecnico',
+                'DATA': 'data_planejada',
+                'SERVIÇO': 'tipo_atividade'
+            }
+            
+            # Renomear colunas se necessário
+            for col_original, col_nova in mapeamento_colunas.items():
+                if col_original in df.columns and col_nova not in df.columns:
+                    df = df.rename(columns={col_original: col_nova})
+            
             # Verificar colunas obrigatórias
             colunas_obrigatorias = ['ID_chamado', 'nome_cliente', 'nome_tecnico', 'data_planejada']
             colunas_faltando = [col for col in colunas_obrigatorias if col not in df.columns]
             
             if colunas_faltando:
+                # Mostrar colunas disponíveis para ajudar o usuário
+                colunas_disponiveis = list(df.columns)
                 return JsonResponse({
-                    'error': f'Colunas obrigatórias não encontradas: {", ".join(colunas_faltando)}'
+                    'error': f'Colunas obrigatórias não encontradas: {", ".join(colunas_faltando)}. Colunas disponíveis: {", ".join(colunas_disponiveis)}'
                 }, status=400)
             
             # Processar dados
@@ -719,7 +753,7 @@ def upload_planilha(request):
                     
                     # Criar chamado
                     chamado = Chamados.objects.create(
-                        ID_chamado=int(row['ID_chamado']),
+                        ID_chamado=str(row['ID_chamado']),  # Usar string para suportar IDs como "125978/1"
                         nome_cliente=str(row['nome_cliente']),
                         nome_tecnico=str(row['nome_tecnico']),
                         data_planejada=data_planejada,
@@ -803,7 +837,8 @@ def finalizar_chamado(request):
         # Calcular total de horas se possível
         if chamado.inicio and conclusao:
             try:
-                inicio_time = datetime.strptime(chamado.inicio, '%H:%M').time()
+                # chamado.inicio já é um objeto time, não precisa converter
+                inicio_time = chamado.inicio
                 conclusao_time = datetime.strptime(conclusao, '%H:%M').time()
                 
                 inicio_datetime = datetime.combine(date.today(), inicio_time)
@@ -814,8 +849,13 @@ def finalizar_chamado(request):
                     conclusao_datetime += timedelta(days=1)
                 
                 diferenca = conclusao_datetime - inicio_datetime
-                horas = diferenca.total_seconds() / 3600
-                chamado.total_horas = round(horas, 2)
+                horas = diferenca.total_seconds() / 3600.0
+                
+                # Se o tempo for 0 ou negativo, considerar 1 minuto mínimo
+                if horas <= 0:
+                    horas = 1/60.0  # 1 minuto = 1/60 de hora
+                
+                chamado.total_horas = horas
             except:
                 pass  # Se houver erro no cálculo, manter o valor existente
         
