@@ -700,13 +700,13 @@ def exportar_excel_formatado(request):
 def upload_planilha(request):
     """
     View para upload e processamento de planilhas de chamados planejados.
-    Acesso permitido apenas das 13:20 às 16:00, uma vez por dia.
+    Acesso permitido apenas das 16:10 às 17:10, uma vez por dia.
     """
-    # Verificar horário de acesso (13:20 às 16:00) - usando horário local
+    # Verificar horário de acesso (16:10 às 17:10) - usando horário local
     agora = datetime.now()  # Usar horário local ao invés de timezone.now()
     hora_atual = agora.time()
-    hora_inicio = datetime.strptime('13:20', '%H:%M').time()
-    hora_fim = datetime.strptime('16:00', '%H:%M').time()
+    hora_inicio = datetime.strptime('16:10', '%H:%M').time()
+    hora_fim = datetime.strptime('17:10', '%H:%M').time()
     
     # Verificar se já foi feito upload hoje
     hoje = agora.date()
@@ -723,13 +723,13 @@ def upload_planilha(request):
         if request.method == 'GET':
             return render(request, 'upload_planilha.html', {
                 'horario_restrito': True,
-                'hora_inicio': '13:20',
-                'hora_fim': '16:00',
+                'hora_inicio': '16:10',
+                'hora_fim': '17:10',
                 'ja_upload_hoje': True
             })
         else:
             return JsonResponse({
-                'error': 'Upload já realizado hoje. Faça novos uploads apenas das 13:20 às 16:00.'
+                'error': 'Upload já realizado hoje. Faça novos uploads apenas das 16:10 às 17:10.'
             }, status=403)
     
     # Verificar horário (mas permitir bypass se tiver o parâmetro)
@@ -737,8 +737,8 @@ def upload_planilha(request):
         if request.method == 'GET':
             return render(request, 'upload_planilha.html', {
                 'horario_restrito': True,
-                'hora_inicio': '13:20',
-                'hora_fim': '16:00',
+                'hora_inicio': '16:10',
+                'hora_fim': '17:10',
                 'ja_upload_hoje': False
             })
         else:
@@ -749,8 +749,8 @@ def upload_planilha(request):
     if request.method == 'GET':
         return render(request, 'upload_planilha.html', {
             'horario_restrito': False,
-            'hora_inicio': '13:20',
-            'hora_fim': '16:00'
+            'hora_inicio': '16:10',
+            'hora_fim': '17:10'
         })
     
     if request.method == 'POST':
@@ -798,13 +798,18 @@ def upload_planilha(request):
                 'Ponto': 'nome_cliente', 
                 'TÉCNICO': 'nome_tecnico',
                 'DATA': 'data_planejada',
-                'SERVIÇO': 'tipo_atividade'
+                'SERVIÇO': 'tipo_atividade',
+                'Horário Previsto': 'previsto'
             }
             
             # Renomear colunas se necessário
+            print(f"📊 Colunas detectadas: {list(df.columns)}")
             for col_original, col_nova in mapeamento_colunas.items():
                 if col_original in df.columns and col_nova not in df.columns:
                     df = df.rename(columns={col_original: col_nova})
+                    print(f"🔄 Coluna renomeada: {col_original} -> {col_nova}")
+            
+            print(f"📊 Colunas após mapeamento: {list(df.columns)}")
             
             # Verificar colunas obrigatórias
             colunas_obrigatorias = ['ID_chamado', 'nome_cliente', 'nome_tecnico', 'data_planejada']
@@ -833,24 +838,43 @@ def upload_planilha(request):
                     data_planejada = None
                     if pd.notna(row['data_planejada']):
                         if isinstance(row['data_planejada'], str):
-                            data_planejada = datetime.strptime(row['data_planejada'], '%d/%m/%Y').date()
+                            # Tentar diferentes formatos de data
+                            try:
+                                data_planejada = datetime.strptime(row['data_planejada'], '%d/%m/%Y').date()
+                            except:
+                                try:
+                                    data_planejada = datetime.strptime(row['data_planejada'], '%Y-%m-%d').date()
+                                except:
+                                    try:
+                                        data_planejada = datetime.strptime(row['data_planejada'], '%Y/%m/%d').date()
+                                    except:
+                                        print(f"❌ Formato de data não reconhecido: {row['data_planejada']}")
+                                        raise ValueError(f"Formato de data não reconhecido: {row['data_planejada']}")
                         else:
                             data_planejada = row['data_planejada'].date()
                     
                     # Converter horário previsto
                     horario_previsto = None
+                    print(f"🕐 Verificando horário previsto para linha {index + 2}: {row.get('previsto', 'NÃO ENCONTRADO')}")
                     if 'previsto' in df.columns and pd.notna(row.get('previsto')):
+                        print(f"🕐 Campo previsto encontrado: {row.get('previsto')}")
                         if isinstance(row['previsto'], str):
                             # Tentar diferentes formatos de horário
                             try:
                                 horario_previsto = datetime.strptime(row['previsto'], '%H:%M').time()
+                                print(f"🕐 Horário convertido (HH:MM): {horario_previsto}")
                             except:
                                 try:
                                     horario_previsto = datetime.strptime(row['previsto'], '%H:%M:%S').time()
+                                    print(f"🕐 Horário convertido (HH:MM:SS): {horario_previsto}")
                                 except:
+                                    print(f"❌ Não foi possível converter horário: {row['previsto']}")
                                     horario_previsto = None
                         else:
                             horario_previsto = row['previsto']
+                            print(f"🕐 Horário já no formato correto: {horario_previsto}")
+                    else:
+                        print(f"❌ Campo 'previsto' não encontrado ou vazio")
                     
                     # Criar chamado
                     chamado = Chamados.objects.create(
@@ -870,6 +894,8 @@ def upload_planilha(request):
                     chamados_criados += 1
                     
                 except Exception as e:
+                    print(f"❌ Erro na linha {index + 2}: {str(e)}")
+                    print(f"Dados da linha: {dict(row)}")
                     erros.append(f"Linha {index + 2}: {str(e)}")
             
             # Resposta de sucesso
