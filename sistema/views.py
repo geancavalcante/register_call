@@ -700,57 +700,11 @@ def exportar_excel_formatado(request):
 def upload_planilha(request):
     """
     View para upload e processamento de planilhas de chamados planejados.
-    Acesso permitido apenas das 16:10 às 17:10, uma vez por dia.
+    Sem restrições de horário.
     """
-    # Verificar horário de acesso (16:10 às 17:10) - usando horário local
-    agora = datetime.now()  # Usar horário local ao invés de timezone.now()
-    hora_atual = agora.time()
-    hora_inicio = datetime.strptime('16:10', '%H:%M').time()
-    hora_fim = datetime.strptime('17:10', '%H:%M').time()
-    
-    # Verificar se já foi feito upload hoje
-    hoje = agora.date()
-    uploads_hoje = Chamados.objects.filter(data_upload__date=hoje, origem_planilha=True).count()
-    
-    # Permitir bypass apenas para hoje com parâmetro especial
-    permitir_novo_upload = request.GET.get('permitir_novo', '') == 'sim'
-    
-    # Permitir segundo upload hoje se estiver no horário correto (13:20-16:00)
-    dentro_do_horario = hora_inicio <= hora_atual <= hora_fim
-    
-    # Verificar se já foi feito upload hoje (só bloqueia se estiver FORA do horário)
-    if uploads_hoje > 0 and not permitir_novo_upload and not dentro_do_horario:
-        if request.method == 'GET':
-            return render(request, 'upload_planilha.html', {
-                'horario_restrito': True,
-                'hora_inicio': '16:10',
-                'hora_fim': '17:10',
-                'ja_upload_hoje': True
-            })
-        else:
-            return JsonResponse({
-                'error': 'Upload já realizado hoje. Faça novos uploads apenas das 16:10 às 17:10.'
-            }, status=403)
-    
-    # Verificar horário (mas permitir bypass se tiver o parâmetro)
-    if not (hora_inicio <= hora_atual <= hora_fim) and not permitir_novo_upload:
-        if request.method == 'GET':
-            return render(request, 'upload_planilha.html', {
-                'horario_restrito': True,
-                'hora_inicio': '16:10',
-                'hora_fim': '17:10',
-                'ja_upload_hoje': False
-            })
-        else:
-            return JsonResponse({
-                'error': f'Upload de planilha permitido apenas das {hora_inicio.strftime("%H:%M")} às {hora_fim.strftime("%H:%M")}'
-            }, status=403)
-    
     if request.method == 'GET':
         return render(request, 'upload_planilha.html', {
-            'horario_restrito': False,
-            'hora_inicio': '16:10',
-            'hora_fim': '17:10'
+            'horario_restrito': False
         })
     
     if request.method == 'POST':
