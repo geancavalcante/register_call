@@ -547,6 +547,9 @@
                     <strong>Data:</strong> <span>{{ chamado.data|date:"d/m/Y" }}</span>
                 </div>
                 <div class="field">
+                    <strong>Horário Previsto:</strong> <span>{{ chamado.previsto|time:"H:i"|default:"-" }}</span>
+                </div>
+                <div class="field">
                     <strong>Horário:</strong> <span>{{ chamado.inicio }} - {{ chamado.conclusao }}</span>
                 </div>
                 <div class="field">

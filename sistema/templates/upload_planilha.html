@@ -518,13 +518,14 @@
                     <table>
                         <thead>
                             <tr>
-                                <th>ICKET</th>
+                                <th>TICKET</th>
                                 <th>Ponto</th>
                                 <th>Cidade</th>
                                 <th>UF</th>
                                 <th>TÉCNICO</th>
                                 <th>NÚMERO</th>
                                 <th>DATA</th>
+                                <th>Horário Previsto</th>
                                 <th>SERVIÇO</th>
                             </tr>
                         </thead>
@@ -537,6 +538,7 @@
                                 <td>João Silva</td>
                                 <td>11999999999</td>
                                 <td>2025-10-15</td>
+                                <td>14:30</td>
                                 <td>Manutenção</td>
                             </tr>
                             <tr>
@@ -547,6 +549,7 @@
                                 <td>Maria Santos</td>
                                 <td>21988888888</td>
                                 <td>2025-10-16</td>
+                                <td>09:15</td>
                                 <td>Migração</td>
                             </tr>
                             <tr>
@@ -557,6 +560,7 @@
                                 <td>Pedro Costa</td>
                                 <td>31977777777</td>
                                 <td>2025-10-17</td>
+                                <td>16:45</td>
                                 <td>Mudança de Endereço</td>
                             </tr>
                         </tbody>
@@ -574,31 +578,32 @@
                 <h3>📋 Instruções para Upload</h3>
                 <ul>
                     <li>Formatos suportados: Excel (.xlsx, .xls) e CSV (.csv)</li>
-                    <li>Use exatamente o formato do arquivo "Rotas 01"</li>
+                    <li>Use exatamente o formato do arquivo "template_chamados"</li>
                     <li>Os chamados serão criados com status "Planejado"</li>
                     <li>Chamados duplicados (mesmo ID) serão ignorados</li>
-                    <li>Data deve estar no formato AAAA-MM-DD (como no arquivo "Rotas 01")</li>
-                    <li>O sistema extrai automaticamente o ID do campo ICKET</li>
+                    <li>Data deve estar no formato AAAA-MM-DD (como no arquivo "template_chamados")</li>
+                    <li>O sistema extrai automaticamente o ID do campo TICKET</li>
                     <li>O nome do cliente é extraído do campo Ponto</li>
                     <li><strong>TODOS os campos são obrigatórios - não podem estar vazios!</strong></li>
                 </ul>
 
                 <div class="required-columns">
-                    <h4>🔧 Colunas Obrigatórias (formato "Rotas 01"):</h4>
+                    <h4>🔧 Colunas Obrigatórias (formato "template_chamados"):</h4>
                     <div class="columns-grid">
-                        <div class="column-item">ICKET</div>
+                        <div class="column-item">TICKET</div>
                         <div class="column-item">Ponto</div>
                         <div class="column-item">Cidade</div>
                         <div class="column-item">UF</div>
                         <div class="column-item">TÉCNICO</div>
                         <div class="column-item">NÚMERO</div>
                         <div class="column-item">DATA</div>
+                        <div class="column-item">Horário Previsto</div>
                         <div class="column-item">SERVIÇO</div>
                     </div>
                     <p style="color: #F8C24A; margin-top: 15px; font-size: 0.9rem;">
-                        <strong>Exemplo:</strong> ICKET "125978/1" → ID será "125978"<br>
+                        <strong>Exemplo:</strong> TICKET "125978/1" → ID será "125978"<br>
                         Ponto "18-007264-1 - AGENCIA LOTERICA" → Cliente será "AGENCIA LOTERICA"<br>
-                        <strong>Use exatamente o formato do arquivo "Rotas 01"!</strong>
+                        <strong>Use exatamente o formato do arquivo "template_chamados"!</strong>
                     </p>
                 </div>
             </div>
@@ -714,10 +719,10 @@
         function downloadTemplate() {
             // Dados do template
             const templateData = [
-                ['ICKET', 'Ponto', 'Cidade', 'UF', 'TÉCNICO', 'NÚMERO', 'DATA', 'SERVIÇO'],
-                ['125978/1', '18-007264-1 - AGENCIA LOTERICA', 'São Paulo', 'SP', 'João Silva', '11999999999', '2025-10-15', 'Manutenção'],
-                ['125979/1', '18-007265-2 - LOJA CONVENIENCIA', 'Rio de Janeiro', 'RJ', 'Maria Santos', '21988888888', '2025-10-16', 'Migração'],
-                ['125980/1', '18-007266-3 - FARMACIA CENTRAL', 'Belo Horizonte', 'MG', 'Pedro Costa', '31977777777', '2025-10-17', 'Mudança de Endereço']
+                ['TICKET', 'Ponto', 'Cidade', 'UF', 'TÉCNICO', 'NÚMERO', 'DATA', 'Horário Previsto', 'SERVIÇO'],
+                ['125978/1', '18-007264-1 - AGENCIA LOTERICA', 'São Paulo', 'SP', 'João Silva', '11999999999', '2025-10-15', '14:30', 'Manutenção'],
+                ['125979/1', '18-007265-2 - LOJA CONVENIENCIA', 'Rio de Janeiro', 'RJ', 'Maria Santos', '21988888888', '2025-10-16', '09:15', 'Migração'],
+                ['125980/1', '18-007266-3 - FARMACIA CENTRAL', 'Belo Horizonte', 'MG', 'Pedro Costa', '31977777777', '2025-10-17', '16:45', 'Mudança de Endereço']
             ];
 
             // Converter para CSV

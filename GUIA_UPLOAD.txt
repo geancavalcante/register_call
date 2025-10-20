@@ -16,16 +16,44 @@ Colunas Obrigatórias (aceita vários nomes):
 Colunas Opcionais:
   • tipo_atividade  → SERVIÇO, Serviço, Tipo, Atividade
   • observacao      → Observação, Obs, OBS
+  • previsto        → PREVISTO, Previsto, Horário Previsto (formato: HH:MM)
 
 ================================================================================
 📝 EXEMPLO DE PLANILHA
 ================================================================================
 
-ID_chamado | nome_cliente    | nome_tecnico | data_planejada | tipo_atividade | observacao
------------|-----------------|--------------|----------------|----------------|------------------
-123456     | Cliente Teste 1 | João Silva   | 2025-01-20     | Instalação     | Teste upload
-789012     | Cliente Teste 2 | Maria Santos | 2025-01-21     | Manutenção     | Segundo teste
-456789     | Cliente Teste 3 | Pedro Costa  | 2025-01-22     | Suporte        | Terceiro teste
+EXEMPLO EXCEL/CSV:
+ID_chamado | nome_cliente    | nome_tecnico | data_planejada | previsto | tipo_atividade | observacao
+-----------|-----------------|--------------|----------------|----------|----------------|------------------
+123456     | Cliente Teste 1 | João Silva   | 20/01/2025     | 14:30    | Instalação     | Teste upload
+789012     | Cliente Teste 2 | Maria Santos | 21/01/2025     | 09:15    | Manutenção     | Segundo teste
+456789     | Cliente Teste 3 | Pedro Costa  | 22/01/2025     | 16:45    | Suporte        | Terceiro teste
+
+EXEMPLO CSV (formato texto):
+ID_chamado,nome_cliente,nome_tecnico,data_planejada,previsto,tipo_atividade,observacao
+123456,Cliente Teste 1,João Silva,20/01/2025,14:30,Instalação,Teste upload
+789012,Cliente Teste 2,Maria Santos,21/01/2025,09:15,Manutenção,Segundo teste
+456789,Cliente Teste 3,Pedro Costa,22/01/2025,16:45,Suporte,Terceiro teste
+
+================================================================================
+📅 FUNCIONALIDADE DAS COLUNAS
+================================================================================
+
+COLUNA "data_planejada" (obrigatória):
+  • Controla quando os chamados aparecem na tela
+  • Se a data for menor ou igual à data atual → chamado aparece
+  • Se a data for maior que a data atual → chamado fica oculto
+  • Se a coluna estiver vazia → chamado aparece normalmente
+
+COLUNA "previsto" (opcional):
+  • Horário previsto do chamado (formato: HH:MM)
+  • Sempre visível quando o chamado aparece
+  • Usado para planejamento e organização
+
+EXEMPLO:
+  • Upload feito em 18/01/2025
+  • Chamado com data_planejada = 20/01/2025 e previsto = 14:30
+  • Resultado: chamado aparece em 20/01/2025 com horário 14:30
 
 ================================================================================
 ✅ COMO PREPARAR SEU ARQUIVO
@@ -38,12 +66,17 @@ OPÇÃO 1 - EXCEL (RECOMENDADO):
   4. Salve como "Arquivo Excel (*.xlsx)"
   5. Faça upload no sistema
 
-OPÇÃO 2 - CSV:
+OPÇÃO 2 - CSV (RECOMENDADO PARA DADOS SIMPLES):
   1. Abra o Excel
   2. Crie uma planilha com as colunas acima
   3. Preencha os dados
   4. Salve como "CSV UTF-8 (delimitado por vírgulas) (*.csv)"
   5. Faça upload no sistema
+  
+  ✅ O sistema suporta automaticamente:
+     • Diferentes encodings (UTF-8, Latin-1, CP1252, ISO-8859-1)
+     • Diferentes separadores (vírgula, ponto e vírgula, tab)
+     • Detecção automática do formato
 
 ================================================================================
 ⚠️  PROBLEMAS COMUNS E SOLUÇÕES
@@ -63,6 +96,8 @@ OPÇÃO 2 - CSV:
    ✅ Solução 1: Salve o arquivo como Excel (.xlsx) ao invés de CSV
    ✅ Solução 2: Abra o arquivo no Excel e salve novamente
    ✅ Solução 3: Verifique se o arquivo não está corrompido
+   ✅ Solução 4: Para CSV, tente salvar com encoding UTF-8
+   ✅ Solução 5: Verifique se o separador está correto (vírgula, ponto e vírgula ou tab)
 
 ❌ Erro: "Chamado já existe"
    ✅ Solução: O sistema ignora chamados duplicados automaticamente

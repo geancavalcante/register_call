@@ -1163,6 +1163,17 @@
                                     <!-- Datas serão preenchidas dinamicamente -->
                                 </div>
                             </th>
+                            <th data-column="previsto">
+                                <div class="header-container">
+                                    <span class="header-title">Horário Previsto</span>
+                                    <button class="dropdown-btn" onclick="toggleDropdown('previsto')">▼</button>
+                                </div>
+                                <div class="dropdown-menu" id="dropdown-previsto">
+                                    <input type="text" class="dropdown-search" placeholder="Buscar horário..." onkeyup="filterDropdown('previsto', this.value)">
+                                    <div class="dropdown-item" onclick="selectFilter('previsto', '')">Todos</div>
+                                    <!-- Horários previstos serão preenchidos dinamicamente -->
+                                </div>
+                            </th>
                             <th data-column="inicio">
                                 <div class="header-container">
                                     <span class="header-title">Início</span>
@@ -1266,6 +1277,7 @@
                             data-tipo="{{ chamado.tipo_atividade }}"
                             data-tecnico="{{ chamado.nome_tecnico }}"
                             data-data="{{ chamado.data|date:'Y-m-d' }}"
+                            data-previsto="{{ chamado.previsto|time:'H:i'|default:'' }}"
                             data-inicio="{{ chamado.inicio }}"
                             data-conclusao="{{ chamado.conclusao }}"
                             data-tempo="{{ chamado.total_horas }}"
@@ -1281,6 +1293,7 @@
                             <td>{{ chamado.tipo_atividade }}</td>
                             <td>{{ chamado.nome_tecnico }}</td>
                             <td>{{ chamado.data|date:"d/m/Y" }}</td>
+                            <td>{{ chamado.previsto|time:"H:i"|default:"-" }}</td>
                             <td>{{ chamado.inicio }}</td>
                             <td>{{ chamado.conclusao }}</td>
                             <td>{{ chamado.total_horas|format_horas }}</td>

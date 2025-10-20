@@ -25,7 +25,8 @@ class Chamados(models.Model):
     nome_tecnico = models.CharField(max_length=30, blank=True)
     nome_cliente = models.CharField(max_length=100, blank=True)  # Novo campo para cliente
     data = models.DateField(default=datetime.today)
-    data_planejada = models.DateField(null=True, blank=True)  # Data planejada da planilha
+    data_planejada = models.DateField(null=True, blank=True, help_text="Data em que o chamado deve aparecer na tela")
+    previsto = models.TimeField(null=True, blank=True, help_text="Horário previsto do chamado")
     inicio = models.TimeField(null=True, blank=True)
     conclusao = models.TimeField(null=True, blank=True)
     total_horas = models.FloatField(null=True, blank=True, help_text="Total de horas em decimal (ex: 2.5 para 2h30min)")

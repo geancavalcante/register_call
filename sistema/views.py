@@ -18,6 +18,7 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 import os
 from django.utils import timezone
+from django.db import models
 
 
 
@@ -72,9 +73,11 @@ def nomes_analistas(request):
 def ver_analista(request, user_id):
     hora = datetime.strptime("01:00","%H:%M").time()
 
-
     analista = User.objects.get(id=user_id)
-    chamados_feitos = Chamados.objects.filter(nome_analista=analista)
+    hoje = date.today()
+    chamados_feitos = Chamados.objects.filter(nome_analista=analista).filter(
+        models.Q(data_planejada__lte=hoje) | models.Q(data_planejada__isnull=True)
+    )
     analista = str(analista).replace("_", " ")
 
     return render(request, "chamado_especifico.html" , {"chamados": chamados_feitos, "analista": analista, "hora": hora} )
@@ -89,7 +92,10 @@ def todos_chamados(request):
     hoje = date.today()
     
     # Buscar todos os chamados ordenados por data (mais recentes primeiro)
-    chamados = Chamados.objects.all().order_by('-data', '-id')
+    # Filtrar chamados que já podem ser exibidos (data_planejada <= hoje ou null)
+    chamados = Chamados.objects.filter(
+        models.Q(data_planejada__lte=hoje) | models.Q(data_planejada__isnull=True)
+    ).order_by('-data', '-id')
     quantidade = chamados.count()
     
     # Filtros opcionais via GET parameters (para uso futuro)
@@ -136,7 +142,10 @@ def tabela_chamados(request):
     
     # Construir query base - chamados "em_andamento" sempre no topo
     from django.db.models import Case, When, Value, IntegerField
-    chamados = Chamados.objects.all().order_by(
+    hoje = timezone.now().date()
+    chamados = Chamados.objects.filter(
+        models.Q(data_planejada__lte=hoje) | models.Q(data_planejada__isnull=True)
+    ).order_by(
         Case(
             When(status='em_andamento', then=Value(0)),
             default=Value(1),
@@ -360,8 +369,11 @@ def views(request):
 
         
 
-        chamados = Chamados.objects.filter(data=data_especifica) 
-        quantidade = Chamados.objects.filter(data=data_especifica).count() 
+        hoje = date.today()
+        chamados = Chamados.objects.filter(data=data_especifica).filter(
+            models.Q(data_planejada__lte=hoje) | models.Q(data_planejada__isnull=True)
+        )
+        quantidade = chamados.count() 
 
         return render(request, "visualização.html", {"chamados":chamados, "quantidade": quantidade, "data_especificada":data_especifica,"data_hoje": data_hoje, "hora":hora}  )
     else:
@@ -373,8 +385,11 @@ def views(request):
 
 
 
-        quantidade = Chamados.objects.filter(data=data_especifica).count()
-        chamados  = Chamados.objects.all()
+        hoje = date.today()
+        chamados = Chamados.objects.filter(
+            models.Q(data_planejada__lte=hoje) | models.Q(data_planejada__isnull=True)
+        )
+        quantidade = chamados.count()
         return render(request, "visualização.html",  {"chamados":chamados, "quantidade": quantidade,"data_especificada":data_especifica,"data_hoje":data_hoje, "hora":hora})
 
 
@@ -599,7 +614,7 @@ def exportar_excel_formatado(request):
         # ========== CABEÇALHOS ==========
         cabecalhos = [
             'Analista', 'ID Chamado', 'Tipo Atividade', 'Técnico',
-            'Data', 'Início', 'Conclusão', 'Tempo Total',
+            'Data', 'Horário Previsto', 'Início', 'Conclusão', 'Tempo Total',
             'Status', 'Senha', 'Observação'
         ]
         
@@ -623,6 +638,7 @@ def exportar_excel_formatado(request):
                 chamado.tipo_atividade,
                 chamado.nome_tecnico,
                 chamado.data.strftime('%d/%m/%Y') if chamado.data else '',
+                chamado.previsto.strftime('%H:%M') if chamado.previsto else '',
                 chamado.inicio.strftime('%H:%M') if chamado.inicio else '',
                 chamado.conclusao.strftime('%H:%M') if chamado.conclusao else '',
                 chamado.total_horas.strftime('%H:%M') if chamado.total_horas else '',
@@ -648,7 +664,7 @@ def exportar_excel_formatado(request):
                     cell.font = fonte_dados
         
         # ========== AJUSTAR LARGURA DAS COLUNAS ==========
-        larguras_colunas = [15, 12, 20, 12, 12, 10, 12, 12, 12, 12, 30]
+        larguras_colunas = [15, 12, 20, 12, 12, 15, 10, 12, 12, 12, 12, 30]
         
         for col, largura in enumerate(larguras_colunas, 1):
             worksheet.column_dimensions[get_column_letter(col)].width = largura
@@ -684,13 +700,13 @@ def exportar_excel_formatado(request):
 def upload_planilha(request):
     """
     View para upload e processamento de planilhas de chamados planejados.
-    Acesso permitido apenas das 16:30 às 17:30, uma vez por dia.
+    Acesso permitido apenas das 13:20 às 16:00, uma vez por dia.
     """
-    # Verificar horário de acesso (16:30 às 17:30) - usando horário local
+    # Verificar horário de acesso (13:20 às 16:00) - usando horário local
     agora = datetime.now()  # Usar horário local ao invés de timezone.now()
     hora_atual = agora.time()
-    hora_inicio = datetime.strptime('16:30', '%H:%M').time()
-    hora_fim = datetime.strptime('17:30', '%H:%M').time()
+    hora_inicio = datetime.strptime('13:20', '%H:%M').time()
+    hora_fim = datetime.strptime('16:00', '%H:%M').time()
     
     # Verificar se já foi feito upload hoje
     hoje = agora.date()
@@ -699,7 +715,7 @@ def upload_planilha(request):
     # Permitir bypass apenas para hoje com parâmetro especial
     permitir_novo_upload = request.GET.get('permitir_novo', '') == 'sim'
     
-    # Permitir segundo upload hoje se estiver no horário correto (16:30-17:30)
+    # Permitir segundo upload hoje se estiver no horário correto (13:20-16:00)
     dentro_do_horario = hora_inicio <= hora_atual <= hora_fim
     
     # Verificar se já foi feito upload hoje (só bloqueia se estiver FORA do horário)
@@ -707,13 +723,13 @@ def upload_planilha(request):
         if request.method == 'GET':
             return render(request, 'upload_planilha.html', {
                 'horario_restrito': True,
-                'hora_inicio': '16:30',
-                'hora_fim': '17:30',
+                'hora_inicio': '13:20',
+                'hora_fim': '16:00',
                 'ja_upload_hoje': True
             })
         else:
             return JsonResponse({
-                'error': 'Upload já realizado hoje. Faça novos uploads apenas das 16:30 às 17:30.'
+                'error': 'Upload já realizado hoje. Faça novos uploads apenas das 13:20 às 16:00.'
             }, status=403)
     
     # Verificar horário (mas permitir bypass se tiver o parâmetro)
@@ -721,8 +737,8 @@ def upload_planilha(request):
         if request.method == 'GET':
             return render(request, 'upload_planilha.html', {
                 'horario_restrito': True,
-                'hora_inicio': '16:30',
-                'hora_fim': '17:30',
+                'hora_inicio': '13:20',
+                'hora_fim': '16:00',
                 'ja_upload_hoje': False
             })
         else:
@@ -733,8 +749,8 @@ def upload_planilha(request):
     if request.method == 'GET':
         return render(request, 'upload_planilha.html', {
             'horario_restrito': False,
-            'hora_inicio': '16:30',
-            'hora_fim': '17:30'
+            'hora_inicio': '13:20',
+            'hora_fim': '16:00'
         })
     
     if request.method == 'POST':
@@ -751,7 +767,28 @@ def upload_planilha(request):
             
             # Ler planilha
             if arquivo.name.endswith('.csv'):
-                df = pd.read_csv(arquivo, encoding='utf-8')
+                # Tentar diferentes encodings e delimitadores para CSV
+                df = None
+                encodings = ['utf-8', 'latin-1', 'cp1252', 'iso-8859-1']
+                separators = [',', ';', '\t']
+                
+                for encoding in encodings:
+                    for sep in separators:
+                        try:
+                            arquivo.seek(0)  # Resetar posição do arquivo
+                            df = pd.read_csv(arquivo, encoding=encoding, sep=sep)
+                            # Verificar se conseguiu ler pelo menos uma coluna
+                            if len(df.columns) > 0:
+                                break
+                        except:
+                            continue
+                    if df is not None and len(df.columns) > 0:
+                        break
+                
+                if df is None or len(df.columns) == 0:
+                    return JsonResponse({
+                        'error': 'Não foi possível ler o arquivo CSV. Verifique se o arquivo não está corrompido e se tem o formato correto.'
+                    }, status=400)
             else:
                 df = pd.read_excel(arquivo)
             
@@ -800,12 +837,28 @@ def upload_planilha(request):
                         else:
                             data_planejada = row['data_planejada'].date()
                     
+                    # Converter horário previsto
+                    horario_previsto = None
+                    if 'previsto' in df.columns and pd.notna(row.get('previsto')):
+                        if isinstance(row['previsto'], str):
+                            # Tentar diferentes formatos de horário
+                            try:
+                                horario_previsto = datetime.strptime(row['previsto'], '%H:%M').time()
+                            except:
+                                try:
+                                    horario_previsto = datetime.strptime(row['previsto'], '%H:%M:%S').time()
+                                except:
+                                    horario_previsto = None
+                        else:
+                            horario_previsto = row['previsto']
+                    
                     # Criar chamado
                     chamado = Chamados.objects.create(
                         ID_chamado=str(row['ID_chamado']),  # Usar string para suportar IDs como "125978/1"
                         nome_cliente=str(row['nome_cliente']),
                         nome_tecnico=str(row['nome_tecnico']),
                         data_planejada=data_planejada,
+                        previsto=horario_previsto,
                         status='planejado',
                         origem_planilha=True,
                         data_upload=timezone.now(),
